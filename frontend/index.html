@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
+</head>
+
+<body>
+    <!-- Tactical Atmosphere -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png?v=2" alt="SDARS Logo" class="logo-image">
+                <span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>TACTICAL INTELLIGENCE HUB</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">DASHBOARD</a></li>
+                <li><a href="map.html" class="nav-link">STRATEGIC MAP</a></li>
+                <li><a href="navigation.html" class="nav-link">NAVIGATOR</a></li>
+                <li><a href="3d-view.html" class="nav-link">WAR ROOM</a></li>
+                <li><a href="prediction.html" class="nav-link">AI SCAN</a></li>
+                <li><a href="zones.html" class="nav-link">ZONES</a></li>
+                <li><a href="alerts.html" class="nav-link">ALERTS</a></li>
+                <!-- Login Button -->
+                <li><a href="#" class="nav-link" id="loginBtn" onclick="openAuthModal()">LOGIN</a></li>
+                <li id="userProfileDisplay" style="display: none; align-items: center; gap: 8px;">
+                    <span style="font-size: 12px; color: #a8b3cf;" id="userEmailDisplay"></span>
+                    <button onclick="logout()"
+                        style="background: none; border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-size: 10px;">LOGOUT</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-backdrop"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="auth-card"
+            style="background: #0d1117; border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 12px; width: 350px; text-align: center; position: relative;">
+            <img src="logo.png" alt="SDARS"
+                style="height: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));">
+            <button onclick="closeAuthModal()"
+                style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer;">✕</button>
+            <h2
+                style="margin-bottom: 10px; color: white; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                SECURE ACCESS</h2>
+
+            <!-- Step 1: Email -->
+            <div id="stepEmail">
+                <p style="color: #a8b3cf; font-size: 14px; margin-bottom: 20px;">Enter your email to receive a
+                    verification code.</p>
+                <input type="email" id="authEmail" placeholder="name@agency.com"
+                    style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                <button class="btn-primary" onclick="requestOTP()" style="width: 100%; justify-content: center;">SEND
+                    CODE</button>
+            </div>
+
+            <!-- Step 2: OTP -->
+            <div id="stepOTP" style="display: none;">
+                <p style="color: #a8b3cf; font-size: 14px; margin-bottom: 20px;">Enter the 6-digit code sent to your
+                    email.</p>
+                <div style="margin-bottom: 10px; font-weight: bold; color: #6366f1;" id="otpDemoHint"></div>
+                <input type="text" id="authOTP" placeholder="000000" maxlength="6"
+                    style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px; letter-spacing: 5px; text-align: center; font-size: 18px;">
+                <button class="btn-primary" onclick="verifyOTP()" style="width: 100%; justify-content: center;">VERIFY
+                    ACCESS</button>
+                <button onclick="backToEmail()"
+                    style="background: none; border: none; color: #a8b3cf; margin-top: 15px; cursor: pointer; font-size: 12px; text-decoration: underline;">Change
+                    Email</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Command Center -->
+        <section class="hero-dashboard reveal-staggered">
+            <div class="hero-content">
+                <div class="tactical-line"></div>
+                <h1 class="page-title">
+                    SYSTEM HEARTBEAT
+                    <span class="gradient-text"
+                        style="background: var(--gradient-hazard); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">ACTIVE
+                        MONITORING</span>
+                </h1>
+                <p class="page-subtitle"
+                    style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-signal);">
+                    [STATUS: OPERATIONAL] • [NODES: CONNECTED] • [AI: INFERENCE ACTIVE]
+                </p>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon fire-gradient">🔥</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="fireAlerts">-</h3>
+                    <p class="stat-label">Fire Alerts</p>
+                    <span class="stat-change positive">Active Monitoring</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon flood-gradient">🌊</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="floodAlerts">-</h3>
+                    <p class="stat-label">Flood Warnings</p>
+                    <span class="stat-change">Regions Analyzed</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon cyclone-gradient">🌪️</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="cycloneAlerts">-</h3>
+                    <p class="stat-label">Cyclone Watches</p>
+                    <span class="stat-change">Pressure Tracking</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon safe-gradient">✅</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="safeLocations">5</h3>
+                    <p class="stat-label">Locations Monitored</p>
+                    <span class="stat-change">Multi-Modal AI</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Current Alerts -->
+        <section class="alerts-section">
+            <h2 class="section-title">🚨 Active Alerts & Warnings</h2>
+            <div class="alerts-container" id="activeAlerts">
+                <div class="alert-placeholder">
+                    <div class="placeholder-icon">🛰️</div>
+                    <p>Analyzing satellite data and weather patterns...</p>
+                    <button class="btn-primary" onclick="loadActiveAlerts()">Load Live Data</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ⭐ NEW: Global AI Prediction Feed -->
+        <section class="global-feed-section" style="margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin: 0;">📡 Global AI Prediction Feed</h2>
+                <span
+                    style="font-size: 12px; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                    Live System History
+                </span>
+            </div>
+
+            <div id="globalPredictionFeed" class="prediction-feed-container"
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; max-height: 400px; overflow-y: auto;">
+                <div style="text-align: center; color: #6b7a99; padding: 40px;">
+                    <div class="loading-spinner" style="margin-bottom: 10px;"></div>
+                    <p>Synchronizing with AI Prediction Database...</p>
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 10px;">
+                <small style="color: #6b7a99;">* Click on any entry to view full spectral analysis</small>
+            </div>
+        </section>
+
+        <!-- Dynamic Monitored Regions -->
+        <section class="locations-section">
+            <h2 class="section-title">🌐 Global Monitored Regions</h2>
+            <div class="locations-grid" id="liveLocationsGrid">
+                <!-- Populated dynamically by dashboard.js -->
+                <div style="text-align: center; padding: 40px; grid-column: 1/-1; color: #6b7a99;">
+                    🌍 Loading worldwide monitoring data...
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2 class="section-title">🚀 Quick Actions</h2>
+            <div class="actions-grid">
+                <a href="navigation.html" class="action-card">
+                    <div class="action-icon">🚀</div>
+                    <h3>Safe Navigator</h3>
+                    <p>Google Maps style routing with integrated disaster avoidance</p>
+                </a>
+
+                <a href="prediction.html" class="action-card">
+                    <div class="action-icon">🔮</div>
+                    <h3>Run Prediction</h3>
+                    <p>Analyze any location for disaster risks</p>
+                </a>
+
+                <a href="3d-view.html" class="action-card">
+                    <div class="action-icon">🌍</div>
+                    <h3>3D War Room</h3>
+                    <p>Immersive 3D satellite visualization and telemetry monitoring</p>
+                </a>
+
+                <a href="map.html" class="action-card">
+
+                    <div class="action-icon">🗺️</div>
+                    <h3>View Map</h3>
+                    <p>Interactive map with risk zones</p>
+                </a>
+
+                <a href="analytics.html" class="action-card">
+                    <div class="action-icon">📊</div>
+                    <h3>Analytics</h3>
+                    <p>Historical trends and insights</p>
+                </a>
+
+                <a href="about.html" class="action-card">
+                    <div class="action-icon">📚</div>
+                    <h3>Learn More</h3>
+                    <p>How SDARS works</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>SDARS - AI-Based Satellite-Driven Smart Disaster Alert and Rescue System</p>
+        <p>Powered by Multi-Modal AI | Real-Time Monitoring Active</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/alert-system.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+
+</html>

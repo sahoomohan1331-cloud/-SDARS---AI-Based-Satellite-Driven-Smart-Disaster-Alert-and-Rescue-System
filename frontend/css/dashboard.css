@@ -1,0 +1,394 @@
+/* Hero Dashboard Section */
+.hero-dashboard {
+    text-align: left;
+    padding: calc(var(--spacing-unit) * 6) 0;
+    position: relative;
+    border-bottom: 1px solid var(--text-dim);
+    margin-bottom: calc(var(--spacing-unit) * 4);
+}
+
+.tactical-line {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100px;
+    height: 3px;
+    background: var(--accent-hazard);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2px;
+    background: var(--border-color);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-xl);
+}
+
+.stat-card {
+    background: var(--bg-deep);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
+    border: none;
+    border-radius: 0;
+}
+
+.stat-card:hover {
+    background: var(--bg-elevated);
+    box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05);
+}
+
+.stat-icon {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+
+.stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--accent-signal);
+}
+
+.stat-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.stat-card:nth-child(1) .stat-label {
+    color: var(--accent-hazard);
+}
+
+.stat-card:nth-child(2) .stat-label {
+    color: var(--accent-signal);
+}
+
+.stat-card:nth-child(3) .stat-label {
+    color: var(--accent-warning);
+}
+
+.stat-card:nth-child(4) .stat-label {
+    color: var(--accent-positive);
+}
+
+/* Alerts Container */
+.alerts-container {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-color);
+    padding: 0;
+    overflow: hidden;
+}
+
+.alert-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: calc(var(--spacing-unit) * 2);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.alert-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.alert-item.highlight-hazard {
+    animation: glitchHorizontal 0.4s infinite;
+    background: rgba(255, 77, 0, 0.05);
+}
+
+@keyframes glitchHorizontal {
+    0% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-2px) skewX(2deg);
+    }
+
+    40% {
+        transform: translateX(2px) skewX(-2deg);
+    }
+
+    60% {
+        transform: translateX(-1px);
+    }
+
+    80% {
+        transform: translateX(1px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Locations Surveillance Grid */
+.locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.location-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--text-dim);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.location-card::after {
+    content: "SCANNING...";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-signal);
+    font-size: 8px;
+    color: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    animation: scanLineMove 2s infinite linear;
+}
+
+@keyframes scanLineMove {
+    0% {
+        transform: translateY(0);
+        opacity: 0.1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-100px);
+        opacity: 0.1;
+    }
+}
+
+.location-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.location-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.location-stats {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.location-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.location-stat .stat-icon {
+    width: auto;
+    height: auto;
+    font-size: 1rem;
+    background: none;
+    border: none;
+}
+
+.location-status {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 0;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-bottom: var(--spacing-xl);
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.action-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    text-align: center;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    display: block;
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(102, 126, 234, 0.4);
+    background: var(--bg-card-hover);
+}
+
+.action-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.action-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.action-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(102, 126, 234, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Feed Item Hover */
+.feed-item:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .locations-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ================================================
+   CRITICAL LAYOUT FIXES
+   ================================================ */
+/* Force horizontal navbar layout to prevent "black screen" overlay */
+.nav-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+.nav-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 15px !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+}
+
+.nav-link {
+    display: inline-block !important;
+    white-space: nowrap !important;
+    width: auto !important;
+    border-left: none !important;
+    margin: 0 !important;
+}
+
+.nav-logo {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    margin-right: 20px !important;
+}
+
+/* Ensure content is not hidden behind navbar */
+.main-content {
+    margin-top: 20px !important;
+    padding-top: 20px !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Specific fix for Dashboard Hero overlap */
+.hero-dashboard {
+    padding-top: 40px !important;
+    margin-top: 10px !important;
+}

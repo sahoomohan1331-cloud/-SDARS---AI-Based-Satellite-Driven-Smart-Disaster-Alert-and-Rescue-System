@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - Analytics</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/analytics.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="SDARS Logo" class="logo-image"
+                    onerror="this.parentElement.classList.add('img-error')"><span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>Disaster Prediction AI</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">🗺️ Live Map</a></li>
+                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
+                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
+                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
+                <li><a href="zones.html" class="nav-link">📍 Zones</a></li>
+                <li><a href="alerts.html" class="nav-link">🚨 Alerts</a></li>
+                <li><a href="about.html" class="nav-link">📚 About</a></li>
+            </ul>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <section class="page-header">
+            <h1 class="page-title">
+                Analytics & Insights
+                <span class="gradient-text">Historical Trends</span>
+            </h1>
+            <p class="page-subtitle">
+                Track disaster patterns, prediction accuracy, and system performance
+            </p>
+        </section>
+
+        <!-- KPI Cards -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon">🎯</div>
+                <div class="kpi-content">
+                    <h3>95.8%</h3>
+                    <p>Prediction Accuracy</p>
+                    <span class="kpi-trend positive">↑ 2.3% from last month</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">⚡</div>
+                <div class="kpi-content">
+                    <h3>1,247</h3>
+                    <p>Predictions Made</p>
+                    <span class="kpi-trend">This month</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">🚨</div>
+                <div class="kpi-content">
+                    <h3>23</h3>
+                    <p>Alerts Issued</p>
+                    <span class="kpi-trend warning">8 High Risk</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-icon">⏱️</div>
+                <div class="kpi-content">
+                    <h3>0.8s</h3>
+                    <p>Avg Response Time</p>
+                    <span class="kpi-trend positive">↓ 15% faster</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>📈 Disaster Risk Trends (Last 30 Days)</h3>
+                    <div class="chart-controls">
+                        <select class="chart-select">
+                            <option>Last 7 days</option>
+                            <option selected>Last 30 days</option>
+                            <option>Last 90 days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <div class="chart-card half">
+                    <div class="chart-header">
+                        <h3>🔥 Risk Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card half">
+                    <div class="chart-header">
+                        <h3>🌍 Predictions by Region</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="regionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="activity-section">
+            <h2 class="section-title">📝 Recent Activity Log</h2>
+            <div class="activity-table">
+                <div class="table-header">
+                    <div>Timestamp</div>
+                    <div>Location</div>
+                    <div>Event Type</div>
+                    <div>Risk Level</div>
+                    <div>Confidence</div>
+                </div>
+                <div class="table-row">
+                    <div>2026-01-30 17:35</div>
+                    <div>Mumbai</div>
+                    <div>🔥 Fire Analysis</div>
+                    <div><span class="badge low">LOW</span></div>
+                    <div>30%</div>
+                </div>
+                <div class="table-row">
+                    <div>2026-01-30 17:29</div>
+                    <div>Chennai</div>
+                    <div>🌊 Flood Analysis</div>
+                    <div><span class="badge medium">MEDIUM</span></div>
+                    <div>55%</div>
+                </div>
+                <div class="table-row">
+                    <div>2026-01-30 17:22</div>
+                    <div>Kolkata</div>
+                    <div>🌪️ Cyclone Analysis</div>
+                    <div><span class="badge high">HIGH</span></div>
+                    <div>90%</div>
+                </div>
+                <div class="table-row">
+                    <div>2026-01-30 17:15</div>
+                    <div>Delhi</div>
+                    <div>🔥 Fire Analysis</div>
+                    <div><span class="badge low">LOW</span></div>
+                    <div>25%</div>
+                </div>
+                <div class="table-row">
+                    <div>2026-01-30 17:08</div>
+                    <div>Bangalore</div>
+                    <div>🌊 Flood Analysis</div>
+                    <div><span class="badge low">LOW</span></div>
+                    <div>15%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Performance -->
+        <section class="performance-section">
+            <h2 class="section-title">🤖 AI Model Performance</h2>
+            <div class="performance-grid">
+                <div class="performance-card">
+                    <h3>Fire Detection Model</h3>
+                    <div class="metric-row">
+                        <span>Accuracy:</span>
+                        <strong>97.2%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Precision:</span>
+                        <strong>95.8%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Recall:</span>
+                        <strong>96.5%</strong>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 97.2%"></div>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>Flood Detection Model</h3>
+                    <div class="metric-row">
+                        <span>Accuracy:</span>
+                        <strong>94.5%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Precision:</span>
+                        <strong>92.3%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Recall:</span>
+                        <strong>93.8%</strong>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 94.5%"></div>
+                    </div>
+                </div>
+
+                <div class="performance-card">
+                    <h3>Cyclone Detection Model</h3>
+                    <div class="metric-row">
+                        <span>Accuracy:</span>
+                        <strong>96.1%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Precision:</span>
+                        <strong>94.7%</strong>
+                    </div>
+                    <div class="metric-row">
+                        <span>Recall:</span>
+                        <strong>95.2%</strong>
+                    </div>
+                    <div class="performance-bar">
+                        <div class="performance-fill" style="width: 96.1%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>SDARS - AI-Based Satellite-Driven Smart Disaster Alert and Rescue System</p>
+        <p>Analytics Updated Every Hour | Historical Data Retained for 90 Days</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/analytics.js"></script>
+</body>
+
+</html>

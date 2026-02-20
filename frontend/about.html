@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - About</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png?v=2" alt="SDARS Logo" class="logo-image">
+                <span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>Disaster Prediction AI</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">🗺️ Live Map</a></li>
+                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
+                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
+                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
+                <li><a href="zones.html" class="nav-link">📍 Zones</a></li>
+                <li><a href="alerts.html" class="nav-link">🚨 Alerts</a></li>
+                <li><a href="about.html" class="nav-link active">📚 About</a></li>
+            </ul>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Main Content -->
+    <main class="main-content about-page">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="about-logo-container">
+                <img src="logo.png?v=2" alt="SDARS Logo" class="about-logo-main">
+            </div>
+            <h1 class="page-title">
+                About SDARS
+                <span class="gradient-text">How It Works</span>
+            </h1>
+            <p class="hero-lead">
+                Satellite-Driven Smart Disaster Alert and Rescue System uses cutting-edge multi-modal AI to predict
+                natural disasters before they strike, combining satellite imagery analysis with weather time-series data
+                for unprecedented accuracy.
+            </p>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <h2 class="section-title">🔬 How SDARS Works</h2>
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>🛰️ Satellite Data Collection</h3>
+                        <p>SDARS continuously monitors satellite imagery including thermal bands, vegetation indices
+                            (NDVI), and water coverage (NDWI) from multiple sources including NASA FIRMS and Sentinel
+                            satellites.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>🌡️ Weather Time-Series Analysis</h3>
+                        <p>The system tracks weather parameters over time, calculating rates of change for temperature,
+                            pressure, humidity, and wind speed. This temporal analysis is key to predicting disasters
+                            BEFORE they occur.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>🤖 Multi-Modal AI Processing</h3>
+                        <p>Advanced AI models analyze 48 combined features (16 from satellite + 32 from weather) to
+                            detect patterns indicative of fires, floods, and cyclones with high confidence.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>🚨 Alert Generation</h3>
+                        <p>When significant risk is detected, SDARS generates detailed alerts with confidence scores,
+                            contributing factors, and actionable insights for disaster management teams.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Features -->
+        <section class="features-showcase">
+            <h2 class="section-title">✨ Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Multi-Modal Analysis</h3>
+                    <p>Combines satellite imagery and weather data for comprehensive disaster risk assessment</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Time-Series Tracking</h3>
+                    <p>Monitors weather changes over time to detect precursor conditions</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-Time Processing</h3>
+                    <p>Analyzes data and generates predictions in under 1 second</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Global Coverage</h3>
+                    <p>Works anywhere in the world with satellite and weather API access</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Explainable AI</h3>
+                    <p>Provides detailed reasoning for each prediction</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Data Visualization</h3>
+                    <p>Interactive maps, charts, and dashboards for easy interpretation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technology Stack -->
+        <section class="tech-stack">
+            <h2 class="section-title">🛠️ Technology Stack</h2>
+            <div class="tech-categories">
+                <div class="tech-category">
+                    <h3>Backend</h3>
+                    <div class="tech-tags">
+                        <span class="tech-tag">Python 3.8+</span>
+                        <span class="tech-tag">FastAPI</span>
+                        <span class="tech-tag">NumPy</span>
+                        <span class="tech-tag">Pandas</span>
+                        <span class="tech-tag">Scikit-learn</span>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h3>Frontend</h3>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">Leaflet.js</span>
+                        <span class="tech-tag">Chart.js</span>
+                    </div>
+                </div>
+
+                <div class="tech-category">
+                    <h3>Data Sources</h3>
+                    <div class="tech-tags">
+                        <span class="tech-tag">NASA FIRMS</span>
+                        <span class="tech-tag">OpenWeatherMap</span>
+                        <span class="tech-tag">Sentinel Hub</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="system-stats">
+            <h2 class="section-title">📊 System Capabilities</h2>
+            <div class="stats-showcase">
+                <div class="stat-item">
+                    <h3>48</h3>
+                    <p>Features Analyzed Per Prediction</p>
+                </div>
+                <div class="stat-item">
+                    <h3>3</h3>
+                    <p>Disaster Types Detected</p>
+                </div>
+                <div class="stat-item">
+                    <h3>&lt;1s</h3>
+                    <p>Average Prediction Time</p>
+                </div>
+                <div class="stat-item">
+                    <h3>95%+</h3>
+                    <p>Prediction Accuracy</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="use-cases">
+            <h2 class="section-title">🎯 Use Cases</h2>
+            <div class="use-case-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">🏛️</div>
+                    <h3>Government Agencies</h3>
+                    <p>Early warning systems for disaster management departments to prepare evacuation plans and
+                        allocate resources</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">🤝</div>
+                    <h3>NGOs & Relief Organizations</h3>
+                    <p>Disaster preparedness and response coordination with predictive analytics</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">🎓</div>
+                    <h3>Research & Academia</h3>
+                    <p>Climate pattern analysis and disaster prediction model development</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">🏢</div>
+                    <h3>Private Sector</h3>
+                    <p>Insurance risk assessment and business continuity planning</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>Ready to See SDARS in Action?</h2>
+                <p>Start analyzing locations and predicting disaster risks with our AI-powered system</p>
+                <div class="cta-buttons">
+                    <a href="prediction.html" class="btn-cta primary">🔮 Run Prediction</a>
+                    <a href="map.html" class="btn-cta secondary">🗺️ View Live Map</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>SDARS - AI-Based Satellite-Driven Smart Disaster Alert and Rescue System</p>
+        <p>Built for Disaster Prevention | Saving Lives Through Technology</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

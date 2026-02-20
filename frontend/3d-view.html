@@ -1,0 +1,1604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - 3D War Room</title>
+
+    <!-- Cesium -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #cesiumContainer {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .cesium-viewer-bottom {
+            display: none !important;
+        }
+
+        .war-room-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Hide scrollbar on the outer wrapper */
+            scrollbar-width: none;
+        }
+
+        .war-room-overlay::-webkit-scrollbar {
+            display: none;
+        }
+
+        .floating-nav {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: rgba(10, 14, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 8px 24px;
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .float-link {
+            color: #a8b3cf;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .float-link:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .float-link.active {
+            color: #667eea;
+        }
+
+        .control-panel {
+            background: rgba(10, 14, 26, 0.9);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            border-radius: 20px;
+            padding: 24px;
+            pointer-events: auto;
+            width: 240px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(102, 126, 234, 0.4) transparent;
+        }
+
+        .control-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .control-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 4px;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+
+        .panel-header {
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #fff 0%, #a8b3cf 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .status-text {
+            color: #4caf50;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            color: #6b7a99;
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .stat-val {
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .telemetry-console {
+            background: #05080f;
+            border-radius: 12px;
+            padding: 12px;
+            height: 100px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .t-line {
+            font-size: 10px;
+            color: #4caf50;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .visual-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #a8b3cf;
+            font-size: 13px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 10px;
+            text-decoration: none;
+        }
+
+        .btn-tour {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-tour:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a8b3cf;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2a334d;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #667eea;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(16px);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Tactical Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 5000;
+            opacity: 0.15;
+        }
+
+        .crt-glitch {
+            animation: glitch-anim 5s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                filter: contrast(100%) brightness(100%);
+            }
+
+            10% {
+                filter: contrast(120%) brightness(110%) hue-rotate(5deg);
+            }
+
+            11% {
+                filter: contrast(100%) brightness(100%) hue-rotate(0deg);
+            }
+
+            90% {
+                filter: contrast(100%) brightness(100%);
+            }
+
+            91% {
+                filter: contrast(150%) brightness(150%) saturate(200%);
+            }
+
+            92% {
+                filter: contrast(100%) brightness(100%);
+            }
+        }
+
+        .t-line.ai {
+            color: #00f2ff;
+            font-weight: 700;
+        }
+
+        .t-line.warn {
+            color: #ff9800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .t-line.danger {
+            color: #ff4d4d;
+            animation: blink-text 1s infinite;
+        }
+
+        .t-line.success {
+            color: #4caf50;
+        }
+
+        @keyframes blink-text {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Satellite Orbit Panel */
+        .orbit-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .orbit-section-title {
+            color: #a78bfa;
+            font-size: 10px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sat-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .sat-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: #a8b3cf;
+        }
+
+        .sat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        .sat-name {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .sat-alt {
+            color: #6b7a99;
+            font-size: 9px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scanlines"></div>
+    <div id="toast"></div>
+    <div class="war-room-overlay">
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2 class="panel-title"><span>🛰️</span><span>SDARS THREAT-3D</span></h2>
+                <p style="color: #6b7a99; font-size: 11px;">Nasa/Sentinel Data Fusion Architecture</p>
+            </div>
+            <div class="status-indicator">
+                <div class="status-pulse"></div>
+                <div class="status-text" id="vLink">System Ready</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">ALERTS ACTIVE</div>
+                    <div class="stat-val" id="alertCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">CITY NODES</div>
+                    <div class="stat-val" id="nodeCount">0</div>
+                </div>
+            </div>
+            <div class="telemetry-console" id="console"></div>
+            <div class="visual-controls">
+                <div class="control-item"><span>3D Buildings</span><label class="switch"><input type="checkbox"
+                            id="buildingsToggle" checked><span class="slider"></span></label></div>
+                <div class="control-item"><span>3D Terrain (Elevation)</span><label class="switch"><input
+                            type="checkbox" id="terrainElevationToggle" checked><span class="slider"></span></label>
+                </div>
+                <div class="control-item"><span>Atmos Fog</span><label class="switch"><input type="checkbox"
+                            id="fogToggle" checked><span class="slider"></span></label></div>
+                <div class="control-item"><span>Day/Night Lighting</span><label class="switch"><input type="checkbox"
+                            id="sunToggle" checked><span class="slider"></span></label></div>
+                <!-- ⭐ SATELLITE ORBITS -->
+                <div class="orbit-section">
+                    <div class="orbit-section-title">🛰️ LIVE SATELLITE ORBITS</div>
+                    <div class="control-item">
+                        <span style="color: white; font-weight: 600;">Show Orbits</span>
+                        <label class="switch"><input type="checkbox" id="orbitToggle" checked><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="control-item" style="margin-top: 8px;">
+                        <span style="color: #a8b3cf;">Orbit Trails</span>
+                        <label class="switch"><input type="checkbox" id="orbitTrailToggle" checked><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="control-item" style="margin-top: 8px;">
+                        <span style="color: #a8b3cf;">Ground Track</span>
+                        <label class="switch"><input type="checkbox" id="groundTrackToggle" checked><span
+                                class="slider"></span></label>
+                    </div>
+                    <div class="sat-legend" id="satLegend">
+                        <div class="sat-legend-item">
+                            <div class="sat-dot" style="background:#00f2ff; color:#00f2ff;"></div><span
+                                class="sat-name">ISS</span><span class="sat-alt">408 km</span>
+                        </div>
+                        <div class="sat-legend-item">
+                            <div class="sat-dot" style="background:#a78bfa; color:#a78bfa;"></div><span
+                                class="sat-name">Sentinel-2A</span><span class="sat-alt">786 km</span>
+                        </div>
+                        <div class="sat-legend-item">
+                            <div class="sat-dot" style="background:#34d399; color:#34d399;"></div><span
+                                class="sat-name">NOAA-20</span><span class="sat-alt">824 km</span>
+                        </div>
+                        <div class="sat-legend-item">
+                            <div class="sat-dot" style="background:#fbbf24; color:#fbbf24;"></div><span
+                                class="sat-name">Landsat-9</span><span class="sat-alt">705 km</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ⭐ STRATEGIC SIMULATORS -->
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <div
+                        style="color: #00f2ff; font-size: 10px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px;">
+                        ⚠️ STRATEGIC CRISIS SIMULATOR </div>
+                    <div class="control-item" style="margin-bottom: 10px;"><span
+                            style="color: white; font-weight: 600;">Flood Engine</span><label class="switch"><input
+                                type="checkbox" id="floodSimToggle"><span class="slider"></span></label></div>
+                    <div id="floodControls" style="display: none;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7a99; margin-bottom: 5px;">
+                            <span>WATER LEVEL (m)</span><span id="waterLevelVal" style="color: #00f2ff;">0m</span>
+                        </div>
+                        <input type="range" id="waterLevelSlider" min="0" max="200" value="0"
+                            style="width: 100%; height: 4px; background: rgba(0, 242, 255, 0.2); border-radius: 2px; appearance: none; cursor: pointer;">
+                        <div
+                            style="margin-top: 10px; font-size: 9px; color: #ff4d00; text-align: center; border: 1px solid rgba(255, 77, 0, 0.2); padding: 5px; border-radius: 4px;">
+                            Simulation active: Topographic analysis running... </div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <div
+                        style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">
+                        Map Base Imagery</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                        <button class="terrain-btn active" onclick="setImagery('tactical')" title="Tactical Dark"
+                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🌌</button>
+                        <button class="terrain-btn" onclick="setImagery('satellite')" title="NASA Satellite"
+                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🛰️</button>
+                        <button class="terrain-btn" onclick="setImagery('topo')" title="Topographic"
+                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🏔️</button>
+                        <button class="terrain-btn" onclick="setImagery('streets')" title="OpenStreetMap"
+                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🏙️</button>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-action btn-tour" id="tourBtn"><span>🎬</span>Start Crisis Tour </button><a
+                href="map.html" class="btn-action btn-secondary">← Exit War Room </a>
+        </div>
+    </div>
+    <nav class="floating-nav"><a href="index.html" class="float-link">🏠 Home</a><a href="map.html"
+            class="float-link">🗺️ Map</a><a href="prediction.html" class="float-link">🔮 Predict</a><a
+            href="3d-view.html" class="float-link active">🌍 3D View</a></nav>
+    <div id="cesiumContainer"></div>
+    <script> // Set your Ion token
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWE3NzQ1OS1mZjU4LTRiYTUtOTRkYS03MzQ0MTU3NGNkODkiLCJpZCI6MzkwNjAzLCJpYXQiOjE3NzEwNzg4NDN9.z5MYsq0_R1Ah5oU7zAHObrYEXVeH-Gywq-JN5DZRZD8';
+
+        let viewer;
+        let locations = [];
+        let riskTowers = [];
+        let buildings;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function addLog(msg, type = 'info') {
+            const con = document.getElementById('console');
+            const line = document.createElement('div');
+
+            line.className = `t-line ${type}`;
+
+            const time = new Date().toLocaleTimeString([], {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            line.textContent = `[${time}] ${msg}`;
+
+            con.prepend(line);
+            if (con.children.length > 15) con.removeChild(con.lastChild);
+        }
+
+        // ⭐ DYNAMIC AI COGNITION LOOP
+        function startAIThoughts() {
+            const thoughts = [{
+                text: "CROSS-REFERENCING NASA FIRMS SPATIAL DATA...", type: "ai"
+            }
+
+                ,
+            {
+                text: "ANALYSER: SPECTRAL ANOMALY IN SWIR BANDS DETECTED", type: "warn"
+            }
+
+                ,
+            {
+                text: "AI CORE: NEURAL WEIGHTS SYNCHRONIZED", type: "info"
+            }
+
+                ,
+            {
+                text: "CALCULATING MULTI-MODAL PROPAGATION VECTORS", type: "ai"
+            }
+
+                ,
+            {
+                text: "ATMOSPHERIC INVERSION DETECTED IN QUADRANT-4", type: "warn"
+            }
+
+                ,
+            {
+                text: "SENTINEL-2 HUB: ACTIVE CLOUD MASKING BYPASSED", type: "success"
+            }
+
+                ,
+            {
+                text: "HEURISTIC RISK ASSESSMENT: CONFIDENCE > 92%", type: "ai"
+            }
+
+            ];
+
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
+                    addLog(thought.text, thought.type);
+                }
+            }
+
+                , 4000);
+        }
+
+        async function initCesium() {
+            try {
+                // 1. Initialize Viewer with Cinematic Settings
+                // We start with Ellipsoid terrain as a base fallback
+                let terrainProvider = new Cesium.EllipsoidTerrainProvider();
+
+                try {
+                    // Try to load world terrain (requires a valid Ion token)
+                    terrainProvider = await Cesium.createWorldTerrainAsync();
+                }
+
+                catch (e) {
+                    console.warn("Cesium World Terrain failed (likely 401). Using standard Ellipsoid.");
+                    addLog("TERRAIN: ION AUTH ERROR (401)");
+                    addLog("HELP: PLEASE UPDATE ION TOKEN");
+                    showToast("Terrain & buildings failed to load. Check Ion token.");
+                }
+
+                viewer = new Cesium.Viewer('cesiumContainer', {
+                    terrainProvider: terrainProvider,
+                    baseLayerPicker: false,
+                    geocoder: false,
+                    homeButton: false,
+                    sceneModePicker: true,
+                    timeline: false,
+                    animation: false,
+                    navigationHelpButton: false,
+                    fullscreenButton: true,
+                    scene3DOnly: true,
+                    infoBox: false, // ⭐ Disable sandboxed iframe to prevent "Blocked script execution"
+                    selectionIndicator: true
+                });
+
+                // ⭐ Custom Selection Handler to replace InfoBox
+                // ⭐ Custom Selection Handler to replace InfoBox
+                viewer.selectedEntityChanged.addEventListener(async function (entity) {
+                    const existingOverlay = document.getElementById('customInfoOverlay');
+                    if (existingOverlay) existingOverlay.remove();
+
+                    if (entity && entity.description) {
+                        const description = entity.description.getValue(viewer.clock.currentTime);
+
+                        const overlay = document.createElement('div');
+                        overlay.id = 'customInfoOverlay';
+                        overlay.style.position = 'absolute';
+                        overlay.style.top = '100px';
+                        overlay.style.right = '20px';
+                        overlay.style.maxWidth = '320px';
+                        overlay.style.zIndex = '999';
+
+                        // Create content wrapper
+                        const contentWrapper = document.createElement('div');
+                        contentWrapper.style.position = 'relative';
+                        contentWrapper.innerHTML = `
+                            <button onclick="document.getElementById('customInfoOverlay').remove()" style="position: absolute; top: -10px; right: -10px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold; z-index: 1001;">×</button>
+                            ${description}
+                        `;
+                        overlay.appendChild(contentWrapper);
+                        document.body.appendChild(overlay);
+
+                        // ⭐ DYNAMIC NAME RESOLUTION for "Generic" Waypoints
+                        setTimeout(async () => {
+                            try {
+                                const titleEl = contentWrapper.querySelector('h3');
+                                if (titleEl) {
+                                    const currentName = titleEl.textContent.trim();
+
+                                    // Check if name is generic (Route Waypoint, Sector, Location)
+                                    if (currentName.match(/Route Waypoint|Sector|Location/i)) {
+
+                                        addLog(`SCANNING: DECODING ${currentName}...`, 'warn');
+                                        titleEl.innerHTML = `${currentName} <span style="font-size: 10px; color: #facc15; animation: blink 1s infinite;">[SCANNING DB]</span>`;
+
+                                        // Try to find lat/lon in the description HTML
+                                        // Robust finder that looks for "Numbers, Numbers" pattern in any div
+                                        const coordEl = Array.from(contentWrapper.querySelectorAll('div')).find(div =>
+                                            div.innerText.match(/-?\d+\.\d+\s*,\s*-?\d+\.\d+/)
+                                        );
+
+                                        if (coordEl) {
+                                            const match = coordEl.innerText.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+                                            if (match) {
+                                                const lat = parseFloat(match[1]);
+                                                const lon = parseFloat(match[2]);
+
+                                                // Fetch real name
+                                                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14`, {
+                                                    headers: { 'Accept-Language': 'en', 'User-Agent': 'SDARS-System/1.0' }
+                                                });
+
+                                                if (response.ok) {
+                                                    const data = await response.json();
+                                                    const addr = data.address || {};
+                                                    const realName = addr.village || addr.town || addr.city || addr.municipality || addr.suburb || addr.hamlet || data.display_name.split(',')[0];
+
+                                                    if (realName) {
+                                                        const cleanName = realName.replace(/Route Waypoint \d+/gi, '').trim() || realName;
+
+                                                        // Update UI
+                                                        titleEl.textContent = cleanName.toUpperCase();
+                                                        titleEl.style.color = '#4ade80';
+                                                        titleEl.style.textShadow = '0 0 10px rgba(74, 222, 128, 0.5)';
+
+                                                        addLog(`RESOLVED: ${cleanName.toUpperCase()}`, 'success');
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            console.warn("Could not find coordinates in popup HTML");
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                console.warn("Dynamic resolution failed", e);
+                                addLog("RESOLUTION ERROR: API TIMEOUT", 'danger');
+                            }
+                        }, 50);
+                    }
+                });
+
+                // 2. Enhance Visuals (Atmosphere & Lighting)
+                viewer.scene.globe.showGroundAtmosphere = true;
+                viewer.scene.fog.enabled = true;
+                viewer.scene.fog.density = 0.0001;
+                viewer.scene.globe.enableLighting = true; // Day/Night Cycle
+
+                // Add Bloom for glow effects
+                viewer.scene.postProcessStages.bloom.enabled = true;
+                viewer.scene.postProcessStages.bloom.uniforms.contrast = 120.0;
+                viewer.scene.postProcessStages.bloom.uniforms.brightness = -0.1;
+
+                // 3. Add 3D Buildings
+                try {
+                    buildings = await Cesium.createOsmBuildingsAsync();
+                    viewer.scene.primitives.add(buildings);
+                    addLog("BUILDINGS: LOADED (OSM)");
+                }
+
+                catch (e) {
+                    console.warn("3D Buildings failed to load (Auth Error).");
+                    addLog("BUILDINGS: ION AUTH ERROR (401)");
+                    addLog(">> VISIT: cesium.com/ion");
+                }
+
+                // 4. Load Data & Create 3D Risk Towers
+                const loadedLocs = await loadStrategicData();
+
+                // ⭐ INITIALIZE IMAGERY (Ensures globe is visible immediately)
+                await setImagery('tactical');
+
+                // 5. Setup Camera & Controls
+                const highRiskLoc = loadedLocs && loadedLocs.find(l => l.prediction && l.prediction.overall_risk === 'HIGH');
+
+                if (highRiskLoc) {
+                    addLog(`TARGET LOCKED: HIGH RISK AT ${highRiskLoc.name.toUpperCase()}`, 'warn');
+                    viewer.camera.flyTo({
+                        destination: Cesium.Cartesian3.fromDegrees(highRiskLoc.lon, highRiskLoc.lat, 5000000.0),
+                        duration: 3
+                    });
+                } else {
+                    viewer.camera.flyTo({
+                        destination: Cesium.Cartesian3.fromDegrees(78.9629, 20.5937, 10000000.0),
+                        duration: 2
+                    });
+                }
+
+                setupEventHandlers();
+
+                addLog("SYSTEM: ONLINE");
+                addLog("ENGINE: CESIUM JS 1.114");
+                addLog("FUSION: CONNECTED");
+
+            }
+
+            catch (error) {
+                console.error(error);
+                alert("Failed to load 3D engine. Check internet connection.");
+            }
+        }
+
+        async function loadStrategicData() {
+            try {
+                const [locRes, histRes] = await Promise.all([
+                    fetch(`${window.API_BASE_URL || 'http://localhost:8000/api'}/locations`),
+                    fetch(`${window.API_BASE_URL || 'http://localhost:8000/api'}/predictions/history`)
+                ]);
+
+                const locData = await locRes.json();
+                const history = await histRes.json();
+
+                // 1. Optimize: Filter history to avoid rendering too many points
+                // Priority: High Risk > Medium Risk > Recent Low Risk
+                const highRisk = history.filter(h => h.overall_risk === 'HIGH');
+                const mediumRisk = history.filter(h => h.overall_risk === 'MEDIUM');
+                // Only take recent low risk items (limit 50) to prevent clutter
+                const lowRisk = history.filter(h => h.overall_risk !== 'HIGH' && h.overall_risk !== 'MEDIUM')
+                    .slice(0, 50);
+
+                const relevantHistory = [...highRisk, ...mediumRisk, ...lowRisk];
+
+                // 2. Combine monitored locations with filtered history
+                const monitored = locData.locations || [];
+                const allNodes = [...monitored];
+
+                // Map relevant history into consistent format
+                relevantHistory.forEach(h => {
+                    const existing = allNodes.find(n => n.name === h.name);
+                    if (existing) {
+                        existing.prediction = h;
+                    } else {
+                        // Only add if not duplicate name
+                        if (!allNodes.some(n => n.name === h.name)) {
+                            allNodes.push({
+                                name: h.name,
+                                lat: h.lat,
+                                lon: h.lon,
+                                prediction: h
+                            });
+                        }
+                    }
+                });
+
+                locations = allNodes;
+
+                // Update UI counts
+                document.getElementById('nodeCount').textContent = locations.length;
+                document.getElementById('alertCount').textContent = highRisk.length;
+
+                // 3. Render filtered nodes in 3D
+                locations.forEach(loc => {
+                    const prediction = loc.prediction;
+                    const risk = (prediction ? prediction.overall_risk : 'NORMAL').toUpperCase();
+
+                    let color;
+                    if (risk === 'HIGH') color = Cesium.Color.RED;
+                    else if (risk === 'MEDIUM') color = Cesium.Color.ORANGE;
+                    else if (risk === 'LOW') color = Cesium.Color.YELLOW;
+                    else color = Cesium.Color.CYAN;
+
+                    const threat = prediction ? (prediction.primary_threat || 'NONE') : 'NONE';
+                    const confidence = prediction ? Math.round((prediction.risk_scores?.[threat] || prediction.confidence || 0) * 100) : 0;
+                    const weather = prediction ? (prediction.weather || prediction.current_weather) : null;
+                    const shelters = prediction ? (prediction.shelters || []) : [];
+                    const hotspots = prediction ? (prediction.fire_hotspots_count || 0) : 0;
+
+                    const detailsHtml = `
+                        <div style="font-family: 'JetBrains Mono', monospace; padding: 18px; background: rgba(10, 14, 26, 0.95); color: #a8b3cf; border-radius: 12px; border: 1px solid ${color.toCssColorString()}; box-shadow: 0 10px 40px rgba(0,0,0,0.8); min-width: 280px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                                <div>
+                                    <h3 style="margin: 0; color: white; font-size: 16px; text-transform: uppercase;">${loc.name}</h3>
+                                    <div style="font-size: 9px; color: #6b7a99;">${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}</div>
+                                </div>
+                                <span style="background: ${color.toCssColorString()}; color: black; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800;">${risk}</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                                <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 8px; color: #6b7a99;">THREAT</div>
+                                    <div style="color: white; font-size: 11px; font-weight: 700;">${threat.toUpperCase()}</div>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px;">
+                                    <div style="font-size: 8px; color: #6b7a99;">MATCH</div>
+                                    <div style="color: #00f2ff; font-size: 11px; font-weight: 700;">${confidence}%</div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
+                                    <div style="text-align: center; background: rgba(0,242,255,0.05); padding: 5px; border-radius: 4px;">
+                                        <div style="font-size: 7px; color: #6b7a99;">TEMP</div>
+                                        <div style="color: white; font-size: 10px;">${weather?.temperature || '--'}°C</div>
+                                    </div>
+                                    <div style="text-align: center; background: rgba(0,242,255,0.05); padding: 5px; border-radius: 4px;">
+                                        <div style="font-size: 7px; color: #6b7a99;">WIND</div>
+                                        <div style="color: white; font-size: 10px;">${weather?.wind_speed || '--'}k/h</div>
+                                    </div>
+                                    <div style="text-align: center; background: rgba(0,242,255,0.05); padding: 5px; border-radius: 4px;">
+                                        <div style="font-size: 7px; color: #6b7a99;">RAIN</div>
+                                        <div style="color: white; font-size: 10px;">${weather?.rainfall || 0}mm</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="font-size: 10px; line-height: 1.4; color: #d1d5db; margin-bottom: 15px;">
+                                ${prediction ? 'Satellite analysis confirmed anomalies in spectral bands. High probability of event occurrence.' : 'Monitoring station active. No current anomalies detected.'}
+                            </p>
+                            <a href="prediction.html?lat=${loc.lat}&lon=${loc.lon}&name=${encodeURIComponent(loc.name)}" style="display: block; text-align: center; background: ${color.toCssColorString()}; color: black; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 10px; font-weight: 700;">VIEW STRATEGIC DASHBOARD</a>
+                        </div>`;
+
+                    // 1. Create 3D Tower for Risks (HIGH and MEDIUM)
+                    if (risk === 'HIGH' || risk === 'MEDIUM') {
+                        const towerHeight = risk === 'HIGH' ? 80000 : 40000;
+                        const tower = viewer.entities.add({
+                            name: `${loc.name} - RISK ZONE`,
+                            position: Cesium.Cartesian3.fromDegrees(loc.lon, loc.lat, towerHeight / 2),
+                            cylinder: {
+                                length: new Cesium.CallbackProperty(() => towerHeight + Math.sin(Date.now() / 500) * 5000, false),
+                                topRadius: risk === 'HIGH' ? 8000.0 : 4000.0,
+                                bottomRadius: risk === 'HIGH' ? 20000.0 : 10000.0,
+                                material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
+                                    const opacity = risk === 'HIGH' ? 0.4 + Math.sin(Date.now() / 500) * 0.1 : 0.2;
+                                    return color.withAlpha(opacity);
+                                }, false)),
+                                outline: true,
+                                outlineColor: color,
+                                outlineWidth: 1
+                            },
+                            description: detailsHtml
+                        });
+                        riskTowers.push(tower);
+                    }
+
+                    // 2. Pulse Marker
+                    viewer.entities.add({
+                        name: `${loc.name}`,
+                        position: Cesium.Cartesian3.fromDegrees(loc.lon, loc.lat),
+                        description: detailsHtml,
+                        point: {
+                            pixelSize: risk === 'HIGH' ? 14 : 8,
+                            color: color,
+                            outlineColor: Cesium.Color.WHITE,
+                            outlineWidth: 1
+                        },
+                        label: {
+                            text: loc.name.toUpperCase(),
+                            font: '8pt JetBrains Mono',
+                            fillColor: color,
+                            outlineColor: Cesium.Color.BLACK,
+                            outlineWidth: 2,
+                            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                            pixelOffset: new Cesium.Cartesian2(0, -15),
+                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 5000000)
+                        }
+                    });
+                });
+
+                addLog(`FUSION: ${history.length} HISTORICAL DATA POINTS INTEGRATED`, 'success');
+                addLog(`LOADED: ${locations.length} ACTIVE SENSOR NODES`, 'info');
+
+                if (highRisk.length > 0) {
+                    addLog(`CRITICAL: ${highRisk.length} THREATS IDENTIFIED`, 'danger');
+                }
+
+                startAIThoughts();
+
+                return locations; // Return data for calling function
+            } catch (err) {
+                addLog("API SYNC: FAILED - RECONNECTING...", 'danger');
+                console.error(err);
+                return [];
+            }
+        }
+
+        async function startCrisisTour() {
+            const highRiskLocs = locations.filter(loc => {
+                // Find if this loc has high risk in our history (simplified for demo)
+                return riskTowers.some(t => t.name.startsWith(loc.name));
+            });
+
+            if (highRiskLocs.length === 0) {
+                showToast("No active crisis zones for tour.");
+                return;
+            }
+
+            document.getElementById('tourBtn').disabled = true;
+            document.getElementById('tourBtn').textContent = "🎬 Tour in Progress...";
+            addLog("TOUR: STARTING CINEMATIC SEQUENCE");
+
+            for (const loc of highRiskLocs) {
+                showToast(`Inspecting Threat: ${loc.name}`);
+
+                addLog(`ZOOM: SCANNING ${loc.name.toUpperCase()}`);
+
+                await new Promise(resolve => {
+                    viewer.camera.flyTo({
+
+                        destination: Cesium.Cartesian3.fromDegrees(loc.lon, loc.lat, 5000.0),
+                        orientation: {
+                            heading: Cesium.Math.toRadians(0),
+                            pitch: Cesium.Math.toRadians(-25.0),
+                            roll: 0.0
+                        }
+
+                        ,
+                        duration: 3,
+                        complete: resolve
+                    });
+                });
+
+                // Dramatic orbit
+                let angle = 0;
+
+                await new Promise(resolve => {
+                    const remove = viewer.scene.preRender.addEventListener(() => {
+                        angle += 0.5;
+                        viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, Cesium.Math.toRadians(0.5));
+
+                        if (angle >= 180) {
+                            remove();
+                            resolve();
+                        }
+                    });
+                });
+            }
+
+            addLog("TOUR: SEQUENCE COMPLETE");
+            showToast("Tour Finished. Returning to HQ view.");
+
+            viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(78.9629, 20.5937, 5000000.0),
+                duration: 4
+            });
+
+            document.getElementById('tourBtn').disabled = false;
+            document.getElementById('tourBtn').innerHTML = "<span>🎬</span> Start Crisis Tour";
+        }
+
+        function setupEventHandlers() {
+            document.getElementById('buildingsToggle').addEventListener('change', (e) => {
+                if (buildings) buildings.show = e.target.checked;
+                addLog(`BUILDINGS: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
+            });
+
+            document.getElementById('terrainElevationToggle').addEventListener('change', async (e) => {
+                try {
+                    if (e.target.checked) {
+                        viewer.terrainProvider = await Cesium.createWorldTerrainAsync();
+                        addLog("TERRAIN: 3D DYNAMICS ENABLED");
+                    }
+
+                    else {
+                        viewer.terrainProvider = new Cesium.EllipsoidTerrainProvider();
+                        addLog("TERRAIN: FLAT TOPOLOGY ENABLED");
+                    }
+                }
+
+                catch (err) {
+                    addLog("TERRAIN ERROR: ION AUTH FAILED");
+                    showToast("Terrain elevation requires valid Ion token.");
+                    e.target.checked = false;
+                }
+            });
+
+            document.getElementById('fogToggle').addEventListener('change', (e) => {
+                viewer.scene.fog.enabled = e.target.checked;
+                viewer.scene.globe.showGroundAtmosphere = e.target.checked;
+                addLog(`ATMOS: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
+            });
+
+            document.getElementById('sunToggle').addEventListener('change', (e) => {
+                viewer.scene.globe.enableLighting = e.target.checked;
+                addLog(`LIGHTING: ${e.target.checked ? 'ON' : 'OFF'}`);
+            });
+
+            document.getElementById('tourBtn').addEventListener('click', startCrisisTour);
+        }
+
+        // ⭐ NEW: imagery switching for 3D
+        async function setImagery(type) {
+            const layers = viewer.imageryLayers;
+            layers.removeAll();
+
+            addLog(`IMAGERY: SWITCHING TO ${type.toUpperCase()}...`);
+
+            try {
+                if (type === 'tactical') {
+                    layers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+                        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                        credit: '©OpenStreetMap, ©CartoDB'
+                    }));
+                }
+
+                else if (type === 'satellite') {
+
+                    // Using Sentinel-2 via Ion if possible, or fallback to standard
+                    try {
+                        const sentinel = await Cesium.IonImageryProvider.fromAssetId(3954); // Sentinel-2
+                        layers.addImageryProvider(sentinel);
+                    }
+
+                    catch (e) {
+                        layers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+                            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                            credit: 'Esri World Imagery'
+                        }));
+                    }
+                }
+
+                else if (type === 'topo') {
+                    layers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+                        url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+                        credit: '©OpenTopoMap'
+                    }));
+                }
+
+                else if (type === 'streets') {
+                    layers.addImageryProvider(new Cesium.OpenStreetMapImageryProvider({
+                        url: 'https://a.tile.openstreetmap.org/'
+                    }));
+                }
+
+                // Update UI buttons
+                document.querySelectorAll('.terrain-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.background = 'rgba(255, 255, 255, 0.05)';
+                    btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                });
+
+                const activeBtn = document.querySelector(`.terrain-btn[onclick*="${type}"]`);
+
+                if (activeBtn) {
+                    activeBtn.classList.add('active');
+                    activeBtn.style.background = '#667eea';
+                    activeBtn.style.borderColor = '#764ba2';
+                }
+
+                addLog(`IMAGERY: ${type.toUpperCase()} LOADED`, 'success');
+            }
+
+            catch (err) {
+                console.error(err);
+                addLog("IMAGERY ERROR: PROVIDER FAILED", 'danger');
+            }
+        }
+
+        // ⭐ RUTHLESS ENHANCEMENT: THE DROWN ALGORITHM
+        class FloodSimulator {
+            constructor() {
+                this.active = false;
+                this.currentLevel = 0;
+                this.waterEntity = null;
+                this.checkInterval = null;
+            }
+
+            init() {
+
+                // Create the water surface
+                this.waterEntity = viewer.entities.add({
+
+                    name: 'Projected Flood Surface',
+                    show: false,
+                    polygon: {
+                        hierarchy: Cesium.Cartesian3.fromDegreesArray([-180, -90, 180, -90, 180, 90, -180, 90]),
+                        height: 0,
+                        material: Cesium.Color.BLUE.withAlpha(0.4),
+                        outline: true,
+                        outlineColor: Cesium.Color.CYAN
+                    }
+                });
+
+                document.getElementById('floodSimToggle').addEventListener('change', (e) => this.toggle(e.target.checked));
+
+                const slider = document.getElementById('waterLevelSlider');
+
+                slider.addEventListener('input', (e) => this.setLevel(parseFloat(e.target.value)));
+            }
+
+            toggle(state) {
+                this.active = state;
+                this.waterEntity.show = state;
+                document.getElementById('floodControls').style.display = state ? 'block' : 'none';
+
+                if (state) {
+                    addLog("FLOOD ENGINE: INITIALIZED", 'info');
+                    this.startMonitoring();
+                } else {
+                    addLog("FLOOD ENGINE: DEACTIVATED", 'info');
+                    this.stopMonitoring();
+                }
+            }
+
+            setLevel(level) {
+                this.currentLevel = level;
+                this.waterEntity.polygon.height = level;
+
+                document.getElementById('waterLevelVal').textContent = `${level}m`;
+
+                // Rapidly update colors of towers based on submersion
+                this.runSubmersionCheck();
+            }
+
+            startMonitoring() {
+                this.checkInterval = setInterval(() => this.runSubmersionCheck(), 3000);
+            }
+
+            stopMonitoring() {
+                if (this.checkInterval) clearInterval(this.checkInterval);
+            }
+
+            runSubmersionCheck() {
+                if (!this.active) return;
+
+                let inundatedCount = 0;
+
+                locations.forEach(loc => {
+                    // Logic: If water height >= ground height (simplified for demo markers)
+                    // In a real system we'd sample terrain, but here we compare vs currentLevel
+                    // Markers at low elevations are 'Inundated'
+
+                    // Let's pretend specific cities are at low elevations for the simulation effect
+                    const syntheticElevation = (loc.lat % 5) * 20; // Simulated elevation 0-100m
+
+                    if (this.currentLevel > syntheticElevation) inundatedCount++;
+                });
+
+                if (inundatedCount > 0 && Math.random() > 0.8) {
+                    addLog(`URGENT: ${inundatedCount} NODES BELOW WATERLINE`, 'warn');
+                }
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // 🛰️ SATELLITE ORBIT SYSTEM
+        // ═══════════════════════════════════════════════════════
+        class SatelliteOrbitSystem {
+            constructor() {
+                this.satellites = [
+                    {
+                        name: 'ISS',
+                        fullName: 'International Space Station',
+                        altitudeKm: 408,
+                        inclinationDeg: 51.6,
+                        raanDeg: 0,       // Right Ascension of Ascending Node
+                        periodMin: 92.68, // Orbital period in minutes
+                        color: Cesium.Color.fromCssColorString('#00f2ff'),
+                        emoji: '🛸',
+                        speed: 7.66,      // km/s
+                        phaseOffset: 0
+                    },
+                    {
+                        name: 'Sentinel-2A',
+                        fullName: 'ESA Sentinel-2A (Multispectral)',
+                        altitudeKm: 786,
+                        inclinationDeg: 98.62,
+                        raanDeg: 90,
+                        periodMin: 100.6,
+                        color: Cesium.Color.fromCssColorString('#a78bfa'),
+                        emoji: '🛰️',
+                        speed: 7.49,
+                        phaseOffset: Math.PI * 0.5
+                    },
+                    {
+                        name: 'NOAA-20',
+                        fullName: 'NOAA-20 (JPSS-1 Weather)',
+                        altitudeKm: 824,
+                        inclinationDeg: 98.74,
+                        raanDeg: 180,
+                        periodMin: 101.4,
+                        color: Cesium.Color.fromCssColorString('#34d399'),
+                        emoji: '🌍',
+                        speed: 7.46,
+                        phaseOffset: Math.PI
+                    },
+                    {
+                        name: 'Landsat-9',
+                        fullName: 'NASA Landsat-9 (Earth Observation)',
+                        altitudeKm: 705,
+                        inclinationDeg: 98.2,
+                        raanDeg: 270,
+                        periodMin: 98.9,
+                        color: Cesium.Color.fromCssColorString('#fbbf24'),
+                        emoji: '📡',
+                        speed: 7.52,
+                        phaseOffset: Math.PI * 1.5
+                    }
+                ];
+
+                this.orbitEntities = [];      // Orbit path polylines
+                this.satEntities = [];        // Moving satellite points
+                this.groundTrackEntities = []; // Ground track footprints
+                this.animationHandle = null;
+                this.showOrbits = true;
+                this.showTrails = true;
+                this.showGroundTrack = true;
+                this.startTime = Date.now();
+            }
+
+            /**
+             * Compute 3D Cartesian position of a satellite at time t.
+             * Uses simplified circular orbital mechanics.
+             * @param {Object} sat - satellite definition
+             * @param {number} t   - time in seconds from epoch
+             * @returns {Cesium.Cartesian3}
+             */
+            _satPosition(sat, t) {
+                const R_EARTH = 6371000; // metres
+                const altM = sat.altitudeKm * 1000;
+                const r = R_EARTH + altM;
+
+                // Angular velocity (rad/s)
+                const omega = (2 * Math.PI) / (sat.periodMin * 60);
+                // Current true anomaly
+                const nu = omega * t + sat.phaseOffset;
+
+                const incRad = Cesium.Math.toRadians(sat.inclinationDeg);
+                const raanRad = Cesium.Math.toRadians(sat.raanDeg);
+
+                // Position in orbital plane
+                const xOrb = r * Math.cos(nu);
+                const yOrb = r * Math.sin(nu);
+
+                // Rotate by RAAN (around Z) then inclination (around X)
+                const cosR = Math.cos(raanRad), sinR = Math.sin(raanRad);
+                const cosI = Math.cos(incRad), sinI = Math.sin(incRad);
+
+                const x = cosR * xOrb - sinR * cosI * yOrb;
+                const y = sinR * xOrb + cosR * cosI * yOrb;
+                const z = sinI * yOrb;
+
+                return new Cesium.Cartesian3(x, y, z);
+            }
+
+            /**
+             * Generate full orbit path as array of Cartesian3 points.
+             */
+            _buildOrbitPath(sat, steps = 180) {
+                const period = sat.periodMin * 60; // seconds
+                const points = [];
+                for (let i = 0; i <= steps; i++) {
+                    const t = (i / steps) * period;
+                    points.push(this._satPosition(sat, t));
+                }
+                return points;
+            }
+
+            /**
+             * Draw the static orbit ring for a satellite.
+             */
+            _addOrbitPath(sat) {
+                const points = this._buildOrbitPath(sat, 360);
+                const entity = viewer.entities.add({
+                    name: `${sat.name} Orbit Path`,
+                    polyline: {
+                        positions: points,
+                        width: 1.5,
+                        material: new Cesium.PolylineGlowMaterialProperty({
+                            glowPower: 0.25,
+                            color: sat.color.withAlpha(0.55)
+                        }),
+                        arcType: Cesium.ArcType.NONE
+                    }
+                });
+                this.orbitEntities.push(entity);
+                return entity;
+            }
+
+            /**
+             * Add the animated satellite icon that moves along the orbit.
+             */
+            _addSatelliteIcon(sat) {
+                const self = this;
+                const infoHtml = `
+                    <div style="font-family:'JetBrains Mono',monospace;padding:16px;background:rgba(10,14,26,0.97);color:#a8b3cf;border-radius:12px;border:1px solid ${sat.color.toCssColorString()};box-shadow:0 10px 40px rgba(0,0,0,0.8);min-width:260px;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:10px;">
+                            <span style="font-size:24px;">${sat.emoji}</span>
+                            <div>
+                                <h3 style="margin:0;color:white;font-size:14px;">${sat.name}</h3>
+                                <div style="font-size:9px;color:#6b7a99;">${sat.fullName}</div>
+                            </div>
+                            <span style="margin-left:auto;background:${sat.color.toCssColorString()};color:black;padding:3px 7px;border-radius:4px;font-size:9px;font-weight:800;">LIVE</span>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+                            <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:6px;">
+                                <div style="font-size:8px;color:#6b7a99;">ALTITUDE</div>
+                                <div style="color:white;font-size:12px;font-weight:700;">${sat.altitudeKm} km</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:6px;">
+                                <div style="font-size:8px;color:#6b7a99;">SPEED</div>
+                                <div style="color:#00f2ff;font-size:12px;font-weight:700;">${sat.speed} km/s</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:6px;">
+                                <div style="font-size:8px;color:#6b7a99;">INCLINATION</div>
+                                <div style="color:white;font-size:12px;font-weight:700;">${sat.inclinationDeg}°</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.03);padding:8px;border-radius:6px;">
+                                <div style="font-size:8px;color:#6b7a99;">PERIOD</div>
+                                <div style="color:white;font-size:12px;font-weight:700;">${sat.periodMin} min</div>
+                            </div>
+                        </div>
+                        <div style="font-size:9px;color:#6b7a99;text-align:center;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">🛰️ SDARS Orbital Tracking System</div>
+                    </div>`;
+
+                const entity = viewer.entities.add({
+                    name: sat.name,
+                    description: infoHtml,
+                    position: new Cesium.CallbackProperty(() => {
+                        const elapsed = (Date.now() - self.startTime) / 1000;
+                        return self._satPosition(sat, elapsed);
+                    }, false),
+                    point: {
+                        pixelSize: new Cesium.CallbackProperty(() => {
+                            // Pulsing size
+                            return 10 + Math.sin(Date.now() / 400) * 2;
+                        }, false),
+                        color: sat.color,
+                        outlineColor: Cesium.Color.WHITE,
+                        outlineWidth: 1.5,
+                        scaleByDistance: new Cesium.NearFarScalar(1e6, 1.5, 2e7, 0.5)
+                    },
+                    label: {
+                        text: `${sat.emoji} ${sat.name}`,
+                        font: '700 9pt Inter',
+                        fillColor: sat.color,
+                        outlineColor: Cesium.Color.BLACK,
+                        outlineWidth: 2,
+                        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                        pixelOffset: new Cesium.Cartesian2(0, -14),
+                        distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 3e7),
+                        scaleByDistance: new Cesium.NearFarScalar(1e6, 1.0, 2e7, 0.5)
+                    }
+                });
+                this.satEntities.push(entity);
+                return entity;
+            }
+
+            /**
+             * Add a pulsing ground-track footprint (sub-satellite point on Earth surface).
+             */
+            _addGroundTrack(sat) {
+                const self = this;
+                // Sub-satellite point: project satellite position onto Earth surface
+                const entity = viewer.entities.add({
+                    name: `${sat.name} Ground Track`,
+                    position: new Cesium.CallbackProperty(() => {
+                        const elapsed = (Date.now() - self.startTime) / 1000;
+                        const pos3d = self._satPosition(sat, elapsed);
+                        // Normalize to Earth surface
+                        const cart = Cesium.Cartographic.fromCartesian(pos3d);
+                        return Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
+                    }, false),
+                    ellipse: {
+                        semiMajorAxis: new Cesium.CallbackProperty(() => {
+                            // Footprint radius based on altitude (simplified)
+                            return 200000 + Math.sin(Date.now() / 600) * 30000;
+                        }, false),
+                        semiMinorAxis: new Cesium.CallbackProperty(() => {
+                            return 200000 + Math.sin(Date.now() / 600) * 30000;
+                        }, false),
+                        material: sat.color.withAlpha(0.08),
+                        outline: true,
+                        outlineColor: sat.color.withAlpha(0.5),
+                        outlineWidth: 1,
+                        height: 0
+                    }
+                });
+                this.groundTrackEntities.push(entity);
+
+                // Also add a vertical line from ground to satellite (nadir line)
+                const nadirLine = viewer.entities.add({
+                    name: `${sat.name} Nadir`,
+                    polyline: {
+                        positions: new Cesium.CallbackProperty(() => {
+                            const elapsed = (Date.now() - self.startTime) / 1000;
+                            const satPos = self._satPosition(sat, elapsed);
+                            const cart = Cesium.Cartographic.fromCartesian(satPos);
+                            const groundPos = Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
+                            return [groundPos, satPos];
+                        }, false),
+                        width: 0.8,
+                        material: new Cesium.PolylineDashMaterialProperty({
+                            color: sat.color.withAlpha(0.3),
+                            dashLength: 16
+                        }),
+                        arcType: Cesium.ArcType.NONE
+                    }
+                });
+                this.groundTrackEntities.push(nadirLine);
+                return entity;
+            }
+
+            /**
+             * Initialize all satellite orbits.
+             */
+            init() {
+                addLog('ORBITAL TRACKING: INITIALIZING...', 'ai');
+
+                this.satellites.forEach(sat => {
+                    this._addOrbitPath(sat);
+                    this._addSatelliteIcon(sat);
+                    this._addGroundTrack(sat);
+                    addLog(`SAT LOCK: ${sat.name} @ ${sat.altitudeKm}km`, 'success');
+                });
+
+                addLog(`ORBITAL TRACKING: ${this.satellites.length} SATELLITES ACTIVE`, 'ai');
+
+                // Wire up toggles
+                document.getElementById('orbitToggle').addEventListener('change', (e) => {
+                    this.showOrbits = e.target.checked;
+                    this.orbitEntities.forEach(en => en.show = this.showOrbits);
+                    this.satEntities.forEach(en => en.show = this.showOrbits);
+                    this.groundTrackEntities.forEach(en => en.show = this.showOrbits && this.showGroundTrack);
+                    addLog(`ORBITS: ${this.showOrbits ? 'ENABLED' : 'DISABLED'}`, 'info');
+                });
+
+                document.getElementById('orbitTrailToggle').addEventListener('change', (e) => {
+                    this.showTrails = e.target.checked;
+                    this.orbitEntities.forEach(en => en.show = this.showOrbits && this.showTrails);
+                    addLog(`ORBIT TRAILS: ${this.showTrails ? 'ON' : 'OFF'}`, 'info');
+                });
+
+                document.getElementById('groundTrackToggle').addEventListener('change', (e) => {
+                    this.showGroundTrack = e.target.checked;
+                    this.groundTrackEntities.forEach(en => en.show = this.showOrbits && this.showGroundTrack);
+                    addLog(`GROUND TRACK: ${this.showGroundTrack ? 'ON' : 'OFF'}`, 'info');
+                });
+            }
+        }
+
+        const satOrbitSystem = new SatelliteOrbitSystem();
+
+        const floodSim = new FloodSimulator();
+
+        // Initialize on load
+        window.addEventListener('load', async () => {
+            await initCesium();
+            floodSim.init();
+            satOrbitSystem.init();
+        });
+    </script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

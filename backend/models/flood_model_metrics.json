@@ -1,0 +1,40 @@
+{
+  "accuracy": 0.982,
+  "precision": 0.9902200488997555,
+  "recall": 0.9267734553775744,
+  "f1": 0.9574468085106383,
+  "cv_f1_mean": 0.9612688205599269,
+  "cv_f1_std": 0.005342263390570041,
+  "feature_importance": [
+    {
+      "feature": "ndwi",
+      "importance": 0.35630040267750845
+    },
+    {
+      "feature": "hum",
+      "importance": 0.21385356098808694
+    },
+    {
+      "feature": "press",
+      "importance": 0.17818567809781366
+    },
+    {
+      "feature": "wind",
+      "importance": 0.1086372846451074
+    },
+    {
+      "feature": "temp",
+      "importance": 0.08365056292469022
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.05645818914392039
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.0029143215228728324
+    }
+  ],
+  "trained_at": "2026-02-05T18:50:54.864856",
+  "model_path": "C:\\Users\\ASUS\\SDARS map\\backend\\models\\flood_risk_model.joblib"
+}

@@ -1,0 +1,78 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" rx="16" fill="#05070A"/>
+  <rect width="800" height="600" rx="16" fill="url(#grid_pattern)" opacity="0.1"/>
+  
+  <!-- Definitions -->
+  <defs>
+    <pattern id="grid_pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00F2FF" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="blue_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F2FF"/>
+      <stop offset="100%" stop-color="#70FDFF"/>
+    </linearGradient>
+    <linearGradient id="purple_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#9333EA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="50" text-anchor="middle" fill="#00F2FF" font-family="Arial" font-size="28" font-weight="bold">SDARS SYSTEM ARCHITECTURE</text>
+  <text x="400" y="75" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="14">SATELLITE-DRIVEN SMART DISASTER ALERT &amp; RESCUE SYSTEM</text>
+
+  <!-- Layer 1: Data Ingestion -->
+  <rect x="50" y="120" width="700" height="100" rx="8" stroke="#1A202C" stroke-width="2" fill="#0D1117"/>
+  <text x="65" y="145" fill="#00F2FF" font-family="Arial" font-size="14" font-weight="bold">LAYER 1: DATA INGESTION (SATELLITE &amp; TELEMETRY)</text>
+  
+  <rect x="70" y="160" width="150" height="40" rx="4" fill="#1A202C" stroke="#00F2FF" stroke-opacity="0.3"/>
+  <text x="145" y="185" text-anchor="middle" fill="white" font-family="Arial" font-size="11">SATELLITE IMAGERY</text>
+  
+  <rect x="230" y="160" width="150" height="40" rx="4" fill="#1A202C" stroke="#00F2FF" stroke-opacity="0.3"/>
+  <text x="305" y="185" text-anchor="middle" fill="white" font-family="Arial" font-size="11">WEATHER TELEMETRY</text>
+  
+  <rect x="390" y="160" width="150" height="40" rx="4" fill="#1A202C" stroke="#00F2FF" stroke-opacity="0.3"/>
+  <text x="465" y="185" text-anchor="middle" fill="white" font-family="Arial" font-size="11">SEISMIC SENSORS</text>
+  
+  <rect x="550" y="160" width="180" height="40" rx="4" fill="#1A202C" stroke="#00F2FF" stroke-opacity="0.3"/>
+  <text x="640" y="185" text-anchor="middle" fill="white" font-family="Arial" font-size="11">HISTORICAL CLIMATE DATA</text>
+
+  <!-- Connectors -->
+  <path d="M 400 220 L 400 260" stroke="#00F2FF" stroke-width="2" stroke-dasharray="4 4"/>
+
+  <!-- Layer 2: Processing Core -->
+  <rect x="200" y="260" width="400" height="120" rx="12" stroke="url(#purple_grad)" stroke-width="3" fill="#0D1117"/>
+  <text x="400" y="295" text-anchor="middle" fill="url(#purple_grad)" font-family="Arial" font-size="18" font-weight="bold">NEURAL AI PREDICTION ENGINE</text>
+  
+  <path d="M 230 330 Q 300 350 400 330 Q 500 310 570 330" stroke="#6366F1" stroke-width="1" opacity="0.5"/>
+  <text x="400" y="335" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="12">HAZARD RISK CALCULATION &amp; NEURAL REASONING</text>
+  <text x="400" y="355" text-anchor="middle" fill="#00DF82" font-family="Arial" font-size="11" font-weight="bold">PROBABILITY ANALYSIS [ENABLED]</text>
+
+  <!-- Connectors -->
+  <path d="M 150 380 L 150 430" stroke="#6366F1" stroke-width="2" stroke-dasharray="4 4"/>
+  <path d="M 400 380 L 400 430" stroke="#6366F1" stroke-width="2" stroke-dasharray="4 4"/>
+  <path d="M 650 380 L 650 430" stroke="#6366F1" stroke-width="2" stroke-dasharray="4 4"/>
+
+  <!-- Layer 3: Output Channels -->
+  <!-- Output 1 -->
+  <rect x="50" y="430" width="200" height="100" rx="8" fill="#1A202C" stroke="#00F2FF" stroke-width="1"/>
+  <text x="150" y="460" text-anchor="middle" fill="#00F2FF" font-family="Arial" font-size="14" font-weight="bold">3D WAR ROOM</text>
+  <text x="150" y="485" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Global Hazard Visuals</text>
+  <text x="150" y="500" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Real-time Command UI</text>
+
+  <!-- Output 2 -->
+  <rect x="300" y="430" width="200" height="100" rx="8" fill="#0D1117" stroke="#EF4444" stroke-width="2"/>
+  <text x="400" y="460" text-anchor="middle" fill="#EF4444" font-family="Arial" font-size="14" font-weight="bold">SAFETY NAVIGATION</text>
+  <text x="400" y="485" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Hazard-Aware Routing</text>
+  <text x="400" y="500" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Emergency Shelter Finder</text>
+
+  <!-- Output 3 -->
+  <rect x="550" y="430" width="200" height="100" rx="8" fill="#1A202C" stroke="#F59E0B" stroke-width="1"/>
+  <text x="650" y="460" text-anchor="middle" fill="#F59E0B" font-family="Arial" font-size="14" font-weight="bold">ALERTS &amp; SMS</text>
+  <text x="650" y="485" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Zone Subscription Push</text>
+  <text x="650" y="500" text-anchor="middle" fill="#8B949E" font-family="Arial" font-size="10">Multi-Channel Delivery</text>
+
+  <!-- Footer -->
+  <text x="400" y="580" text-anchor="middle" fill="#484F58" font-family="Arial" font-size="10">© 2026 TEAM SDARS | INNOVATION CATEGORY: CLIMATE &amp; DISASTER MANAGEMENT</text>
+</svg>

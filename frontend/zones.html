@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - Custom Alert Zones</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/zones.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>">
+
+    <!-- Leaflet for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="SDARS Logo" class="logo-image"
+                    onerror="this.parentElement.classList.add('img-error')"><span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>Disaster Prediction AI</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">🗺️ Live Map</a></li>
+                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
+                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
+                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
+                <li><a href="zones.html" class="nav-link active">📍 Zones</a></li>
+                <li><a href="alerts.html" class="nav-link">🚨 Alerts</a></li>
+                <li><a href="about.html" class="nav-link">📚 About</a></li>
+            </ul>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Shared Scripts -->
+    <script src="js/main.js"></script>
+
+    <!-- Main Content -->
+    <div class="zones-container">
+        <!-- Sidebar -->
+        <div class="zones-sidebar">
+            <div class="sidebar-header">
+                <h2>🎯 Custom Alert Zones</h2>
+                <p>Draw zones on the map to get alerts for specific areas</p>
+            </div>
+
+            <!-- Drawing Tools -->
+            <div class="tools-section">
+                <h3>✏️ Drawing Tools</h3>
+                <div class="tool-buttons">
+                    <button id="drawPolygonBtn" class="tool-btn active" onclick="startDrawing()">
+                        <span class="tool-icon">📐</span>
+                        <span>Draw Zone</span>
+                    </button>
+                    <button id="editZoneBtn" class="tool-btn" onclick="toggleEdit()">
+                        <span class="tool-icon">✏️</span>
+                        <span>Edit Zones</span>
+                    </button>
+                    <button id="deleteZoneBtn" class="tool-btn" onclick="toggleDelete()">
+                        <span class="tool-icon">🗑️</span>
+                        <span>Delete Zone</span>
+                    </button>
+                </div>
+                <div class="tool-hint">
+                    💡 Click on the map to start drawing a polygon. Double-click to finish.
+                </div>
+            </div>
+
+            <!-- Zone Form (Hidden initially) -->
+            <div id="zoneForm" class="zone-form" style="display: none;">
+                <h3>📝 Zone Details</h3>
+
+                <div class="form-group">
+                    <label>Zone Name</label>
+                    <input type="text" id="zoneName" placeholder="e.g., My Neighborhood, Family Home">
+                </div>
+
+                <div class="form-group">
+                    <label>Severity Threshold</label>
+                    <select id="severityThreshold">
+                        <option value="LOW">🔵 LOW - All alerts</option>
+                        <option value="MEDIUM" selected>🟡 MEDIUM - Important alerts</option>
+                        <option value="HIGH">🟠 HIGH - Urgent alerts only</option>
+                        <option value="CRITICAL">🔴 CRITICAL - Emergency only</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>📧 Alert Email(s) for This Zone</label>
+                    <input type="text" id="recipientEmails" placeholder="e.g. alice@gmail.com, bob@gmail.com"
+                        style="border-color: rgba(99,102,241,0.4);">
+                    <small style="color: #6b7a99; font-size: 11px; margin-top: 5px; display: block;">
+                        ⚡ When AI detects a risk inside this zone, an alert email is sent <strong>only</strong> to these
+                        addresses. No login needed.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Notification Channels</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="system" checked>
+                            <span>🖥️ System</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="email" checked>
+                            <span>📧 Email</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="push" checked>
+                            <span>🔔 Push</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="sms">
+                            <span>📱 SMS</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-primary" onclick="saveZone()">💾 Save Zone</button>
+                    <button class="btn-secondary" onclick="cancelZone()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Zones List -->
+            <div class="zones-list-section">
+                <div class="section-header">
+                    <h3>📍 My Zones</h3>
+                    <span class="badge" id="zoneCount">0</span>
+                </div>
+                <div id="zonesList" class="zones-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">🗺️</div>
+                        <p>No zones created yet</p>
+                        <small>Draw a zone on the map to get started</small>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container" style="position: relative;">
+            <div id="map"></div>
+
+            <!-- ⭐ Floating Terrain Selector -->
+            <div class="terrain-selector"
+                style="position: absolute; top: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(12px); padding: 8px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+                <button class="terrain-btn active" onclick="setTerrain('dark')" title="Dark Tactical"
+                    style="width: 42px; height: 42px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;">🌌</button>
+                <button class="terrain-btn" onclick="setTerrain('satellite')" title="Satellite View"
+                    style="width: 42px; height: 42px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;">🛰️</button>
+                <button class="terrain-btn" onclick="setTerrain('terrain')" title="Topographic Terrain"
+                    style="width: 42px; height: 42px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;">🏔️</button>
+                <button class="terrain-btn" onclick="setTerrain('streets')" title="Standard Streets"
+                    style="width: 42px; height: 42px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;">🏙️</button>
+            </div>
+
+            <!-- Map Controls Overlay -->
+            <div class="map-controls-overlay">
+                <button class="map-control-btn" onclick="locateMe()" title="My Location">
+                    📍
+                </button>
+                <button class="map-control-btn" onclick="clearAll()" title="Clear Drawing">
+                    🗑️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/zones.js"></script>
+</body>
+
+</html>

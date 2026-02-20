@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - Live Map</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png?v=2" alt="SDARS Logo" class="logo-image">
+                <span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>Disaster Prediction AI</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
+                <li><a href="map.html" class="nav-link active">🗺️ Live Map</a></li>
+                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
+                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
+                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
+                <li><a href="zones.html" class="nav-link">📍 Zones</a></li>
+                <li><a href="alerts.html" class="nav-link">🚨 Alerts</a></li>
+                <li><a href="about.html" class="nav-link">📚 About</a></li>
+            </ul>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content map-page">
+        <!-- Page Header -->
+        <section class="page-header">
+            <h1 class="page-title">
+                🗺️ Live Risk Map
+                <span class="gradient-text">Worldwide Monitoring</span>
+            </h1>
+            <p class="page-subtitle">
+                Interactive map showing real-time disaster risk zones across all continents • Click anywhere to analyze
+            </p>
+        </section>
+
+        <!-- 🔍 Google Maps Style Search Box -->
+        <section class="google-search-section">
+            <div class="search-container">
+                <!-- Search Input with GPS Button -->
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="locationSearchInput"
+                        placeholder="Search any location... Cuttack, Dasapalla, Mumbai..." autocomplete="off">
+                    <button id="gpsButton" class="gps-button" onclick="useCurrentLocation()"
+                        title="Use my current location">
+                        <span class="gps-icon">📍</span>
+                        <span class="gps-text">My Location</span>
+                    </button>
+                </div>
+
+                <!-- Autocomplete Suggestions Dropdown -->
+                <div id="searchSuggestions" class="search-suggestions">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <!-- Search Tips -->
+                <div class="search-tips">
+                    <small>
+                        💡 Tip: Type any city, village, or place name. Works for remote areas like Dasapalla, Cuttack,
+                        etc.
+                    </small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Map Controls -->
+        <div class="map-controls">
+            <div class="control-group">
+                <label>Risk Layer:</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showFire" checked onchange="toggleLayer('fire')">
+                        <span>🔥 Fire Risk</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showFlood" checked onchange="toggleLayer('flood')">
+                        <span>🌊 Flood Risk</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showCyclone" checked onchange="toggleLayer('cyclone')">
+                        <span>🌪️ Cyclone Risk</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showHistory" checked onchange="toggleHistoryLayer()">
+                        <span style="color: #6b7a99;">📜 History Nodes</span>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="refreshMap()">
+                🔄 Refresh Data
+            </button>
+            <a href="3d-view.html" class="btn-secondary btn-3d-war-room">
+                🛰️ 3D War Room
+            </a>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-wrapper">
+            <div id="map" class="map-container"></div>
+
+            <!-- ⭐ Floating Terrain Selector -->
+            <div class="terrain-selector">
+                <button class="terrain-btn active" onclick="setTerrain('dark')" title="Dark Tactical">🌌</button>
+                <button class="terrain-btn" onclick="setTerrain('satellite')" title="Satellite View">🛰️</button>
+                <button class="terrain-btn" onclick="setTerrain('terrain')" title="Topographic Terrain">🏔️</button>
+                <button class="terrain-btn" onclick="setTerrain('streets')" title="Standard Streets">🏙️</button>
+            </div>
+
+            <!-- Map Legend -->
+            <div class="map-legend">
+                <h3>Risk Levels</h3>
+                <div class="legend-item">
+                    <span class="legend-dot high"></span>
+                    <span>HIGH Risk</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot medium"></span>
+                    <span>MEDIUM Risk</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot low"></span>
+                    <span>LOW Risk</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot safe"></span>
+                    <span>Safe</span>
+                </div>
+                <hr>
+                <div class="legend-item">
+                    <span class="legend-dot archived"></span>
+                    <span class="archived-label">Archived Record</span>
+                </div>
+            </div>
+
+            <!-- Selected Location Info -->
+            <div class="location-info hidden" id="locationInfo">
+                <div class="info-header">
+                    <h3 id="infoTitle">Location Details</h3>
+                    <button class="close-btn" onclick="closeLocationInfo()">✕</button>
+                </div>
+                <div class="info-content" id="infoContent">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="info-actions">
+                    <button class="btn-secondary" onclick="viewDetailedAnalysis()">
+                        📊 Detailed Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Statistics -->
+        <section class="map-stats">
+            <div class="stat-box">
+                <div class="stat-icon">📍</div>
+                <div class="stat-info">
+                    <h4 id="totalLocations">5</h4>
+                    <p>Monitored Locations</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-info">
+                    <h4 id="highRiskZones">0</h4>
+                    <p>High Risk Zones</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-info">
+                    <h4 id="mediumRiskZones">1</h4>
+                    <p>Medium Risk Zones</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h4 id="safeZones">4</h4>
+                    <p>Safe Zones</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>SDARS - AI-Based Satellite-Driven Smart Disaster Alert and Rescue System</p>
+        <p>Map Data Updated Every 5 Minutes | Powered by Leaflet.js</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/location-search.js"></script>
+</body>
+
+</html>

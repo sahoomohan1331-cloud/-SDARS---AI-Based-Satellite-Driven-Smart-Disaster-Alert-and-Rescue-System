@@ -1,0 +1,60 @@
+# Core AI/ML Libraries
+tensorflow==2.15.0
+keras==2.15.0
+torch==2.1.0
+torchvision==0.16.0
+scikit-learn==1.3.2
+xgboost==2.0.3
+
+# Data Processing
+numpy==1.24.3
+pandas==2.1.4
+scipy==1.11.4
+
+# Image Processing & Satellite Data
+opencv-python==4.8.1.78
+Pillow==10.1.0
+rasterio==1.3.9
+gdal==3.8.0
+sentinelsat==1.2.1
+
+# Weather Data APIs
+requests==2.31.0
+openweathermap-python==0.1.0
+meteostat==1.6.5
+
+# NASA & Satellite APIs
+earthengine-api==0.1.384
+planet==2.4.0
+pystac-client==0.7.5
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.0
+plotly==5.18.0
+
+# Time Series Analysis
+statsmodels==0.14.1
+prophet==1.1.5
+pmdarima==2.0.4
+
+# API & Server
+fastapi==0.109.0
+uvicorn==0.27.0
+python-multipart==0.0.6
+pydantic==2.5.3
+aiohttp==3.9.1
+
+# Alerts & Notifications
+twilio==8.11.1
+python-telegram-bot==20.7
+
+# Database
+pymongo==4.6.1
+sqlalchemy==2.0.25
+
+# Utilities
+python-dotenv==1.0.0
+schedule==1.2.0
+joblib==1.3.2
+tqdm==4.66.1

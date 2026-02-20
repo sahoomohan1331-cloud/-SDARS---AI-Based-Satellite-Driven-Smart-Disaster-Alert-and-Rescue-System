@@ -1,0 +1,364 @@
+/* AI Command Center Layout */
+.prediction-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    margin-top: 30px;
+    min-height: 80vh;
+}
+
+/* Sidebar Styling */
+.prediction-sidebar {
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-color);
+    padding: 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-primary);
+}
+
+.history-item:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: var(--accent-blue);
+}
+
+.h-name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.h-meta {
+    font-size: 11px;
+    color: #a8b3cf;
+    opacity: 0.8;
+}
+
+.h-time {
+    font-size: 10px;
+    color: #6b7a99;
+    margin-top: 8px;
+}
+
+/* Neural Log / Terminal Output */
+.neural-log-box {
+    background: var(--bg-deep);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+}
+
+.log-header {
+    background: var(--bg-elevated);
+    padding: 8px 15px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--accent-signal);
+}
+
+.log-lines {
+    padding: 15px;
+    height: 150px;
+    overflow-y: auto;
+    font-size: 13px;
+    color: #66bb6a;
+}
+
+.log-line {
+    margin-bottom: 5px;
+}
+
+.log-line .prompt {
+    color: #4ecdc4;
+}
+
+/* AI Status Pill */
+.ai-status-pill {
+    background: rgba(78, 205, 196, 0.1);
+    color: #4ecdc4;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: #4ecdc4;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+}
+
+.manual-input-zone {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.input-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.location-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a8b3cf;
+    padding: 8px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.chip:hover {
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* Risk Badges */
+.risk-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.risk-badge.high {
+    background: rgba(255, 82, 82, 0.15);
+    color: #ff5252;
+    border: 1px solid rgba(255, 82, 82, 0.3);
+    box-shadow: 0 0 10px rgba(255, 82, 82, 0.2);
+}
+
+.risk-badge.medium {
+    background: rgba(255, 167, 38, 0.15);
+    color: #ffa726;
+    border: 1px solid rgba(255, 167, 38, 0.3);
+    box-shadow: 0 0 10px rgba(255, 167, 38, 0.2);
+}
+
+.risk-badge.low {
+    background: rgba(102, 187, 106, 0.15);
+    color: #66bb6a;
+    border: 1px solid rgba(102, 187, 106, 0.3);
+    box-shadow: 0 0 10px rgba(102, 187, 106, 0.2);
+}
+
+.results-section {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.threat-banner {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.risk-card-detailed {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.confidence-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #a8b3cf;
+    margin-top: 15px;
+}
+
+.confidence-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin: 8px 0 20px 0;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: var(--accent-blue);
+    border-radius: 4px;
+    transition: width 1.5s cubic-bezier(0.1, 0, 0.1, 1);
+}
+
+.factor-item {
+    font-size: 13px;
+    color: #a8b3cf;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 10px;
+}
+
+.chart-bar {
+    margin-top: 15px;
+}
+
+.bar-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+}
+
+.bar-fill.satellite {
+    background: #4ecdc4;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.4);
+}
+
+.bar-fill.weather {
+    background: #ff6b6b;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+}
+
+.bar-label {
+    font-size: 11px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bar-label:contains('Satellite') {
+    color: #4ecdc4;
+}
+
+.bar-label:contains('Weather') {
+    color: #ff6b6b;
+}
+
+/* Fallback for browsers that don't support :contains */
+.risk-card-detailed .chart-bar:nth-child(1) .bar-label {
+    color: #4ecdc4;
+}
+
+.risk-card-detailed .chart-bar:nth-child(2) .bar-label {
+    color: #ff6b6b;
+}
+
+.spectral-analysis-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 40px;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.weather-card-mini {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btn-analyze {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.2s;
+}
+
+.btn-analyze:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none;
+}

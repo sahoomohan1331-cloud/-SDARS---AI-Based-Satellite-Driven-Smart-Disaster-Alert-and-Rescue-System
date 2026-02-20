@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDARS - Alert Management</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/alerts-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background Effects -->
+    <div class="background-grid"></div>
+    <div class="background-gradient"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Synchronizing Satellite Arrays...</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.png" alt="SDARS Logo" class="logo-image"
+                    onerror="this.parentElement.classList.add('img-error')"><span class="logo-fallback">🛰️</span>
+                <div class="logo-text">
+                    <h1>SDARS</h1>
+                    <p>Disaster Prediction AI</p>
+                </div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
+                <li><a href="map.html" class="nav-link">🗺️ Live Map</a></li>
+                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
+                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
+                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
+                <li><a href="zones.html" class="nav-link">📍 Zones</a></li>
+                <li><a href="alerts.html" class="nav-link active">🚨 Alerts</a></li>
+                <li><a href="about.html" class="nav-link">📚 About</a></li>
+            </ul>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <section class="page-header">
+            <h1 class="page-title">
+                🚨 Alert Management
+                <span class="gradient-text">Real-time Monitoring</span>
+            </h1>
+            <p class="page-subtitle">
+                Monitor active alerts, view history, and manage notification preferences
+            </p>
+        </section>
+
+        <!-- Alert Statistics -->
+        <section class="alert-stats">
+            <div class="stat-card">
+                <div class="stat-icon critical">🆘</div>
+                <div class="stat-info">
+                    <h3 id="criticalCount">0</h3>
+                    <p>Critical Alerts</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon high">🚨</div>
+                <div class="stat-info">
+                    <h3 id="highCount">0</h3>
+                    <p>High Priority</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon medium">⚠️</div>
+                <div class="stat-info">
+                    <h3 id="mediumCount">0</h3>
+                    <p>Medium Priority</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon low">ℹ️</div>
+                <div class="stat-info">
+                    <h3 id="lowCount">0</h3>
+                    <p>Low Priority</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon total">📊</div>
+                <div class="stat-info">
+                    <h3 id="totalCount">0</h3>
+                    <p>Total Alerts</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alert Actions Bar -->
+        <section class="actions-bar">
+            <div class="actions-left">
+                <button class="btn-primary" onclick="refreshAlerts()">
+                    🔄 Refresh
+                </button>
+                <button class="btn-secondary" onclick="testAlert()">
+                    🧪 Test Alert
+                </button>
+                <button class="btn-secondary" onclick="acknowledgeAll()">
+                    ✓ Acknowledge All
+                </button>
+                <button class="btn-secondary" onclick="openSettingsModal()"
+                    style="background: rgba(102, 126, 234, 0.1); border-color: #667eea;">
+                    ⚙️ Strategic Config
+                </button>
+            </div>
+            <div class="actions-right">
+                <select id="severityFilter" onchange="filterAlerts()">
+                    <option value="all">All Severities</option>
+                    <option value="CRITICAL">Critical Only</option>
+                    <option value="HIGH">High Only</option>
+                    <option value="MEDIUM">Medium Only</option>
+                    <option value="LOW">Low Only</option>
+                </select>
+                <select id="statusFilter" onchange="filterAlerts()">
+                    <option value="active">Active Alerts</option>
+                    <option value="history">Alert History</option>
+                    <option value="all">All Alerts</option>
+                </select>
+            </div>
+        </section>
+
+        </section>
+
+        <!-- View Switcher -->
+        <div class="view-switcher"
+            style="display: flex; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0;">
+            <button class="tab-btn active" onclick="switchView('predictions')" id="tab-predictions" style="
+                background: none; border: none; color: white; padding: 10px 20px; font-weight: 600; cursor: pointer; border-bottom: 2px solid #6366f1;
+            ">🌍 Global AI Predictions</button>
+            <button class="tab-btn" onclick="switchView('zones')" id="tab-zones" style="
+                background: none; border: none; color: #a8b3cf; padding: 10px 20px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent;
+            ">📍 My Zone Alerts (Actionable)</button>
+        </div>
+
+        <!-- Global Predictions View -->
+        <div id="view-predictions" class="view-section">
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2>🧠 Raw AI Output Stream</h2>
+                    <span class="badge" id="predictionCountBadge">0</span>
+                </div>
+                <div id="predictionsList" class="alerts-list">
+                    <!-- Populated via API /api/predictions/history -->
+                </div>
+            </section>
+        </div>
+
+        <!-- Zone Alerts View (Actionable) -->
+        <div id="view-zones" class="view-section" style="display: none;">
+            <!-- Active Alerts Section -->
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2>🔴 Active Alerts</h2>
+                    <span class="badge" id="activeCountBadge">0</span>
+                </div>
+                <div id="activeAlertsList" class="alerts-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">✅</div>
+                        <h3>No Active Zone Alerts</h3>
+                        <p>When the AI detects a risk inside one of your created zones, it will appear here
+                            automatically.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alert History Section -->
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2>📜 Alert History</h2>
+                    <span class="badge" id="historyCountBadge">0</span>
+                </div>
+                <div id="historyAlertsList" class="alerts-list">
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No Zone Alert History</h3>
+                        <p>Acknowledged zone alerts will appear here. <a href="zones.html" style="color:#6366f1;">Create
+                                a zone →</a></p>
+                    </div>
+                </div>
+        </div>
+        </section>
+        </div> <!-- End view-zones -->
+    </main>
+
+    <!-- Alert Detail Modal -->
+    <div id="alertDetailModal" class="modal" style="display: none;">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Alert Details</h2>
+                <button onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- System Settings Modal -->
+    <div id="settingsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ System Configuration</h2>
+                <button onclick="closeSettingsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="settingsForm" onsubmit="saveSettings(event)">
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; color: #a8b3cf; margin-bottom: 5px; font-size: 13px;">SMTP
+                            SERVER</label>
+                        <input type="text" id="smtp_server" placeholder="smtp.gmail.com"
+                            style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; color: #a8b3cf; margin-bottom: 5px; font-size: 13px;">SMTP
+                            PORT</label>
+                        <input type="number" id="smtp_port" placeholder="587"
+                            style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; color: #a8b3cf; margin-bottom: 5px; font-size: 13px;">SENDER EMAIL
+                            (USER)</label>
+                        <input type="email" id="smtp_user" placeholder="your-email@gmail.com"
+                            style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label style="display: block; color: #a8b3cf; margin-bottom: 5px; font-size: 13px;">SMTP
+                            PASSWORD / APP PASS</label>
+                        <input type="password" id="smtp_password" placeholder="••••••••••••"
+                            style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        <label style="display: block; color: #a8b3cf; margin-bottom: 5px; font-size: 13px;">RECIPIENT
+                            EMAIL (ALERTS)</label>
+                        <input type="email" id="alert_email_to" placeholder="emergency-team@domain.com"
+                            style="width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px;">
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn-primary" style="flex: 1;">💾 Save Configuration</button>
+                        <button type="button" class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/alerts-page.js"></script>
+</body>
+
+</html>

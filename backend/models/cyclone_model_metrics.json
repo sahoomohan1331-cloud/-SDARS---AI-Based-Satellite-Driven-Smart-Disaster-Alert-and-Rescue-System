@@ -1,0 +1,40 @@
+{
+  "accuracy": 0.984,
+  "precision": 0.986159169550173,
+  "recall": 0.9105431309904153,
+  "f1": 0.946843853820598,
+  "cv_f1_mean": 0.94222796282153,
+  "cv_f1_std": 0.009902290620111337,
+  "feature_importance": [
+    {
+      "feature": "wind",
+      "importance": 0.34656256410510256
+    },
+    {
+      "feature": "press",
+      "importance": 0.24022497205824017
+    },
+    {
+      "feature": "hum",
+      "importance": 0.17540756168793215
+    },
+    {
+      "feature": "ndwi",
+      "importance": 0.10378439236335
+    },
+    {
+      "feature": "temp",
+      "importance": 0.07156731113346278
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.05649887522293141
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.00595432342898098
+    }
+  ],
+  "trained_at": "2026-02-05T18:50:58.274122",
+  "model_path": "C:\\Users\\ASUS\\SDARS map\\backend\\models\\cyclone_risk_model.joblib"
+}

@@ -1,0 +1,65 @@
+# ============================
+# SDARS - .gitignore
+# ============================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# ---- Virtual Environments ----
+venv/
+env/
+.env
+*.env
+.venv/
+
+# ---- Secrets & API Keys ----
+backend/.env
+.env.local
+.env.production
+secrets.py
+config_secret.py
+
+# ---- Database Files ----
+*.db
+*.sqlite
+*.sqlite3
+
+# ---- IDE & Editor ----
+.vscode/
+.idea/
+*.suo
+*.user
+*.workspace
+
+# ---- OS Files ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Jupyter Notebooks (checkpoints) ----
+.ipynb_checkpoints/
+
+# ---- Node Modules (if any) ----
+node_modules/
+npm-debug.log
+
+# ---- Temporary Files ----
+*.tmp
+*.temp
+*.bak
+*.swp
+~$*
