@@ -3,8 +3,8 @@
     // SDARS - CORE System JavaScript (Optimized)
     // ================================================
 
-    const host = (window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname;
-    window.API_BASE_URL = `http://${host}:8000/api`;
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    window.API_BASE_URL = (isLocal && window.location.port === '5500') ? `http://${window.location.hostname || '127.0.0.1'}:8000/api` : '/api';
     const API_BASE_URL = window.API_BASE_URL;
 
     // ===== Theme & UI =====

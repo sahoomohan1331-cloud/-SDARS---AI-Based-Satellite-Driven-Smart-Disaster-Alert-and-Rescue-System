@@ -3,6 +3,7 @@ FastAPI REST API Server - RELOAD BUMP
 Provides endpoints for the frontend to access AI predictions
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
@@ -124,7 +125,21 @@ async def update_settings(request: SettingsUpdate, db: Session = Depends(get_db)
 
 @app.get("/")
 async def root():
-    """API root endpoint"""
+    """Serve frontend index.html if available, otherwise return API status"""
+    _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    index_path = os.path.join(_root, "frontend", "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {
+        "message": "SDARS API is running",
+        "version": "1.0.0",
+        "status": "operational",
+        "timestamp": datetime.now().isoformat()
+    }
+
+@app.get("/api/status")
+async def api_status():
+    """API status endpoint"""
     return {
         "message": "SDARS API is running",
         "version": "1.0.0",
