@@ -15,16 +15,21 @@ let terrainLayers = {};
 let currentLayerName = 'dark';
 let shelterMarkers = [];
 let hazardMarkers = [];
+let roadMarkers = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
     setupGeocoders();
+    toggleRoadStatuses(true);
 });
 
 function initMap() {
     map = L.map('map', { zoomControl: false, attributionControl: false }).setView([20.5937, 78.9629], 5);
     terrainLayers = {
-        dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 19 }),
+        dark: L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 }),
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 })
+        ]),
         satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
         terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17 }),
         streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
@@ -84,7 +89,7 @@ async function calculateSafeRoute() {
             show: false,
             createMarker: () => null,
             router: L.Routing.osrmv1({
-                serviceUrl: 'https://router.project-osrm.org/route/v1',
+                serviceUrl: 'https://routing.openstreetmap.de/routed-car/route/v1',
                 alternatives: 3,
                 steps: true,
                 overview: 'full'
@@ -113,25 +118,44 @@ async function calculateSafeRoute() {
             displayRouteDetails(allRoutes[0]);
             map.fitBounds(L.latLngBounds(allRoutes[0].coordinates), { padding: [50, 50] });
 
-            // Run Analysis
+            // Run Analysis instantly on active route
             analyzeAllRoutes();
 
             // Auto-load hazards if checked
             if (document.getElementById('toggleHazards')?.checked) toggleHazards(true);
+            if (document.getElementById('toggleRoads')?.checked) toggleRoadStatuses(true);
+        });
+
+        routingControl.on('routingerror', function (err) {
+            console.warn("Routing notice:", err);
+            navBtn.disabled = false;
+            navBtn.innerHTML = `🚀 Start Navigation`;
         });
 
     } catch (err) {
+        console.error("Navigation error:", err);
         navBtn.disabled = false;
         navBtn.innerHTML = `🚀 Start Navigation`;
     }
 }
 
 async function analyzeAllRoutes() {
-    updateMapStatus('Probing routes for AI security threats...', 'warning');
+    updateMapStatus('Probing route corridors for AI disaster threats...', 'warning');
+    if (!allRoutes || allRoutes.length === 0) return;
+
+    // Immediately analyze the selected route first for sub-second UI feedback
+    const activeRoute = allRoutes[activeRouteIndex];
+    if (activeRoute) {
+        const scoreData = await performRouteAnalysis(activeRoute);
+        updateRouteBadge(activeRouteIndex, scoreData);
+        displaySafetyDetails(scoreData);
+    }
+
+    // Process alternatives asynchronously in background
     for (let i = 0; i < allRoutes.length; i++) {
-        const scoreData = await performRouteAnalysis(allRoutes[i]);
-        updateRouteBadge(i, scoreData);
-        if (i === activeRouteIndex) displaySafetyDetails(scoreData);
+        if (i !== activeRouteIndex) {
+            performRouteAnalysis(allRoutes[i]).then(data => updateRouteBadge(i, data));
+        }
     }
 }
 
@@ -156,21 +180,64 @@ async function performRouteAnalysis(route) {
     } catch (e) { return null; }
 }
 
+let allRouteAnalyses = [];
+
 function updateRouteBadge(index, data) {
+    allRouteAnalyses[index] = data;
     const badge = document.getElementById(`safety-badge-${index}`);
     if (!badge || !data) return;
     const score = data.safety_score;
-    badge.className = `route-safety-badge ${score > 80 ? 'safe' : score > 50 ? 'warning' : 'danger'}`;
-    badge.textContent = score > 80 ? '✓ Safe' : score > 50 ? '⚠ Caution' : '⛔ High Risk';
+    const hasBlocked = data.blocked_roads && data.blocked_roads.length > 0;
+    
+    if (hasBlocked) {
+        badge.className = 'route-safety-badge danger';
+        badge.textContent = '⛔ Road Blocked';
+    } else {
+        badge.className = `route-safety-badge ${score > 80 ? 'safe' : score > 50 ? 'warning' : 'danger'}`;
+        badge.textContent = score > 80 ? '✓ Safe' : score > 50 ? '⚠ Caution' : '⛔ High Risk';
+    }
 }
 
 function displaySafetyDetails(data) {
     const indicator = document.getElementById('safetyIndicator');
+    const detourBox = document.getElementById('detourNotice');
     if (!indicator || !data) return;
-    const isSafe = data.safety_score > 80;
+    
+    const hasBlocked = data.blocked_roads && data.blocked_roads.length > 0;
+    const isSafe = data.safety_score > 80 && !hasBlocked;
+    
     indicator.className = `safety-indicator ${isSafe ? 'safe' : 'danger'}`;
-    indicator.innerHTML = isSafe ? `✅ ROUTE SECURE: No disaster risks detected.` : `⚠️ DANGER: Hazard zones detected on path!`;
-    updateMapStatus(isSafe ? 'Path Verified Safe' : 'CRISIS ALERT: Hazards Intercepted', isSafe ? 'success' : 'danger');
+    indicator.innerHTML = isSafe 
+        ? `✅ ROUTE SECURE: No disaster risks detected.` 
+        : hasBlocked 
+            ? `🛑 BLOCKED CORRIDOR AVOIDED: Detour engaged!` 
+            : `⚠️ DANGER: Hazard zones detected on path!`;
+            
+    updateMapStatus(
+        isSafe ? 'Path Verified Safe' : hasBlocked ? 'DETOUR ACTIVE: Blocked Road Detected' : 'CRISIS ALERT: Hazards Intercepted', 
+        isSafe ? 'success' : 'danger'
+    );
+
+    if (detourBox) {
+        if (hasBlocked) {
+            detourBox.style.display = 'block';
+            detourBox.innerHTML = `
+                <div style="font-weight: 700; color: #f87171; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                    <span>🛑</span> ROADWAY IMPASSIBLE — DETOUR ROUTING ENGAGED
+                </div>
+                ${data.blocked_roads.map(b => `
+                    <div style="background: rgba(0,0,0,0.25); border-left: 3px solid #ef4444; padding: 6px 8px; margin-bottom: 6px; border-radius: 4px;">
+                        <strong style="color: #fff;">${b.name} (${b.status})</strong>: <span style="color: #cbd5e1;">${b.reason}</span>
+                        <div style="color: #38bdf8; font-weight: 600; margin-top: 4px; font-size: 11px;">
+                            ↪ Recommended Detour: ${b.detour}
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        } else {
+            detourBox.style.display = 'none';
+        }
+    }
 }
 
 function switchToRoute(index) {
@@ -179,7 +246,52 @@ function switchToRoute(index) {
     document.querySelectorAll('.route-option-card').forEach((c, i) => c.classList.toggle('active', i === index));
     routeLayers.forEach((l, i) => l.setStyle({ opacity: i === index ? 0.9 : 0.3, weight: i === index ? 7 : 5 }));
     displayRouteDetails(allRoutes[index]);
+    if (allRouteAnalyses[index]) {
+        displaySafetyDetails(allRouteAnalyses[index]);
+    }
     map.fitBounds(L.latLngBounds(allRoutes[index].coordinates), { padding: [50, 50] });
+}
+
+// Real-Time Road Status Layer (Sprint 4: Evacuation Road Telemetry)
+async function toggleRoadStatuses(show) {
+    if (!show) return clearRoadMarkers();
+    try {
+        const resp = await fetch(`${API_BASE_URL}/roads/status`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        clearRoadMarkers();
+        data.roads.forEach(r => {
+            const isBlocked = r.status === 'BLOCKED';
+            const isWaterlogged = r.status === 'WATERLOGGED';
+            const isLandslide = r.status === 'LANDSLIDE';
+            const color = isBlocked ? '#ef4444' : isWaterlogged ? '#0284c7' : isLandslide ? '#ea580c' : '#10b981';
+            const iconChar = isBlocked ? '🛑' : isWaterlogged ? '🌊' : isLandslide ? '⛰️' : '🚗';
+            
+            const icon = L.divIcon({
+                className: 'road-status-marker',
+                html: `<div style="background: ${color}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 12px ${color}; border: 2px solid #fff; cursor: pointer;">${iconChar}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+
+            const m = L.marker([r.latitude, r.longitude], { icon }).addTo(map).bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; min-width: 220px; color: #fff;">
+                    <div style="color: ${color}; font-size: 13px; font-weight: 700; margin-bottom: 4px;">${iconChar} ${r.status} CORRIDOR</div>
+                    <strong style="color: #fff; font-size: 13px;">${r.name}</strong><br>
+                    <div style="color: #94a3b8; font-size: 11px; margin-top: 4px;">${r.reason}</div>
+                    ${r.detour ? `<div style="margin-top: 8px; padding: 6px 8px; background: rgba(56,189,248,0.12); border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 11px; color: #38bdf8;"><strong>↪ Tactical Detour:</strong> ${r.detour}</div>` : ''}
+                </div>
+            `);
+            roadMarkers.push(m);
+        });
+    } catch (e) {
+        console.error('Road status load error:', e);
+    }
+}
+
+function clearRoadMarkers() {
+    roadMarkers.forEach(m => map.removeLayer(m));
+    roadMarkers = [];
 }
 
 // Support Functions
@@ -241,15 +353,99 @@ function updateMapStatus(msg, type) {
 }
 
 async function resolveLocation(text) {
-    if (text.match(/^[-+]?[\d\.]+\s*,\s*[-+]?[\d\.]+$/)) {
-        const p = text.split(','); return { lat: parseFloat(p[0]), lng: parseFloat(p[1]) };
+    if (!text) return null;
+    let clean = text.trim();
+
+    // 1. Normalize coordinates typed with spaces instead of dots (e.g. "20 17593, 85 61965" -> "20.17593, 85.61965")
+    if (clean.match(/\d+\s+\d{3,}/)) {
+        clean = clean.replace(/(\d+)\s+(\d{3,})/g, '$1.$2');
     }
+
+    // 2. Check if direct coordinates match
+    const coordMatch = clean.match(/^[-+]?[\d\.]+\s*,\s*[-+]?[\d\.]+$/);
+    if (coordMatch) {
+        const p = clean.split(',');
+        const lat = parseFloat(p[0].trim());
+        const lng = parseFloat(p[1].trim());
+        if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+            return { lat, lng };
+        }
+    }
+
+    // 3. Smart local aliases for instant resolution without any API lag
+    const lower = clean.toLowerCase().trim();
+    const cityAliases = {
+        // Cuttack
+        'chauliaganj': { lat: 20.4584, lng: 85.9091 },
+        'badambadi': { lat: 20.4530, lng: 85.8670 },
+        'ranihat': { lat: 20.4680, lng: 85.8810 },
+        'college square': { lat: 20.4625, lng: 85.8920 },
+        'manglabag': { lat: 20.4695, lng: 85.8870 },
+        'scb medical': { lat: 20.4690, lng: 85.8880 },
+        'scb': { lat: 20.4690, lng: 85.8880 },
+        'jobra': { lat: 20.4720, lng: 85.8990 },
+        'madhupatna': { lat: 20.4480, lng: 85.8920 },
+        'link road': { lat: 20.4450, lng: 85.8780 },
+        'cda': { lat: 20.4750, lng: 85.8350 },
+        'bidanasi': { lat: 20.4760, lng: 85.8230 },
+        'khannagar': { lat: 20.4430, lng: 85.8710 },
+        'choudwar': { lat: 20.5280, lng: 85.9080 },
+        'jagatpur': { lat: 20.4980, lng: 85.9250 },
+        'cuttack': { lat: 20.4625, lng: 85.8828 },
+        // Bhubaneswar
+        'patia': { lat: 20.3540, lng: 85.8180 },
+        'kiit': { lat: 20.3533, lng: 85.8178 },
+        'nayapalli': { lat: 20.2980, lng: 85.8120 },
+        'jaydev vihar': { lat: 20.3020, lng: 85.8240 },
+        'saheed nagar': { lat: 20.2910, lng: 85.8450 },
+        'rasulgarh': { lat: 20.2980, lng: 85.8640 },
+        'chandrasekharpur': { lat: 20.3250, lng: 85.8190 },
+        'khandagiri': { lat: 20.2580, lng: 85.7760 },
+        'baramunda': { lat: 20.2780, lng: 85.7980 },
+        'master canteen': { lat: 20.2680, lng: 85.8410 },
+        'samantarapur': { lat: 20.2350, lng: 85.8420 },
+        'aiims': { lat: 20.2310, lng: 85.7780 },
+        'bhubaneswar': { lat: 20.2961, lng: 85.8245 },
+        'bhuban': { lat: 20.2961, lng: 85.8245 },
+        'bbsr': { lat: 20.2961, lng: 85.8245 },
+        // Odisha
+        'puri': { lat: 19.8135, lng: 85.8312 },
+        'konark': { lat: 19.8876, lng: 86.0945 },
+        'paradeep': { lat: 20.3164, lng: 86.6114 },
+        'balasore': { lat: 21.4934, lng: 86.9135 },
+        'berhampur': { lat: 19.3149, lng: 84.7941 },
+        'sambalpur': { lat: 21.4669, lng: 83.9812 },
+        'rourkela': { lat: 22.2604, lng: 84.8536 },
+        'angul': { lat: 20.8400, lng: 85.1010 },
+        'jajpur': { lat: 20.8520, lng: 86.3310 },
+        'kendrapara': { lat: 20.5020, lng: 86.4220 },
+        'khurda': { lat: 20.1880, lng: 85.6210 },
+        'jatni': { lat: 20.1650, lng: 85.7060 },
+        // Indian Metros
+        'delhi': { lat: 28.6139, lng: 77.2090 },
+        'mumbai': { lat: 19.0760, lng: 72.8777 },
+        'kolkata': { lat: 22.5726, lng: 88.3639 },
+        'chennai': { lat: 13.0827, lng: 80.2707 },
+        'bangalore': { lat: 12.9716, lng: 77.5946 },
+        'bengaluru': { lat: 12.9716, lng: 77.5946 },
+        'hyderabad': { lat: 17.3850, lng: 78.4867 }
+    };
+    if (cityAliases[lower]) return cityAliases[lower];
+
+    // 4. Backend multi-tier search (Gazetteer + Open-Meteo + Nominatim)
     try {
-        const res = await fetch(`${API_BASE_URL}/search/${encodeURIComponent(text)}`);
-        const data = await res.json();
-        if (data.found) return { lat: data.lat, lng: data.lon };
-    } catch (e) { }
-    return new Promise(r => geocoder.geocode(text, res => r(res?.[0]?.center || null)));
+        const res = await fetch(`${API_BASE_URL}/search/${encodeURIComponent(clean)}`);
+        if (res.ok) {
+            const data = await res.json();
+            if (data.found) return { lat: data.lat, lng: data.lon };
+        }
+    } catch (e) { console.warn('Backend search failed:', e); }
+
+    // 5. Final fallback: Leaflet Nominatim geocoder
+    return new Promise(r => {
+        geocoder.geocode(clean, res => r(res?.[0]?.center || null));
+        setTimeout(() => r(null), 4000);
+    });
 }
 
 function displayRouteDetails(route) {
@@ -279,9 +475,91 @@ function displayRouteOptions(routes) {
 // Use My Location
 function useMyLocation() {
     if (!navigator.geolocation) return alert("Geolocation not supported.");
-    navigator.geolocation.getCurrentPosition(pos => {
-        userCoords = [pos.coords.latitude, pos.coords.longitude];
-        document.getElementById('startInput').value = `${userCoords[0].toFixed(5)}, ${userCoords[1].toFixed(5)}`;
-        map.flyTo(userCoords, 15);
-    });
+    
+    updateMapStatus('Intercepting satellite coordinates...', 'warning');
+    
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            userCoords = [pos.coords.latitude, pos.coords.longitude];
+            document.getElementById('startInput').value = `${userCoords[0].toFixed(5)}, ${userCoords[1].toFixed(5)}`;
+            map.flyTo(userCoords, 16); // Slightly closer zoom for precision
+            updateMapStatus('Location Fixed via GPS', 'success');
+            if (window.showSuccess) showSuccess("Current location accurately fixed.");
+        },
+        err => {
+            console.error("Geolocation error:", err);
+            updateMapStatus('GPS Signal Interrupted', 'danger');
+            let msg = "Could not get location.";
+            if (err.code === 1) msg = "Location permission denied.";
+            else if (err.code === 2) msg = "Location unavailable.";
+            else if (err.code === 3) msg = "Timeout obtaining location.";
+            alert(msg);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
 }
+
+// Interactive Map Picker
+let isPickingMap = false;
+let pickerInputId = null;
+
+function enableMapPicker(inputId) {
+    if (isPickingMap) {
+        // Cancel active picker
+        document.getElementById('map').style.cursor = '';
+        map.off('click', onMapPicked);
+        updateMapStatus('Map picker canceled', 'warning');
+        isPickingMap = false;
+        return;
+    }
+    
+    isPickingMap = true;
+    pickerInputId = inputId;
+    document.getElementById('map').style.cursor = 'crosshair';
+    updateMapStatus('Click anywhere on the map to select location...', 'warning');
+    
+    if (window.showSuccess) showSuccess("Click on the map to drop a pin.");
+    
+    // Listen for a single click
+    setTimeout(() => {
+        map.once('click', onMapPicked);
+    }, 100);
+}
+
+function onMapPicked(e) {
+    if (!isPickingMap || !pickerInputId) return;
+    
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+    
+    const input = document.getElementById(pickerInputId);
+    if (input) {
+        input.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        input.classList.add('flash-highlight'); // Optionally add CSS for visual feedback
+        setTimeout(() => input.classList.remove('flash-highlight'), 1000);
+    }
+    
+    // Draw a temporary marker just to show where they clicked
+    const tempMarker = L.circleMarker([lat, lng], {
+        radius: 6,
+        fillColor: pickerInputId === 'startInput' ? '#10b981' : '#ef4444',
+        color: '#fff',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 1
+    }).addTo(map);
+    
+    // Clear the marker after a short delay since routing will redraw main markers anyway
+    setTimeout(() => map.removeLayer(tempMarker), 4000);
+    
+    document.getElementById('map').style.cursor = '';
+    isPickingMap = false;
+    pickerInputId = null;
+    
+    updateMapStatus('Coordinates Locked', 'success');
+}
+

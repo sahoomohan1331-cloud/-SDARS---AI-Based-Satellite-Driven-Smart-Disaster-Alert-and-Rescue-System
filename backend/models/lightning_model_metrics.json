@@ -1,0 +1,90 @@
+{
+  "accuracy": 0.99625,
+  "precision": 1.0,
+  "recall": 0.9540229885057471,
+  "f1": 0.9764705882352941,
+  "cv_f1_mean": 0.9742701497416068,
+  "cv_f1_std": 0.009628824446013545,
+  "confusion_matrix": [
+    [
+      2939,
+      0
+    ],
+    [
+      12,
+      249
+    ]
+  ],
+  "feature_importance": [
+    {
+      "feature": "forecast_rain_24h",
+      "importance": 0.1453788879442162
+    },
+    {
+      "feature": "dew_point",
+      "importance": 0.14145318421706277
+    },
+    {
+      "feature": "wind_gusts",
+      "importance": 0.13624111997152896
+    },
+    {
+      "feature": "press",
+      "importance": 0.09963828501030206
+    },
+    {
+      "feature": "temp",
+      "importance": 0.09958518174473595
+    },
+    {
+      "feature": "hum",
+      "importance": 0.09449056876127158
+    },
+    {
+      "feature": "rain_1h",
+      "importance": 0.06722910210280354
+    },
+    {
+      "feature": "ndwi",
+      "importance": 0.05615916878718453
+    },
+    {
+      "feature": "wind",
+      "importance": 0.052653944533885985
+    },
+    {
+      "feature": "soil_moisture",
+      "importance": 0.05179716681387459
+    },
+    {
+      "feature": "elevation",
+      "importance": 0.0289950913072
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.02589669999073554
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.0004815988151984073
+    }
+  ],
+  "disaster_type": "lightning",
+  "features": [
+    "temp",
+    "hum",
+    "wind",
+    "wind_gusts",
+    "press",
+    "dew_point",
+    "soil_moisture",
+    "elevation",
+    "rain_1h",
+    "forecast_rain_24h",
+    "ndvi",
+    "ndwi",
+    "hotspots"
+  ],
+  "trained_at": "2026-10-02T04:17:37.992691",
+  "model_path": "D:\\SDARS map\\backend\\models\\lightning_risk_model.joblib"
+}

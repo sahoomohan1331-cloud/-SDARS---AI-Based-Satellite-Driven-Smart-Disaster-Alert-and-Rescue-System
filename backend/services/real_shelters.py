@@ -22,35 +22,24 @@ class RealShelterFinder:
         
         # Overpass QL query for emergency facilities - ENHANCED for better detection
         query = f"""
-        [out:json][timeout:35];
+        [out:json][timeout:2];
         (
-          // Hospitals (Nodes, Ways, and Relations)
+          // Hospitals (Nodes)
           node["amenity"="hospital"](around:{radius_m},{lat},{lon});
-          way["amenity"="hospital"](around:{radius_m},{lat},{lon});
-          rel["amenity"="hospital"](around:{radius_m},{lat},{lon});
-          
-          // Alternative Medical Tags
           node["healthcare"="hospital"](around:{radius_m},{lat},{lon});
-          way["healthcare"="hospital"](around:{radius_m},{lat},{lon});
           node["amenity"="clinic"](around:{radius_m},{lat},{lon});
-          node["healthcare"="clinic"](around:{radius_m},{lat},{lon});
           
           // Fire Stations
           node["amenity"="fire_station"](around:{radius_m},{lat},{lon});
-          way["amenity"="fire_station"](around:{radius_m},{lat},{lon});
           
           // Police Stations
           node["amenity"="police"](around:{radius_m},{lat},{lon});
-          way["amenity"="police"](around:{radius_m},{lat},{lon});
           
           // Emergency Shelters
           node["amenity"="shelter"](around:{radius_m},{lat},{lon});
           node["emergency"="assembly_point"](around:{radius_m},{lat},{lon});
           node["social_facility"="shelter"](around:{radius_m},{lat},{lon});
-          
-          // Community Centers (potential shelters)
           node["amenity"="community_centre"](around:{radius_m},{lat},{lon});
-          way["amenity"="community_centre"](around:{radius_m},{lat},{lon});
         );
         out center;
         """
@@ -61,7 +50,7 @@ class RealShelterFinder:
             response = requests.post(
                 self.OVERPASS_URL,
                 data={'data': query},
-                timeout=30
+                timeout=1.5
             )
             
             if response.status_code == 200:

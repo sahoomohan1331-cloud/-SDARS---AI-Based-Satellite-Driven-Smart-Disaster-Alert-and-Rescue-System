@@ -1,0 +1,90 @@
+{
+  "accuracy": 0.9934375,
+  "precision": 0.9963503649635036,
+  "recall": 0.931740614334471,
+  "f1": 0.9629629629629629,
+  "cv_f1_mean": 0.9751932607138631,
+  "cv_f1_std": 0.008775911434349302,
+  "confusion_matrix": [
+    [
+      2906,
+      1
+    ],
+    [
+      20,
+      273
+    ]
+  ],
+  "feature_importance": [
+    {
+      "feature": "ndvi",
+      "importance": 0.19634565524507439
+    },
+    {
+      "feature": "hum",
+      "importance": 0.17902351482294698
+    },
+    {
+      "feature": "soil_moisture",
+      "importance": 0.17418478853022357
+    },
+    {
+      "feature": "rain_1h",
+      "importance": 0.1037662528742123
+    },
+    {
+      "feature": "forecast_rain_24h",
+      "importance": 0.07568683121801098
+    },
+    {
+      "feature": "dew_point",
+      "importance": 0.06739529926602786
+    },
+    {
+      "feature": "wind_gusts",
+      "importance": 0.04992261937629094
+    },
+    {
+      "feature": "temp",
+      "importance": 0.03683640160843721
+    },
+    {
+      "feature": "wind",
+      "importance": 0.03510239677369883
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.030122512424631834
+    },
+    {
+      "feature": "press",
+      "importance": 0.020091766972627503
+    },
+    {
+      "feature": "ndwi",
+      "importance": 0.015834545633459585
+    },
+    {
+      "feature": "elevation",
+      "importance": 0.01568741525435814
+    }
+  ],
+  "disaster_type": "drought",
+  "features": [
+    "temp",
+    "hum",
+    "wind",
+    "wind_gusts",
+    "press",
+    "dew_point",
+    "soil_moisture",
+    "elevation",
+    "rain_1h",
+    "forecast_rain_24h",
+    "ndvi",
+    "ndwi",
+    "hotspots"
+  ],
+  "trained_at": "2026-10-02T04:17:29.851910",
+  "model_path": "D:\\SDARS map\\backend\\models\\drought_risk_model.joblib"
+}

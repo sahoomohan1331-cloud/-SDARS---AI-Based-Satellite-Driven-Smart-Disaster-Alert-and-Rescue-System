@@ -63,3 +63,5 @@ npm-debug.log
 *.bak
 *.swp
 ~$*
+scratch/
+r*.json

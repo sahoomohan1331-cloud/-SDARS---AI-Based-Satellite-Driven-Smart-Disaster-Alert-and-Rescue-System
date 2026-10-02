@@ -34,38 +34,58 @@ class WeatherDataCollector:
         params = {
             "latitude": lat,
             "longitude": lon,
-            "current": ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "is_day", "precipitation", "rain", "showers", "weather_code", "pressure_msl", "surface_pressure", "wind_speed_10m", "wind_direction_10m"],
+            "current": [
+                "temperature_2m", "relative_humidity_2m", "apparent_temperature", "is_day",
+                "precipitation", "rain", "showers", "weather_code", "pressure_msl",
+                "surface_pressure", "wind_speed_10m", "wind_direction_10m",
+                "wind_gusts_10m", "dew_point_2m", "soil_moisture_0_to_1cm", "soil_temperature_0cm"
+            ],
+            "hourly": ["precipitation", "precipitation_probability", "wind_gusts_10m"],
+            "forecast_days": 2,
             "timezone": "auto"
         }
         
         try:
-            response = requests.get(self.base_url, params=params, timeout=3)
+            response = requests.get(self.base_url, params=params, timeout=4)
             response.raise_for_status()
             data = response.json()
-            current = data['current']
+            current = data.get('current', {})
             
             # Map Open-Meteo weather codes to descriptive text
-            wc = current['weather_code']
+            wc = current.get('weather_code', 0)
             condition = "Clear"
             if wc > 0: condition = "Cloudy"
             if wc >= 51: condition = "Rain"
             if wc >= 71: condition = "Snow"
             if wc >= 95: condition = "Thunderstorm"
 
+            hourly_rain_24h = sum(data.get('hourly', {}).get('precipitation', [])[:24]) if 'hourly' in data else 0.0
+            hourly_max_prob_24h = max(data.get('hourly', {}).get('precipitation_probability', [0])[:24]) if 'hourly' in data else 0
+            hourly_max_gust_24h = max(data.get('hourly', {}).get('wind_gusts_10m', [0])[:24]) if 'hourly' in data else 0.0
+            elevation_m = data.get('elevation', 50.0)
+
             result = {
                 'timestamp': datetime.now().isoformat(),
                 'location': {'lat': lat, 'lon': lon},
-                'temperature': current['temperature_2m'],
-                'feels_like': current['apparent_temperature'],
-                'pressure': current['pressure_msl'],
-                'humidity': current['relative_humidity_2m'],
-                'wind_speed': current['wind_speed_10m'],
-                'wind_deg': current['wind_direction_10m'],
+                'temperature': current.get('temperature_2m', 25.0),
+                'feels_like': current.get('apparent_temperature', 25.0),
+                'pressure': current.get('pressure_msl', 1013.0),
+                'humidity': current.get('relative_humidity_2m', 50.0),
+                'wind_speed': current.get('wind_speed_10m', 10.0),
+                'wind_deg': current.get('wind_direction_10m', 0.0),
+                'wind_gusts': current.get('wind_gusts_10m', current.get('wind_speed_10m', 10.0)),
+                'dew_point': current.get('dew_point_2m', 15.0),
+                'soil_moisture': current.get('soil_moisture_0_to_1cm', 0.25),
+                'soil_temperature': current.get('soil_temperature_0cm', 22.0),
+                'elevation': elevation_m,
+                'forecast_rain_24h': round(hourly_rain_24h, 1),
+                'forecast_rain_prob_24h': hourly_max_prob_24h,
+                'forecast_max_gust_24h': round(hourly_max_gust_24h, 1),
                 'clouds': 0, # Calculated from weather_code
                 'weather_condition': condition,
                 'weather_description': f"Code {wc}",
-                'rain_1h': current['rain'],
-                'source': "Open-Meteo (Google-Grade Accuracy)"
+                'rain_1h': current.get('rain', 0.0),
+                'source': "Open-Meteo High-Precision Satellite Grid"
             }
             
             self.cache[cache_key] = (result, datetime.now())

@@ -1,0 +1,90 @@
+{
+  "accuracy": 0.996875,
+  "precision": 1.0,
+  "recall": 0.9604743083003953,
+  "f1": 0.9798387096774194,
+  "cv_f1_mean": 0.9759264908454645,
+  "cv_f1_std": 0.003162837780312597,
+  "confusion_matrix": [
+    [
+      2947,
+      0
+    ],
+    [
+      10,
+      243
+    ]
+  ],
+  "feature_importance": [
+    {
+      "feature": "soil_moisture",
+      "importance": 0.22337771551227797
+    },
+    {
+      "feature": "elevation",
+      "importance": 0.14202617367513823
+    },
+    {
+      "feature": "hum",
+      "importance": 0.12667707056276367
+    },
+    {
+      "feature": "ndwi",
+      "importance": 0.09291861058271339
+    },
+    {
+      "feature": "temp",
+      "importance": 0.08607488806041975
+    },
+    {
+      "feature": "forecast_rain_24h",
+      "importance": 0.08514345471301589
+    },
+    {
+      "feature": "rain_1h",
+      "importance": 0.07994453860878278
+    },
+    {
+      "feature": "wind_gusts",
+      "importance": 0.04605887854803668
+    },
+    {
+      "feature": "press",
+      "importance": 0.03875040565488081
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.03322206126347898
+    },
+    {
+      "feature": "wind",
+      "importance": 0.02992331959980354
+    },
+    {
+      "feature": "dew_point",
+      "importance": 0.015620823936978494
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.0002620592817098646
+    }
+  ],
+  "disaster_type": "landslide",
+  "features": [
+    "temp",
+    "hum",
+    "wind",
+    "wind_gusts",
+    "press",
+    "dew_point",
+    "soil_moisture",
+    "elevation",
+    "rain_1h",
+    "forecast_rain_24h",
+    "ndvi",
+    "ndwi",
+    "hotspots"
+  ],
+  "trained_at": "2026-10-02T04:17:41.962581",
+  "model_path": "D:\\SDARS map\\backend\\models\\landslide_risk_model.joblib"
+}

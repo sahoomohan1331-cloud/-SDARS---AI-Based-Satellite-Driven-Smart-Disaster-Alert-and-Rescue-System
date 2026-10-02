@@ -18,9 +18,9 @@ class EmailService:
         return {
             'server': os.getenv('SMTP_SERVER', 'smtp.gmail.com'),
             'port': int(os.getenv('SMTP_PORT', '587')),
-            'user': os.getenv('SMTP_USER', ''),
+            'user': os.getenv('SMTP_EMAIL', ''),
             'password': os.getenv('SMTP_PASSWORD', ''),
-            'from_email': os.getenv('SMTP_USER', '')
+            'from_email': os.getenv('SMTP_EMAIL', '')
         }
 
     @staticmethod

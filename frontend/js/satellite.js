@@ -3,6 +3,9 @@
  * Interactive satellite analysis with multi-layer support
  */
 
+// Global constant
+const API_BASE_URL = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
+
 // Global state
 const satelliteState = {
     map: null,
@@ -47,9 +50,11 @@ function initMap() {
     }).setView([satelliteState.currentLat, satelliteState.currentLon], 10);
 
     // Add dark tile layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd'
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16
+    }).addTo(satelliteState.map);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16
     }).addTo(satelliteState.map);
 
     // Add zoom control
@@ -66,7 +71,7 @@ function initMap() {
  */
 async function loadLayerOptions() {
     try {
-        const response = await fetch('http://localhost:8000/api/satellite/layers');
+        const response = await fetch('${API_BASE_URL}/satellite/layers');
         const data = await response.json();
 
         if (data.status === 'success') {
@@ -135,7 +140,7 @@ async function loadSatelliteImagery() {
         satelliteState.currentLon = lon;
         satelliteState.currentDate = date;
 
-        const response = await fetch('http://localhost:8000/api/satellite/imagery', {
+        const response = await fetch('${API_BASE_URL}/satellite/imagery', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -204,7 +209,7 @@ async function calculateNDVI() {
         const lon = parseFloat(document.getElementById('lonInput').value) || satelliteState.currentLon;
         const date = document.getElementById('dateInput').value || satelliteState.currentDate;
 
-        const response = await fetch('http://localhost:8000/api/satellite/ndvi', {
+        const response = await fetch('${API_BASE_URL}/satellite/ndvi', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lat, lon, date })
@@ -280,7 +285,7 @@ async function getThermalData() {
         const lat = parseFloat(document.getElementById('latInput').value) || satelliteState.currentLat;
         const lon = parseFloat(document.getElementById('lonInput').value) || satelliteState.currentLon;
 
-        const response = await fetch('http://localhost:8000/api/satellite/thermal', {
+        const response = await fetch('${API_BASE_URL}/satellite/thermal', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ lat, lon, radius_km: 50 })
@@ -387,7 +392,7 @@ async function loadTimeSeries() {
         const endDate = document.getElementById('tsEndDate').value;
         const metric = document.getElementById('tsMetric').value;
 
-        const response = await fetch('http://localhost:8000/api/satellite/timeseries', {
+        const response = await fetch('${API_BASE_URL}/satellite/timeseries', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -508,7 +513,7 @@ async function loadComparison() {
         const date1 = document.getElementById('compareDate1').value;
         const date2 = document.getElementById('compareDate2').value;
 
-        const response = await fetch('http://localhost:8000/api/satellite/compare', {
+        const response = await fetch('${API_BASE_URL}/satellite/compare', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

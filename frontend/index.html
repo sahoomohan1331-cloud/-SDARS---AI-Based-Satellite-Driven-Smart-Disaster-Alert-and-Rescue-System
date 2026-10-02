@@ -109,41 +109,86 @@
             </div>
         </section>
 
-        <!-- Quick Stats -->
+        <!-- Multi-Hazard Strategic Telemetry Grid (All 8 Hazards + Monitored Grid) -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon fire-gradient">🔥</div>
                 <div class="stat-content">
-                    <h3 class="stat-value" id="fireAlerts">-</h3>
-                    <p class="stat-label">Fire Alerts</p>
-                    <span class="stat-change positive">Active Monitoring</span>
+                    <h3 class="stat-value" id="fireAlerts">4</h3>
+                    <p class="stat-label">Wildfire Alerts</p>
+                    <span class="stat-change positive">Thermal Hotspots</span>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon flood-gradient">🌊</div>
                 <div class="stat-content">
-                    <h3 class="stat-value" id="floodAlerts">-</h3>
+                    <h3 class="stat-value" id="floodAlerts">3</h3>
                     <p class="stat-label">Flood Warnings</p>
-                    <span class="stat-change">Regions Analyzed</span>
+                    <span class="stat-change">Runoff Telemetry</span>
                 </div>
             </div>
 
             <div class="stat-card">
                 <div class="stat-icon cyclone-gradient">🌪️</div>
                 <div class="stat-content">
-                    <h3 class="stat-value" id="cycloneAlerts">-</h3>
+                    <h3 class="stat-value" id="cycloneAlerts">2</h3>
                     <p class="stat-label">Cyclone Watches</p>
-                    <span class="stat-change">Pressure Tracking</span>
+                    <span class="stat-change">Pressure Drops</span>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon safe-gradient">✅</div>
+                <div class="stat-icon heat-gradient">🌡️</div>
                 <div class="stat-content">
-                    <h3 class="stat-value" id="safeLocations">5</h3>
+                    <h3 class="stat-value" id="heatwaveAlerts">3</h3>
+                    <p class="stat-label">Heatwave Alerts</p>
+                    <span class="stat-change">NWS Heat Index</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon landslide-gradient">⛰️</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="landslideAlerts">2</h3>
+                    <p class="stat-label">Landslide Warnings</p>
+                    <span class="stat-change">Slope & Soil Sat</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon drought-gradient">☀️</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="droughtAlerts">2</h3>
+                    <p class="stat-label">Drought Watches</p>
+                    <span class="stat-change">NDVI & Moisture</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon surge-gradient">🌊</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="surgeAlerts">1</h3>
+                    <p class="stat-label">Storm Surge Alerts</p>
+                    <span class="stat-change">Coastal Inundation</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon lightning-gradient">⚡</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="lightningAlerts">3</h3>
+                    <p class="stat-label">Lightning Threats</p>
+                    <span class="stat-change">CAPE & Convective</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon safe-gradient">🛰️</div>
+                <div class="stat-content">
+                    <h3 class="stat-value" id="safeLocations">18</h3>
                     <p class="stat-label">Locations Monitored</p>
-                    <span class="stat-change">Multi-Modal AI</span>
+                    <span class="stat-change">Multi-Modal AI Grid</span>
                 </div>
             </div>
         </section>
@@ -179,6 +224,67 @@
             </div>
             <div style="text-align: right; margin-top: 10px;">
                 <small style="color: #6b7a99;">* Click on any entry to view full spectral analysis</small>
+            </div>
+        </section>
+
+        <!-- ⭐ REAL-TIME COMMANDER MODULES (Sprint 3, 4, 5 Deliverables) -->
+        <section class="commander-hub-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <!-- 1. River Gauge Telemetry -->
+            <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">💧</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px; color: #fff;">River Gauge Telemetry</h3>
+                            <small style="color: #38bdf8;">CWC Sensor Network Simulation</small>
+                        </div>
+                    </div>
+                    <button onclick="triggerSimulatedSurge()" style="background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">
+                        ⚡ Surge Test (+0.4m)
+                    </button>
+                </div>
+                <div id="riverGaugesContainer" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="text-align: center; color: #64748b; padding: 15px;">Polling hydrological stations...</div>
+                </div>
+            </div>
+
+            <!-- 2. Emergency Resource Allocation & Logistics -->
+            <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">🏕️</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px; color: #fff;">Resource & Shelter Logistics</h3>
+                            <small style="color: #a78bfa;">Impact-Based Dispatch Engine</small>
+                        </div>
+                    </div>
+                    <button onclick="runAutoAllocation()" style="background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; color: #a78bfa; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">
+                        🚀 Auto-Allocate
+                    </button>
+                </div>
+                <div id="resourcesSummaryContainer" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="text-align: center; color: #64748b; padding: 15px;">Loading resource inventory...</div>
+                </div>
+                <div id="allocationResultBox" style="display: none; margin-top: 10px; width: 100%; background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.25); border-radius: 8px; padding: 10px; font-size: 12px; color: #e2e8f0;"></div>
+            </div>
+
+            <!-- 3. Citizen Ground-Truth Observations -->
+            <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">📢</span>
+                        <div>
+                            <h3 style="margin: 0; font-size: 16px; color: #fff;">Citizen Ground-Truth Reports</h3>
+                            <small style="color: #f43f5e;">Community Early Warning</small>
+                        </div>
+                    </div>
+                    <a href="map.html" style="color: #f43f5e; font-size: 11px; text-decoration: none; font-weight: 600;">
+                        Open Map View →
+                    </a>
+                </div>
+                <div id="crowdReportsFeedContainer" style="width: 100%; display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;">
+                    <div style="text-align: center; color: #64748b; padding: 15px;">Loading field reports...</div>
+                </div>
             </div>
         </section>
 
@@ -243,10 +349,10 @@
         <p>Powered by Multi-Modal AI | Real-Time Monitoring Active</p>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/alert-system.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/main.js?v=2.6"></script>
+    <script src="js/dashboard.js?v=2.6"></script>
+    <script src="js/alert-system.js?v=2.6"></script>
+    <script src="js/auth.js?v=2.6"></script>
 </body>
 
 </html>

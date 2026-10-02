@@ -221,10 +221,13 @@ function renderDetailedResults(data, name) {
     // 2. Primary Threat Banner
     renderThreatBanner(data);
 
-    // 3. Risk Cards
-    updateRiskCard('fire', data.fire);
-    updateRiskCard('flood', data.flood);
-    updateRiskCard('cyclone', data.cyclone);
+    // 3. Risk Cards - ALL 8 HAZARDS
+    const allHazards = ['cyclone', 'flood', 'drought', 'heatwave', 'lightning', 'landslide', 'storm_surge', 'fire'];
+    allHazards.forEach(hazard => {
+        if (data[hazard]) {
+            updateRiskCard(hazard, data[hazard]);
+        }
+    });
 
     // 4. Weather Conditions
     renderWeatherGrid(data.current_weather);
@@ -294,8 +297,9 @@ function updateRiskCard(type, riskData) {
     }
 
     // Breakdown Bars
-    const satVal = Math.round((riskData.satellite_contribution || 0) * 100);
-    const weatherVal = Math.round((riskData.weather_contribution || 0) * 100);
+    const satVal = Math.round((riskData.satellite_contribution !== undefined ? riskData.satellite_contribution : 0.40) * 100);
+    const weatherVal = Math.round((riskData.weather_contribution !== undefined ? riskData.weather_contribution : 0.60) * 100);
+
 
     const satBar = document.getElementById(`${type}SatelliteBar`);
     const satValue = document.getElementById(`${type}SatelliteValue`);

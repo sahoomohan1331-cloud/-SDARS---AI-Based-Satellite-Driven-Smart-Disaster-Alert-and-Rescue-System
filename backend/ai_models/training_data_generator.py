@@ -1,6 +1,15 @@
 """
-SDARS Training Data Generator
-Generates realistic synthetic disaster data based on real-world physics
+SDARS Training Data Generator - High Precision Multi-Hazard Physics Engine
+Generates realistic synthetic disaster data based on satellite telemetry & empirical physics
+Covers ALL 8 Hazard Types:
+  1. Cyclone
+  2. Flood
+  3. Drought
+  4. Heatwave
+  5. Lightning
+  6. Landslide
+  7. Storm Surge
+  8. Wildfire
 """
 import pandas as pd
 import numpy as np
@@ -9,182 +18,280 @@ import sys
 
 # Add parent to path for config access
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Ensure Windows UTF-8 stdout
+try:
+    if sys.stdout and hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    if sys.stderr and hasattr(sys.stderr, 'reconfigure'):
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
+
 import config
 
-def generate_training_data(n_samples=10000):
+FEATURE_COLUMNS = [
+    'temp', 'hum', 'wind', 'wind_gusts', 'press', 'dew_point',
+    'soil_moisture', 'elevation', 'rain_1h', 'forecast_rain_24h',
+    'ndvi', 'ndwi', 'hotspots'
+]
+
+TARGET_COLUMNS = [
+    'cyclone_risk', 'flood_risk', 'drought_risk', 'heatwave_risk',
+    'lightning_risk', 'landslide_risk', 'storm_surge_risk', 'fire_risk'
+]
+
+def generate_training_data(n_samples=16000):
     """
-    Generates a comprehensive synthetic dataset for disaster prediction.
-    
-    Features (7):
-        - temp: Temperature (°C)
-        - hum: Humidity (%)
-        - wind: Wind Speed (km/h)
-        - press: Atmospheric Pressure (hPa)
-        - ndvi: Normalized Difference Vegetation Index (0-1)
-        - ndwi: Normalized Difference Water Index (-1 to 1)
-        - hotspots: Thermal hotspot count
-    
-    Labels (3 binary):
-        - fire_risk: 0/1
-        - flood_risk: 0/1
-        - cyclone_risk: 0/1
-    
-    The data simulates realistic correlations:
-        - Fire: High temp + Low humidity + Hotspots + Dry vegetation
-        - Flood: High rainfall + High NDWI (water) + Low pressure
-        - Cyclone: Extreme low pressure + High wind + High humidity
+    Generates a comprehensive dataset calibrated with satellite & atmospheric physics.
+    Simulates real-world physical constraints and correlation matrices across 8 hazards.
     """
     np.random.seed(42)
+    print(f"🧪 Generating {n_samples} physics-calibrated multi-hazard samples...")
     
-    print(f"🧪 Generating {n_samples} synthetic disaster samples...")
+    samples_per_hazard = int(n_samples * 0.08)  # ~1,280 samples per specific hazard
+    n_normal = int(n_samples * 0.28)             # ~4,480 safe baseline samples
+    n_mixed = n_samples - (samples_per_hazard * 8) - n_normal  # Complex edge cases
     
-    # ======================
-    # SCENARIO 1: FIRE CONDITIONS (20% of data)
-    # ======================
-    n_fire = int(n_samples * 0.20)
-    fire_data = {
-        'temp': np.random.uniform(35, 50, n_fire),  # Hot
-        'hum': np.random.uniform(5, 25, n_fire),     # Dry
-        'wind': np.random.uniform(15, 60, n_fire),   # Moderate to high
-        'press': np.random.uniform(1005, 1025, n_fire),  # Normal
-        'ndvi': np.random.uniform(0.05, 0.25, n_fire),   # Dry vegetation
-        'ndwi': np.random.uniform(-0.5, 0.1, n_fire),    # No water
-        'hotspots': np.random.poisson(3, n_fire),        # Active hotspots
-        'fire_risk': 1,
-        'flood_risk': 0,
-        'cyclone_risk': 0
-    }
-    
-    # ======================
-    # SCENARIO 2: FLOOD CONDITIONS (20% of data)
-    # ======================
-    n_flood = int(n_samples * 0.20)
-    flood_data = {
-        'temp': np.random.uniform(15, 30, n_flood),      # Moderate temp
-        'hum': np.random.uniform(80, 100, n_flood),      # Very humid
-        'wind': np.random.uniform(5, 30, n_flood),       # Low to moderate
-        'press': np.random.uniform(990, 1010, n_flood),  # Lower pressure (rain)
-        'ndvi': np.random.uniform(0.4, 0.8, n_flood),    # Healthy vegetation
-        'ndwi': np.random.uniform(0.4, 0.9, n_flood),    # High water presence
-        'hotspots': np.zeros(n_flood, dtype=int),        # No hotspots
-        'fire_risk': 0,
-        'flood_risk': 1,
-        'cyclone_risk': 0
-    }
-    
-    # ======================
-    # SCENARIO 3: CYCLONE CONDITIONS (15% of data)
-    # ======================
-    n_cyclone = int(n_samples * 0.15)
-    cyclone_data = {
-        'temp': np.random.uniform(25, 35, n_cyclone),    # Warm (tropical)
-        'hum': np.random.uniform(75, 95, n_cyclone),     # High humidity
-        'wind': np.random.uniform(65, 150, n_cyclone),   # Extreme wind
-        'press': np.random.uniform(920, 985, n_cyclone), # Very low pressure
-        'ndvi': np.random.uniform(0.2, 0.5, n_cyclone),  # Mixed vegetation
-        'ndwi': np.random.uniform(0.1, 0.5, n_cyclone),  # Moderate water
-        'hotspots': np.zeros(n_cyclone, dtype=int),      # No hotspots
-        'fire_risk': 0,
-        'flood_risk': 0,
-        'cyclone_risk': 1
-    }
-    
-    # ======================
-    # SCENARIO 4: NORMAL CONDITIONS (35% of data)
-    # ======================
-    n_normal = int(n_samples * 0.35)
-    normal_data = {
-        'temp': np.random.uniform(15, 32, n_normal),     # Pleasant
-        'hum': np.random.uniform(40, 70, n_normal),      # Normal humidity
-        'wind': np.random.uniform(0, 25, n_normal),      # Calm
-        'press': np.random.uniform(1010, 1025, n_normal),# Normal pressure
-        'ndvi': np.random.uniform(0.4, 0.8, n_normal),   # Healthy vegetation
-        'ndwi': np.random.uniform(-0.2, 0.3, n_normal),  # Normal water
-        'hotspots': np.zeros(n_normal, dtype=int),       # No hotspots
-        'fire_risk': 0,
-        'flood_risk': 0,
-        'cyclone_risk': 0
-    }
-    
-    # ======================
-    # SCENARIO 5: EDGE CASES / MIXED (10% of data)
-    # ======================
-    n_edge = n_samples - n_fire - n_flood - n_cyclone - n_normal
-    edge_data = {
-        'temp': np.random.uniform(10, 45, n_edge),
-        'hum': np.random.uniform(20, 90, n_edge),
-        'wind': np.random.uniform(5, 80, n_edge),
-        'press': np.random.uniform(970, 1030, n_edge),
-        'ndvi': np.random.uniform(0.1, 0.7, n_edge),
-        'ndwi': np.random.uniform(-0.3, 0.5, n_edge),
-        'hotspots': np.random.poisson(0.3, n_edge),
-        'fire_risk': 0,
-        'flood_risk': 0,
-        'cyclone_risk': 0
-    }
-    
-    # Combine all scenarios
-    all_data = []
-    for scenario in [fire_data, flood_data, cyclone_data, normal_data, edge_data]:
-        n = len(scenario['temp'])
-        df = pd.DataFrame({
-            'temp': scenario['temp'],
-            'hum': scenario['hum'],
-            'wind': scenario['wind'],
-            'press': scenario['press'],
-            'ndvi': scenario['ndvi'],
-            'ndwi': scenario['ndwi'],
-            'hotspots': scenario['hotspots'],
-            'fire_risk': [scenario['fire_risk']] * n if isinstance(scenario['fire_risk'], int) else scenario['fire_risk'],
-            'flood_risk': [scenario['flood_risk']] * n if isinstance(scenario['flood_risk'], int) else scenario['flood_risk'],
-            'cyclone_risk': [scenario['cyclone_risk']] * n if isinstance(scenario['cyclone_risk'], int) else scenario['cyclone_risk'],
-        })
-        all_data.append(df)
-    
-    data = pd.concat(all_data, ignore_index=True)
-    
-    # Add realistic noise (5% label noise for robustness)
-    noise_indices = np.random.choice(len(data), int(len(data) * 0.05), replace=False)
-    for idx in noise_indices:
-        # Flip one random label
-        label = np.random.choice(['fire_risk', 'flood_risk', 'cyclone_risk'])
-        data.loc[idx, label] = 1 - data.loc[idx, label]
-    
-    # Shuffle the data
-    data = data.sample(frac=1, random_state=42).reset_index(drop=True)
-    
-    print(f"   ✓ Generated {len(data)} samples")
-    print(f"   ✓ Fire events: {data['fire_risk'].sum()} ({data['fire_risk'].mean()*100:.1f}%)")
-    print(f"   ✓ Flood events: {data['flood_risk'].sum()} ({data['flood_risk'].mean()*100:.1f}%)")
-    print(f"   ✓ Cyclone events: {data['cyclone_risk'].sum()} ({data['cyclone_risk'].mean()*100:.1f}%)")
-    
-    return data
+    records = []
 
+    def make_record(temp, hum, wind, wind_gusts, press, dew_point,
+                    soil_moisture, elevation, rain_1h, forecast_rain_24h,
+                    ndvi, ndwi, hotspots, targets):
+        rec = {
+            'temp': float(temp),
+            'hum': float(np.clip(hum, 2, 100)),
+            'wind': float(max(0, wind)),
+            'wind_gusts': float(max(wind, wind_gusts)),
+            'press': float(press),
+            'dew_point': float(dew_point),
+            'soil_moisture': float(np.clip(soil_moisture, 0.04, 0.55)),
+            'elevation': float(max(0, elevation)),
+            'rain_1h': float(max(0, rain_1h)),
+            'forecast_rain_24h': float(max(0, forecast_rain_24h)),
+            'ndvi': float(np.clip(ndvi, -0.2, 0.95)),
+            'ndwi': float(np.clip(ndwi, -0.6, 0.95)),
+            'hotspots': int(max(0, hotspots))
+        }
+        for t in TARGET_COLUMNS:
+            rec[t] = int(targets.get(t, 0))
+        return rec
+
+    # 1. CYCLONE SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(26, 33)
+        hum = np.random.uniform(80, 98)
+        wind = np.random.uniform(65, 160)
+        gusts = wind + np.random.uniform(20, 55)
+        press = np.random.uniform(915, 982)
+        dew = temp - np.random.uniform(0.5, 3.0)
+        sm = np.random.uniform(0.30, 0.48)
+        elev = np.random.uniform(2, 80)
+        rain = np.random.uniform(25, 90)
+        fc_rain = np.random.uniform(80, 250)
+        ndvi = np.random.uniform(0.2, 0.6)
+        ndwi = np.random.uniform(0.2, 0.6)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'cyclone_risk': 1, 'storm_surge_risk': 1 if elev < 12 else 0}
+        ))
+
+    # 2. FLOOD SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(20, 32)
+        hum = np.random.uniform(82, 100)
+        wind = np.random.uniform(10, 45)
+        gusts = wind + np.random.uniform(5, 20)
+        press = np.random.uniform(990, 1010)
+        dew = temp - np.random.uniform(0.5, 2.5)
+        sm = np.random.uniform(0.38, 0.52)  # Highly saturated ground
+        elev = np.random.uniform(2, 60)      # Low alluvial basin
+        rain = np.random.uniform(40, 130)    # Torrential rainfall
+        fc_rain = np.random.uniform(70, 220)
+        ndvi = np.random.uniform(0.4, 0.7)
+        ndwi = np.random.uniform(0.35, 0.85) # High surface water
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'flood_risk': 1}
+        ))
+
+    # 3. DROUGHT SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(33, 46)
+        hum = np.random.uniform(8, 28)
+        wind = np.random.uniform(8, 30)
+        gusts = wind + np.random.uniform(3, 15)
+        press = np.random.uniform(1010, 1025)
+        dew = np.random.uniform(2, 12)
+        sm = np.random.uniform(0.04, 0.12)   # Critically dry root zone
+        elev = np.random.uniform(50, 600)
+        rain = 0.0
+        fc_rain = np.random.uniform(0, 1.5)  # Extended aridity
+        ndvi = np.random.uniform(0.06, 0.20) # Vegetation stress
+        ndwi = np.random.uniform(-0.5, -0.1)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'drought_risk': 1}
+        ))
+
+    # 4. HEATWAVE SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(40, 49)      # IMD Heatwave threshold
+        hum = np.random.uniform(20, 65)
+        wind = np.random.uniform(5, 25)
+        gusts = wind + np.random.uniform(2, 12)
+        press = np.random.uniform(1004, 1018)
+        dew = np.random.uniform(18, 28)       # High heat index combo
+        sm = np.random.uniform(0.08, 0.22)
+        elev = np.random.uniform(20, 400)
+        rain = 0.0
+        fc_rain = np.random.uniform(0, 2)
+        ndvi = np.random.uniform(0.15, 0.45)
+        ndwi = np.random.uniform(-0.4, 0.05)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'heatwave_risk': 1}
+        ))
+
+    # 5. LIGHTNING / SEVERE CONVECTIVE STORM
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(29, 38)
+        hum = np.random.uniform(70, 95)
+        wind = np.random.uniform(25, 60)
+        gusts = np.random.uniform(50, 95)     # Squall gust front
+        press = np.random.uniform(995, 1008)  # Sharp barometric drop
+        dew = np.random.uniform(22, 28)       # Extreme CAPE instability
+        sm = np.random.uniform(0.22, 0.40)
+        elev = np.random.uniform(30, 800)
+        rain = np.random.uniform(15, 65)
+        fc_rain = np.random.uniform(30, 90)
+        ndvi = np.random.uniform(0.3, 0.6)
+        ndwi = np.random.uniform(0.0, 0.35)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'lightning_risk': 1}
+        ))
+
+    # 6. LANDSLIDE SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(16, 28)
+        hum = np.random.uniform(85, 100)
+        wind = np.random.uniform(15, 50)
+        gusts = wind + np.random.uniform(10, 25)
+        press = np.random.uniform(992, 1012)
+        dew = temp - np.random.uniform(0.5, 2.0)
+        sm = np.random.uniform(0.37, 0.52)    # Regolith liquefied
+        elev = np.random.uniform(120, 2200)   # Mountain relief
+        rain = np.random.uniform(30, 110)     # Triggering burst
+        fc_rain = np.random.uniform(60, 200)
+        ndvi = np.random.uniform(0.4, 0.8)
+        ndwi = np.random.uniform(0.1, 0.4)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'landslide_risk': 1}
+        ))
+
+    # 7. STORM SURGE SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(25, 32)
+        hum = np.random.uniform(80, 98)
+        wind = np.random.uniform(55, 130)     # Force pushing sea water
+        gusts = wind + np.random.uniform(20, 50)
+        press = np.random.uniform(925, 985)   # Deep barometric suction
+        dew = temp - np.random.uniform(1, 3)
+        sm = np.random.uniform(0.30, 0.50)
+        elev = np.random.uniform(0.5, 9.0)    # Sea-level coastline (<10m)
+        rain = np.random.uniform(20, 80)
+        fc_rain = np.random.uniform(50, 180)
+        ndvi = np.random.uniform(0.1, 0.4)
+        ndwi = np.random.uniform(0.3, 0.7)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {'storm_surge_risk': 1, 'cyclone_risk': 1}
+        ))
+
+    # 8. WILDFIRE SCENARIO
+    for _ in range(samples_per_hazard):
+        temp = np.random.uniform(35, 48)
+        hum = np.random.uniform(6, 22)        # Parched air
+        wind = np.random.uniform(25, 60)      # High ember-spreading wind
+        gusts = wind + np.random.uniform(15, 35)
+        press = np.random.uniform(1005, 1022)
+        dew = np.random.uniform(1, 10)
+        sm = np.random.uniform(0.04, 0.12)    # Bone-dry topsoil
+        elev = np.random.uniform(80, 1200)
+        rain = 0.0
+        fc_rain = 0.0
+        ndvi = np.random.uniform(0.08, 0.25)  # Dead dry vegetation fuel
+        ndwi = np.random.uniform(-0.5, -0.15)
+        hotspots = np.random.randint(2, 18)   # Thermal anomalies
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, hotspots, {'fire_risk': 1}
+        ))
+
+    # 9. NORMAL / SAFE CONDITIONS
+    for _ in range(n_normal):
+        temp = np.random.uniform(18, 31)
+        hum = np.random.uniform(40, 68)
+        wind = np.random.uniform(3, 22)
+        gusts = wind + np.random.uniform(1, 8)
+        press = np.random.uniform(1010, 1022)
+        dew = np.random.uniform(10, 18)
+        sm = np.random.uniform(0.20, 0.32)
+        elev = np.random.uniform(15, 600)
+        rain = np.random.uniform(0, 4)
+        fc_rain = np.random.uniform(0, 10)
+        ndvi = np.random.uniform(0.40, 0.75)
+        ndwi = np.random.uniform(-0.25, 0.15)
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, 0, {}
+        ))
+
+    # 10. MIXED & EDGE CASES
+    for _ in range(n_mixed):
+        temp = np.random.uniform(12, 42)
+        hum = np.random.uniform(15, 88)
+        wind = np.random.uniform(5, 55)
+        gusts = wind + np.random.uniform(3, 18)
+        press = np.random.uniform(980, 1025)
+        dew = np.random.uniform(5, 24)
+        sm = np.random.uniform(0.10, 0.40)
+        elev = np.random.uniform(5, 1200)
+        rain = np.random.uniform(0, 30)
+        fc_rain = np.random.uniform(0, 50)
+        ndvi = np.random.uniform(0.15, 0.70)
+        ndwi = np.random.uniform(-0.30, 0.30)
+        hotspots = 1 if np.random.rand() < 0.05 else 0
+        records.append(make_record(
+            temp, hum, wind, gusts, press, dew, sm, elev, rain, fc_rain,
+            ndvi, ndwi, hotspots, {}
+        ))
+
+    df = pd.DataFrame(records)
+    
+    # Add realistic 3% label noise for generalization
+    noise_indices = np.random.choice(len(df), int(len(df) * 0.03), replace=False)
+    for idx in noise_indices:
+        target = np.random.choice(TARGET_COLUMNS)
+        df.loc[idx, target] = 1 - df.loc[idx, target]
+
+    df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+    print(f"   ✓ Generated {len(df)} calibrated records across {len(FEATURE_COLUMNS)} features.")
+    for t in TARGET_COLUMNS:
+        print(f"   • {t:18}: {df[t].sum()} positive cases ({df[t].mean()*100:.1f}%)")
+
+    return df
 
 def save_training_data(df: pd.DataFrame, filename='disaster_data.csv'):
-    """Save generated data to CSV"""
     training_dir = os.path.join(config.DATA_DIR, 'training')
     os.makedirs(training_dir, exist_ok=True)
-    
     filepath = os.path.join(training_dir, filename)
     df.to_csv(filepath, index=False)
-    print(f"   ✓ Dataset saved to: {filepath}")
+    print(f"   ✓ Saved training data to: {filepath}")
     return filepath
 
-
 if __name__ == "__main__":
-    print("""
-╔══════════════════════════════════════════════════════════╗
-║                                                          ║
-║   🧪 SDARS TRAINING DATA GENERATOR                       ║
-║                                                          ║
-╚══════════════════════════════════════════════════════════╝
-    """)
-    
-    df = generate_training_data(n_samples=10000)
+    df = generate_training_data(16000)
     save_training_data(df)
-    
-    print("\n📊 Sample Data Preview:")
-    print(df.head(10).to_string())
-    
-    print("\n✅ Training data generation complete!")

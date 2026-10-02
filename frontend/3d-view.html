@@ -482,10 +482,23 @@
             color: #6b7a99;
             font-size: 9px;
         }
+        @keyframes floatSat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(4deg); }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Engine Initializing Overlay -->
+    <div id="engineLoader" style="position: fixed; inset: 0; background: #070913; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: #fff; transition: opacity 0.5s ease;">
+        <div style="font-size: 48px; margin-bottom: 16px; animation: floatSat 2s infinite ease-in-out;">🛰️</div>
+        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, #667eea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">INITIALIZING 3D WAR ROOM</h2>
+        <p id="loaderStatus" style="color: #6b7a99; font-size: 13px; margin-bottom: 24px;">Loading Cesium 3D Globe & Orbital Telemetry...</p>
+        <div style="width: 260px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+            <div id="loaderBar" style="width: 45%; height: 100%; background: linear-gradient(90deg, #667eea, #00f2ff); border-radius: 4px; transition: width 0.4s ease;"></div>
+        </div>
+    </div>
     <div class="scanlines"></div>
     <div id="toast"></div>
     <div class="war-room-overlay">
@@ -511,14 +524,14 @@
             <div class="telemetry-console" id="console"></div>
             <div class="visual-controls">
                 <div class="control-item"><span>3D Buildings</span><label class="switch"><input type="checkbox"
-                            id="buildingsToggle" checked><span class="slider"></span></label></div>
+                            id="buildingsToggle"><span class="slider"></span></label></div>
                 <div class="control-item"><span>3D Terrain (Elevation)</span><label class="switch"><input
-                            type="checkbox" id="terrainElevationToggle" checked><span class="slider"></span></label>
+                            type="checkbox" id="terrainElevationToggle"><span class="slider"></span></label>
                 </div>
                 <div class="control-item"><span>Atmos Fog</span><label class="switch"><input type="checkbox"
-                            id="fogToggle" checked><span class="slider"></span></label></div>
+                            id="fogToggle"><span class="slider"></span></label></div>
                 <div class="control-item"><span>Day/Night Lighting</span><label class="switch"><input type="checkbox"
-                            id="sunToggle" checked><span class="slider"></span></label></div>
+                            id="sunToggle"><span class="slider"></span></label></div>
                 <!-- ⭐ SATELLITE ORBITS -->
                 <div class="orbit-section">
                     <div class="orbit-section-title">🛰️ LIVE SATELLITE ORBITS</div>
@@ -682,21 +695,8 @@
 
         async function initCesium() {
             try {
-                // 1. Initialize Viewer with Cinematic Settings
-                // We start with Ellipsoid terrain as a base fallback
+                // 1. Initialize Viewer with fast default settings (Flat Ellipsoid)
                 let terrainProvider = new Cesium.EllipsoidTerrainProvider();
-
-                try {
-                    // Try to load world terrain (requires a valid Ion token)
-                    terrainProvider = await Cesium.createWorldTerrainAsync();
-                }
-
-                catch (e) {
-                    console.warn("Cesium World Terrain failed (likely 401). Using standard Ellipsoid.");
-                    addLog("TERRAIN: ION AUTH ERROR (401)");
-                    addLog("HELP: PLEASE UPDATE ION TOKEN");
-                    showToast("Terrain & buildings failed to load. Check Ion token.");
-                }
 
                 viewer = new Cesium.Viewer('cesiumContainer', {
                     terrainProvider: terrainProvider,
@@ -709,11 +709,10 @@
                     navigationHelpButton: false,
                     fullscreenButton: true,
                     scene3DOnly: true,
-                    infoBox: false, // ⭐ Disable sandboxed iframe to prevent "Blocked script execution"
+                    infoBox: false, 
                     selectionIndicator: true
                 });
 
-                // ⭐ Custom Selection Handler to replace InfoBox
                 // ⭐ Custom Selection Handler to replace InfoBox
                 viewer.selectedEntityChanged.addEventListener(async function (entity) {
                     const existingOverlay = document.getElementById('customInfoOverlay');
@@ -754,7 +753,6 @@
                                         titleEl.innerHTML = `${currentName} <span style="font-size: 10px; color: #facc15; animation: blink 1s infinite;">[SCANNING DB]</span>`;
 
                                         // Try to find lat/lon in the description HTML
-                                        // Robust finder that looks for "Numbers, Numbers" pattern in any div
                                         const coordEl = Array.from(contentWrapper.querySelectorAll('div')).find(div =>
                                             div.innerText.match(/-?\d+\.\d+\s*,\s*-?\d+\.\d+/)
                                         );
@@ -787,42 +785,25 @@
                                                     }
                                                 }
                                             }
-                                        } else {
-                                            console.warn("Could not find coordinates in popup HTML");
                                         }
                                     }
                                 }
-                            } catch (e) {
-                                console.warn("Dynamic resolution failed", e);
-                                addLog("RESOLUTION ERROR: API TIMEOUT", 'danger');
-                            }
+                            } catch (e) {}
                         }, 50);
                     }
                 });
 
-                // 2. Enhance Visuals (Atmosphere & Lighting)
-                viewer.scene.globe.showGroundAtmosphere = true;
-                viewer.scene.fog.enabled = true;
-                viewer.scene.fog.density = 0.0001;
-                viewer.scene.globe.enableLighting = true; // Day/Night Cycle
+                // 2. Fast Visual Settings (Disable heavy volumetric effects initially)
+                viewer.scene.globe.showGroundAtmosphere = false;
+                viewer.scene.fog.enabled = false;
+                viewer.scene.globe.enableLighting = false; 
 
-                // Add Bloom for glow effects
+                // Add Bloom for glow effects (lightweight)
                 viewer.scene.postProcessStages.bloom.enabled = true;
                 viewer.scene.postProcessStages.bloom.uniforms.contrast = 120.0;
                 viewer.scene.postProcessStages.bloom.uniforms.brightness = -0.1;
 
-                // 3. Add 3D Buildings
-                try {
-                    buildings = await Cesium.createOsmBuildingsAsync();
-                    viewer.scene.primitives.add(buildings);
-                    addLog("BUILDINGS: LOADED (OSM)");
-                }
-
-                catch (e) {
-                    console.warn("3D Buildings failed to load (Auth Error).");
-                    addLog("BUILDINGS: ION AUTH ERROR (401)");
-                    addLog(">> VISIT: cesium.com/ion");
-                }
+                // 3. (3D Buildings removed from auto-load to save time)
 
                 // 4. Load Data & Create 3D Risk Towers
                 const loadedLocs = await loadStrategicData();
@@ -852,19 +833,33 @@
                 addLog("ENGINE: CESIUM JS 1.114");
                 addLog("FUSION: CONNECTED");
 
+                // Dismiss engine loader
+                const loader = document.getElementById('engineLoader');
+                if (loader) {
+                    const bar = document.getElementById('loaderBar');
+                    if (bar) bar.style.width = '100%';
+                    setTimeout(() => {
+                        loader.style.opacity = '0';
+                        setTimeout(() => loader.remove(), 500);
+                    }, 200);
+                }
+
             }
 
             catch (error) {
                 console.error(error);
+                const loader = document.getElementById('engineLoader');
+                if (loader) loader.remove();
                 alert("Failed to load 3D engine. Check internet connection.");
             }
         }
 
         async function loadStrategicData() {
             try {
+                const apiBase = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
                 const [locRes, histRes] = await Promise.all([
-                    fetch(`${window.API_BASE_URL || 'http://localhost:8000/api'}/locations`),
-                    fetch(`${window.API_BASE_URL || 'http://localhost:8000/api'}/predictions/history`)
+                    fetch(`${apiBase}/locations`),
+                    fetch(`${apiBase}/predictions/history`)
                 ]);
 
                 const locData = await locRes.json();
@@ -1023,6 +1018,14 @@
 
                 startAIThoughts();
 
+                // Fetch real DEM topographical elevation from Open-Meteo for flood modeling
+                locations.forEach(loc => {
+                    fetch(`https://api.open-meteo.com/v1/elevation?latitude=${loc.lat}&longitude=${loc.lon}`)
+                        .then(r => r.json())
+                        .then(d => { if (d.elevation && d.elevation.length) loc.elevation = d.elevation[0]; })
+                        .catch(() => {});
+                });
+
                 return locations; // Return data for calling function
             } catch (err) {
                 addLog("API SYNC: FAILED - RECONNECTING...", 'danger');
@@ -1096,9 +1099,24 @@
         }
 
         function setupEventHandlers() {
-            document.getElementById('buildingsToggle').addEventListener('change', (e) => {
-                if (buildings) buildings.show = e.target.checked;
-                addLog(`BUILDINGS: ${e.target.checked ? 'ENABLED' : 'DISABLED'}`);
+            document.getElementById('buildingsToggle').addEventListener('change', async (e) => {
+                if (e.target.checked) {
+                    if (!buildings) {
+                        try {
+                            buildings = await Cesium.createOsmBuildingsAsync();
+                            viewer.scene.primitives.add(buildings);
+                            addLog("BUILDINGS: LOADED (OSM)");
+                        } catch (err) {
+                            addLog("BUILDINGS ERROR: ION AUTH FAILED");
+                            showToast("3D buildings require valid Ion token.");
+                            e.target.checked = false;
+                        }
+                    } else {
+                        buildings.show = true;
+                    }
+                } else if (buildings) {
+                    buildings.show = false;
+                }
             });
 
             document.getElementById('terrainElevationToggle').addEventListener('change', async (e) => {
@@ -1145,8 +1163,12 @@
             try {
                 if (type === 'tactical') {
                     layers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
-                        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-                        credit: '©OpenStreetMap, ©CartoDB'
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                        credit: 'Esri World Dark Gray'
+                    }));
+                    layers.addImageryProvider(new Cesium.UrlTemplateImageryProvider({
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+                        credit: 'Esri World Dark Gray Labels'
                     }));
                 }
 
@@ -1273,14 +1295,9 @@
                 let inundatedCount = 0;
 
                 locations.forEach(loc => {
-                    // Logic: If water height >= ground height (simplified for demo markers)
-                    // In a real system we'd sample terrain, but here we compare vs currentLevel
-                    // Markers at low elevations are 'Inundated'
-
-                    // Let's pretend specific cities are at low elevations for the simulation effect
-                    const syntheticElevation = (loc.lat % 5) * 20; // Simulated elevation 0-100m
-
-                    if (this.currentLevel > syntheticElevation) inundatedCount++;
+                    // Real topographical elevation in meters from Open-Meteo DEM
+                    const elevation = loc.elevation !== undefined ? loc.elevation : 12;
+                    if (this.currentLevel > elevation) inundatedCount++;
                 });
 
                 if (inundatedCount > 0 && Math.random() > 0.8) {
@@ -1353,16 +1370,41 @@
                 this.showTrails = true;
                 this.showGroundTrack = true;
                 this.startTime = Date.now();
+                this._startLiveTelemetry();
+            }
+
+            /**
+             * Stream live NASA/NORAD telemetry for active spacecraft
+             */
+            _startLiveTelemetry() {
+                const fetchISS = async () => {
+                    try {
+                        const res = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+                        if (res.ok) {
+                            const data = await res.json();
+                            const issSat = this.satellites.find(s => s.name === 'ISS');
+                            if (issSat) {
+                                issSat.livePosition = Cesium.Cartesian3.fromDegrees(data.longitude, data.latitude, data.altitude * 1000);
+                                issSat.altitudeKm = Math.round(data.altitude);
+                                issSat.speed = Math.round(data.velocity / 3600 * 10) / 10;
+                            }
+                        }
+                    } catch (e) {
+                        // Fallback to orbital mechanics
+                    }
+                };
+                fetchISS();
+                setInterval(fetchISS, 4000);
             }
 
             /**
              * Compute 3D Cartesian position of a satellite at time t.
-             * Uses simplified circular orbital mechanics.
-             * @param {Object} sat - satellite definition
-             * @param {number} t   - time in seconds from epoch
-             * @returns {Cesium.Cartesian3}
+             * Uses real-time telemetry when available, with orbital mechanics calculation.
              */
             _satPosition(sat, t) {
+                if (sat.name === 'ISS' && sat.livePosition) {
+                    return sat.livePosition;
+                }
                 const R_EARTH = 6371000; // metres
                 const altM = sat.altitudeKm * 1000;
                 const r = R_EARTH + altM;

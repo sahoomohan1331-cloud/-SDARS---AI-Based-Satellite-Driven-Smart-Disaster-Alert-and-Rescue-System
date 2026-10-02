@@ -1,0 +1,90 @@
+{
+  "accuracy": 0.995,
+  "precision": 1.0,
+  "recall": 0.9501557632398754,
+  "f1": 0.9744408945686901,
+  "cv_f1_mean": 0.9769549863905873,
+  "cv_f1_std": 0.007715593351632219,
+  "confusion_matrix": [
+    [
+      2879,
+      0
+    ],
+    [
+      16,
+      305
+    ]
+  ],
+  "feature_importance": [
+    {
+      "feature": "elevation",
+      "importance": 0.35859772502657655
+    },
+    {
+      "feature": "press",
+      "importance": 0.16637466262434136
+    },
+    {
+      "feature": "wind",
+      "importance": 0.1516300781251155
+    },
+    {
+      "feature": "wind_gusts",
+      "importance": 0.10054862817173417
+    },
+    {
+      "feature": "dew_point",
+      "importance": 0.05207372752819954
+    },
+    {
+      "feature": "ndwi",
+      "importance": 0.05051553523661497
+    },
+    {
+      "feature": "forecast_rain_24h",
+      "importance": 0.03417560112761791
+    },
+    {
+      "feature": "hum",
+      "importance": 0.03141637439374393
+    },
+    {
+      "feature": "rain_1h",
+      "importance": 0.017504564411696025
+    },
+    {
+      "feature": "ndvi",
+      "importance": 0.014890276933432233
+    },
+    {
+      "feature": "soil_moisture",
+      "importance": 0.011275000999742687
+    },
+    {
+      "feature": "temp",
+      "importance": 0.010624432911669795
+    },
+    {
+      "feature": "hotspots",
+      "importance": 0.00037339250951508144
+    }
+  ],
+  "disaster_type": "storm_surge",
+  "features": [
+    "temp",
+    "hum",
+    "wind",
+    "wind_gusts",
+    "press",
+    "dew_point",
+    "soil_moisture",
+    "elevation",
+    "rain_1h",
+    "forecast_rain_24h",
+    "ndvi",
+    "ndwi",
+    "hotspots"
+  ],
+  "trained_at": "2026-10-02T04:17:46.305817",
+  "model_path": "D:\\SDARS map\\backend\\models\\storm_surge_risk_model.joblib"
+}

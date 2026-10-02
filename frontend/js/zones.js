@@ -1,5 +1,5 @@
 // Global constant
-const API_BASE_URL = window.API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
 
 // Global state
 const zonesState = {
@@ -49,11 +49,15 @@ function initMap() {
 
     // Define all available terrain layers
     zonesState.terrainLayers = {
-        dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '©OpenStreetMap, ©CartoDB',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }),
+        dark: L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri',
+                maxZoom: 16
+            }),
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 16
+            })
+        ]),
         satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
         }),

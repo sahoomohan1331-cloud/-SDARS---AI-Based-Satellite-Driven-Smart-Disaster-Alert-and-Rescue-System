@@ -104,11 +104,11 @@ class AdvancedAlertSystem:
         try:
             self.load_settings_from_db(db)
         except OperationalError:
-            print("⚠️ System settings table not ready. Using defaults.")
+            print("[!] System settings table not ready. Using defaults.")
             # Set defaults to prevent startup crash
             self.smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
             self.smtp_port = int(os.getenv('SMTP_PORT', '587'))
-            self.smtp_user = os.getenv('SMTP_USER', '')
+            self.smtp_user = os.getenv('SMTP_EMAIL', '')
             self.smtp_password = os.getenv('SMTP_PASSWORD', '')
             self.user_preferences = {
                 'default_user': {
@@ -119,7 +119,7 @@ class AdvancedAlertSystem:
                 }
             }
         except Exception as e:
-            print(f"⚠️ Error loading settings: {e}")
+            print(f"[!] Error loading settings: {e}")
         finally:
             db.close()
             
@@ -136,15 +136,15 @@ class AdvancedAlertSystem:
 
         self.smtp_server = get_setting('smtp_server', 'SMTP_SERVER', 'smtp.gmail.com')
         self.smtp_port = int(get_setting('smtp_port', 'SMTP_PORT', '587'))
-        self.smtp_user = get_setting('smtp_user', 'SMTP_USER', '')
+        self.smtp_user = get_setting('smtp_user', 'SMTP_EMAIL', '')
         self.smtp_password = get_setting('smtp_password', 'SMTP_PASSWORD', '')
 
         # Double check: if they are empty strings, fallback to env
-        if not self.smtp_user: self.smtp_user = os.getenv('SMTP_USER', '')
+        if not self.smtp_user: self.smtp_user = os.getenv('SMTP_EMAIL', '')
         if not self.smtp_password: self.smtp_password = os.getenv('SMTP_PASSWORD', '')
         
         # Update user preferences with alert email
-        alert_email = get_setting('alert_email_to', 'ALERT_EMAIL_TO', os.getenv('SMTP_USER', 'admin@sdars.com'))
+        alert_email = get_setting('alert_email_to', 'ALERT_EMAIL_TO', os.getenv('SMTP_EMAIL', 'admin@sdars.com'))
         
         self.user_preferences = {
             'default_user': {
@@ -156,7 +156,7 @@ class AdvancedAlertSystem:
                 'disaster_types': ['fire', 'flood', 'cyclone', 'earthquake']
             }
         }
-        print(f"📡 Alert System: Loaded configuration for {self.smtp_user} (Target: {alert_email})")
+        print(f"[+] Alert System: Loaded configuration for {self.smtp_user} (Target: {alert_email})")
     
     def create_alert(
         self,
@@ -620,7 +620,7 @@ class AdvancedAlertSystem:
                 self.alert_history.append(alert)
                 self.alerts.remove(alert)
                 
-                print(f"✅ Alert {alert.alert_id} Acknowledged by {user_id}. Returning for background task.")
+                print(f"[+] Alert {alert.alert_id} Acknowledged by {user_id}. Returning for background task.")
                 return True, alert
         return False, None
     

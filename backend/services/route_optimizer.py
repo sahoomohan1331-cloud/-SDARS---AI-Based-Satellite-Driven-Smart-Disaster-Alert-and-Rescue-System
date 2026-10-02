@@ -17,15 +17,18 @@ class RouteOptimizer:
         self.OSRM_URL = "https://router.project-osrm.org/route/v1"
         self.cache = {}
         
-    def calculate_route_safety_score(self, route_predictions: List[Dict]) -> Dict:
+    def calculate_route_safety_score(self, route_predictions: List[Dict], road_statuses: Optional[List[Dict]] = None) -> Dict:
         """
-        Calculate comprehensive safety score for a route
+        Calculate comprehensive safety score for a route, factoring in active disaster predictions
+        and real-time blocked/waterlogged road corridor telemetry.
         
         Returns:
             {
                 'overall_score': 0-100 (100 = safest),
                 'risk_level': 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
                 'hazard_segments': [...],
+                'blocked_roads': [...],
+                'detour_recommendations': [...],
                 'recommendations': [...],
                 'safest_time': 'now' | 'wait_6h' | 'avoid',
             }
@@ -35,6 +38,8 @@ class RouteOptimizer:
                 'overall_score': 100,
                 'risk_level': 'LOW',
                 'hazard_segments': [],
+                'blocked_roads': [],
+                'detour_recommendations': [],
                 'recommendations': ['Route is clear'],
                 'safest_time': 'now'
             }
@@ -48,12 +53,48 @@ class RouteOptimizer:
         safety_score = 100
         safety_score -= (high_risk_count / total_points) * 50  # Each high risk waypoint reduces score by up to 50
         safety_score -= (medium_risk_count / total_points) * 25  # Each medium risk reduces by up to 25
+
+        # Check proximity to real-time road blockages / flooded corridors
+        blocked_roads_detected = []
+        detour_recommendations = []
+        if road_statuses:
+            for pred in route_predictions:
+                loc = pred.get('location', {})
+                plat = loc.get('lat') if 'lat' in loc else loc.get('latitude')
+                plon = loc.get('lon') if 'lon' in loc else loc.get('longitude')
+                if plat is None or plon is None:
+                    continue
+                
+                for road in road_statuses:
+                    status = road.get('status', 'OPEN').upper()
+                    if status in ['BLOCKED', 'WATERLOGGED', 'LANDSLIDE']:
+                        rlat = road.get('latitude')
+                        rlon = road.get('longitude')
+                        if rlat is not None and rlon is not None:
+                            dist_km = self._calculate_distance(plat, plon, rlat, rlon)
+                            if dist_km <= 2.0:  # Within 2 km of corridor obstruction
+                                if not any(b['name'] == road.get('name') for b in blocked_roads_detected):
+                                    blocked_roads_detected.append({
+                                        'road_id': road.get('road_id'),
+                                        'name': road.get('name'),
+                                        'status': status,
+                                        'reason': road.get('reason', 'Corridor impassable'),
+                                        'detour': road.get('detour', 'Seek alternative high-elevation route'),
+                                        'distance_km': round(dist_km, 2)
+                                    })
+                                    if road.get('detour'):
+                                        detour_recommendations.append(f"Detour for {road.get('name')}: {road.get('detour')}")
+
+        # Heavy penalty for blocked or submerged corridors on route
+        if blocked_roads_detected:
+            safety_score -= len(blocked_roads_detected) * 35
+
         safety_score = max(0, min(100, safety_score))  # Clamp to 0-100
         
         # Determine risk level
-        if safety_score >= 80:
+        if safety_score >= 80 and not blocked_roads_detected:
             risk_level = 'LOW'
-        elif safety_score >= 60:
+        elif safety_score >= 60 and not blocked_roads_detected:
             risk_level = 'MEDIUM'
         elif safety_score >= 40:
             risk_level = 'HIGH'
@@ -73,6 +114,10 @@ class RouteOptimizer:
         
         # Generate recommendations
         recommendations = []
+        # Prepend blocked road directives first as highest priority
+        for b in blocked_roads_detected:
+            recommendations.append(f"🛑 CORRIDOR {b['status']}: {b['name']} ({b['reason']}). DETOUR: {b['detour']}")
+
         if high_risk_count > 0:
             recommendations.append(f"⚠️ {high_risk_count} high-risk zones detected on route")
             recommendations.append("Consider alternative route or delay travel")
@@ -81,10 +126,10 @@ class RouteOptimizer:
             recommendations.append(f"⚡ {medium_risk_count} medium-risk areas along path")
             recommendations.append("Proceed with caution and monitor conditions")
         
-        if safety_score >= 80:
+        if safety_score >= 80 and not blocked_roads_detected:
             recommendations.append("✅ Route is generally safe for travel")
             safest_time = 'now'
-        elif safety_score >= 60:
+        elif safety_score >= 60 and not blocked_roads_detected:
             recommendations.append("⚠️ Some risks present, travel during daylight recommended")
             safest_time = 'now'
         elif safety_score >= 40:
@@ -98,6 +143,8 @@ class RouteOptimizer:
             'overall_score': round(safety_score, 1),
             'risk_level': risk_level,
             'hazard_segments': hazard_segments,
+            'blocked_roads': blocked_roads_detected,
+            'detour_recommendations': detour_recommendations,
             'recommendations': recommendations,
             'safest_time': safest_time,
             'interception_events': self._detect_interception_risk(route_predictions),
@@ -105,7 +152,8 @@ class RouteOptimizer:
                 'total_waypoints': total_points,
                 'high_risk_zones': high_risk_count,
                 'medium_risk_zones': medium_risk_count,
-                'safe_zones': total_points - high_risk_count - medium_risk_count
+                'blocked_corridors': len(blocked_roads_detected),
+                'safe_zones': max(0, total_points - high_risk_count - medium_risk_count)
             }
         }
 

@@ -94,33 +94,54 @@
         <!-- Map Controls -->
         <div class="map-controls">
             <div class="control-group">
-                <label>Risk Layer:</label>
+                <label>Telemetry & Layers:</label>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
                         <input type="checkbox" id="showFire" checked onchange="toggleLayer('fire')">
-                        <span>🔥 Fire Risk</span>
+                        <span>🔥 Fire</span>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="showFlood" checked onchange="toggleLayer('flood')">
-                        <span>🌊 Flood Risk</span>
+                        <span>🌊 Flood</span>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="showCyclone" checked onchange="toggleLayer('cyclone')">
-                        <span>🌪️ Cyclone Risk</span>
+                        <span>🌪️ Cyclone</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showGauges" checked onchange="toggleGaugesLayer()">
+                        <span style="color: #38bdf8;">💧 River Gauges</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showCrowdReports" checked onchange="toggleCrowdLayer()">
+                        <span style="color: #fb7185;">📢 Citizen Reports</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showResources" checked onchange="toggleResourcesLayer()">
+                        <span style="color: #a78bfa;">🚑 Units & Shelters</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="showRoads" checked onchange="toggleRoadsLayer()">
+                        <span style="color: #fbbf24;">⛔ Road Status</span>
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="showHistory" checked onchange="toggleHistoryLayer()">
-                        <span style="color: #6b7a99;">📜 History Nodes</span>
+                        <span style="color: #94a3b8;">📜 Archives</span>
                     </label>
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="refreshMap()">
-                🔄 Refresh Data
-            </button>
-            <a href="3d-view.html" class="btn-secondary btn-3d-war-room">
-                🛰️ 3D War Room
-            </a>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="openCrowdReportModal()" style="background: linear-gradient(135deg, #f43f5e, #be123c); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);">
+                    📢 Report Incident
+                </button>
+                <button class="btn-primary" onclick="refreshMap()">
+                    🔄 Refresh Data
+                </button>
+                <a href="3d-view.html" class="btn-secondary btn-3d-war-room">
+                    🛰️ 3D War Room
+                </a>
+            </div>
         </div>
 
         <!-- Map Container -->
@@ -135,29 +156,41 @@
                 <button class="terrain-btn" onclick="setTerrain('streets')" title="Standard Streets">🏙️</button>
             </div>
 
-            <!-- Map Legend -->
+            <!-- Map Legend: 4-Tier Impact Classification -->
             <div class="map-legend">
-                <h3>Risk Levels</h3>
+                <h3 style="margin-bottom: 8px;">Risk & Impact Tiers</h3>
                 <div class="legend-item">
-                    <span class="legend-dot high"></span>
-                    <span>HIGH Risk</span>
+                    <span class="legend-dot" style="background: #ef4444; box-shadow: 0 0 8px #ef4444;"></span>
+                    <strong style="color: #ef4444;">CRITICAL Impact</strong>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-dot medium"></span>
-                    <span>MEDIUM Risk</span>
+                    <span class="legend-dot" style="background: #f97316;"></span>
+                    <strong style="color: #f97316;">HIGH Risk</strong>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-dot low"></span>
-                    <span>LOW Risk</span>
+                    <span class="legend-dot" style="background: #eab308;"></span>
+                    <strong style="color: #eab308;">MODERATE Risk</strong>
                 </div>
                 <div class="legend-item">
-                    <span class="legend-dot safe"></span>
-                    <span>Safe</span>
+                    <span class="legend-dot" style="background: #10b981;"></span>
+                    <strong style="color: #10b981;">LOW Risk</strong>
                 </div>
-                <hr>
+                <hr style="margin: 8px 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
                 <div class="legend-item">
-                    <span class="legend-dot archived"></span>
-                    <span class="archived-label">Archived Record</span>
+                    <span style="font-size: 14px;">💧</span>
+                    <span style="font-size: 11px; color: #38bdf8;">River Telemetry</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-size: 14px;">📢</span>
+                    <span style="font-size: 11px; color: #fb7185;">Citizen Ground-Truth</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-size: 14px;">🚑</span>
+                    <span style="font-size: 11px; color: #a78bfa;">Emergency Resource</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-size: 14px;">⛔</span>
+                    <span style="font-size: 11px; color: #fbbf24;">Road Block / Hazard</span>
                 </div>
             </div>
 
@@ -183,33 +216,107 @@
             <div class="stat-box">
                 <div class="stat-icon">📍</div>
                 <div class="stat-info">
-                    <h4 id="totalLocations">5</h4>
-                    <p>Monitored Locations</p>
+                    <h4 id="totalLocations">17</h4>
+                    <p>Monitored Sectors</p>
                 </div>
             </div>
             <div class="stat-box">
-                <div class="stat-icon">🚨</div>
+                <div class="stat-icon" style="color: #ef4444;">🚨</div>
                 <div class="stat-info">
-                    <h4 id="highRiskZones">0</h4>
-                    <p>High Risk Zones</p>
+                    <h4 id="criticalRiskZones" style="color: #ef4444;">0</h4>
+                    <p>Critical Impact</p>
                 </div>
             </div>
             <div class="stat-box">
-                <div class="stat-icon">⚠️</div>
+                <div class="stat-icon" style="color: #f97316;">⚠️</div>
                 <div class="stat-info">
-                    <h4 id="mediumRiskZones">1</h4>
-                    <p>Medium Risk Zones</p>
+                    <h4 id="highRiskZones" style="color: #f97316;">0</h4>
+                    <p>High Threat</p>
                 </div>
             </div>
             <div class="stat-box">
-                <div class="stat-icon">✅</div>
+                <div class="stat-icon" style="color: #eab308;">🟡</div>
                 <div class="stat-info">
-                    <h4 id="safeZones">4</h4>
-                    <p>Safe Zones</p>
+                    <h4 id="mediumRiskZones" style="color: #eab308;">1</h4>
+                    <p>Moderate Watch</p>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon" style="color: #10b981;">✅</div>
+                <div class="stat-info">
+                    <h4 id="safeZones" style="color: #10b981;">16</h4>
+                    <p>Low / Normal</p>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- 📢 Citizen Ground-Truth Incident Modal -->
+    <div id="crowdReportModal" class="modal-backdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
+        <div style="background: #0f172a; border: 1px solid rgba(244,63,94,0.4); box-shadow: 0 0 30px rgba(244,63,94,0.25); border-radius: 16px; width: 440px; max-width: 90vw; padding: 25px; color: #fff; position: relative;">
+            <button onclick="closeCrowdReportModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">✕</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+                <span style="font-size: 26px;">📢</span>
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #f43f5e;">CITIZEN GROUND INCIDENT</h3>
+                    <p style="margin: 0; font-size: 11px; color: #94a3b8;">Crowdsourced early-warning telemetry feed</p>
+                </div>
+            </div>
+
+            <form id="crowdReportForm" onsubmit="submitCrowdReportForm(event)">
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 12px; color: #cbd5e1; display: block; margin-bottom: 4px;">Incident Location Name</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="crLocationName" placeholder="e.g. Kashmere Gate Ring Road" required style="flex: 1; padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 13px;">
+                        <button type="button" onclick="autoFillCurrentCoords()" title="Fill GPS" style="padding: 8px 12px; background: rgba(56,189,248,0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; cursor: pointer; font-size: 12px;">📍 GPS</button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Latitude</label>
+                        <input type="number" step="any" id="crLat" placeholder="28.6650" required style="width: 100%; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Longitude</label>
+                        <input type="number" step="any" id="crLon" placeholder="77.2490" required style="width: 100%; padding: 8px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Hazard Observation</label>
+                        <select id="crType" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
+                            <option value="flooding">🌊 Waterlogging / Flood</option>
+                            <option value="blocked_road">⛔ Blocked Road / Tree Fall</option>
+                            <option value="smoke">🔥 Dense Smoke / Fire</option>
+                            <option value="landslide">⛰️ Landslide / Rockfall</option>
+                            <option value="tremor">📳 Ground Tremor</option>
+                            <option value="storm_damage">🌪️ Squall / Roof Damage</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Severity</label>
+                        <select id="crSeverity" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
+                            <option value="MODERATE">🟡 MODERATE</option>
+                            <option value="HIGH">🟠 HIGH</option>
+                            <option value="CRITICAL">🔴 CRITICAL</option>
+                            <option value="LOW">🟢 LOW</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 12px; color: #cbd5e1; display: block; margin-bottom: 4px;">Description / Field Notes</label>
+                    <textarea id="crDescription" rows="3" placeholder="Describe the water depth, blocked lanes, or immediate risks to people..." required style="width: 100%; padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px; resize: vertical;"></textarea>
+                </div>
+
+                <button type="submit" id="crSubmitBtn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #f43f5e, #be123c); border: none; border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer; font-size: 13px; letter-spacing: 0.5px;">
+                    TRANSMIT GROUND-TRUTH REPORT
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -217,9 +324,9 @@
         <p>Map Data Updated Every 5 Minutes | Powered by Leaflet.js</p>
     </footer>
 
-    <script src="js/main.js"></script>
-    <script src="js/map.js"></script>
-    <script src="js/location-search.js"></script>
+    <script src="js/main.js?v=2.5"></script>
+    <script src="js/map.js?v=2.5"></script>
+    <script src="js/location-search.js?v=2.5"></script>
 </body>
 
 </html>

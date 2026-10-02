@@ -3,6 +3,9 @@
  * Comprehensive alert viewing, filtering, and management
  */
 
+// Global constant
+const API_BASE_URL = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
+
 // State management
 const alertsPageState = {
     activeAlerts: [],
@@ -605,7 +608,7 @@ async function acknowledgeAll() {
  */
 async function testAlert() {
     try {
-        const response = await fetch('http://localhost:8000/api/alerts/test', {
+        const response = await fetch(`${API_BASE_URL}/alerts/test`, {
             method: 'POST'
         });
 

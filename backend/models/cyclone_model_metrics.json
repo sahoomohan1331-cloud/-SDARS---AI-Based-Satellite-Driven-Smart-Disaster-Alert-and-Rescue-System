@@ -1,40 +1,90 @@
 {
-  "accuracy": 0.984,
-  "precision": 0.986159169550173,
-  "recall": 0.9105431309904153,
-  "f1": 0.946843853820598,
-  "cv_f1_mean": 0.94222796282153,
-  "cv_f1_std": 0.009902290620111337,
+  "accuracy": 0.995,
+  "precision": 0.9944547134935305,
+  "recall": 0.9764065335753176,
+  "f1": 0.9853479853479854,
+  "cv_f1_mean": 0.9882057378727811,
+  "cv_f1_std": 0.0022842903197811773,
+  "confusion_matrix": [
+    [
+      2646,
+      3
+    ],
+    [
+      13,
+      538
+    ]
+  ],
   "feature_importance": [
     {
-      "feature": "wind",
-      "importance": 0.34656256410510256
-    },
-    {
       "feature": "press",
-      "importance": 0.24022497205824017
+      "importance": 0.2646992704675236
     },
     {
-      "feature": "hum",
-      "importance": 0.17540756168793215
+      "feature": "wind",
+      "importance": 0.2140228917469166
+    },
+    {
+      "feature": "wind_gusts",
+      "importance": 0.1733876609462929
+    },
+    {
+      "feature": "elevation",
+      "importance": 0.12226818899751182
+    },
+    {
+      "feature": "dew_point",
+      "importance": 0.07224882662860224
     },
     {
       "feature": "ndwi",
-      "importance": 0.10378439236335
+      "importance": 0.05001256738362921
+    },
+    {
+      "feature": "hum",
+      "importance": 0.032264134880483006
+    },
+    {
+      "feature": "forecast_rain_24h",
+      "importance": 0.02096478662075053
+    },
+    {
+      "feature": "rain_1h",
+      "importance": 0.017237168951234394
     },
     {
       "feature": "temp",
-      "importance": 0.07156731113346278
+      "importance": 0.01613210182649592
+    },
+    {
+      "feature": "soil_moisture",
+      "importance": 0.01128904331465034
     },
     {
       "feature": "ndvi",
-      "importance": 0.05649887522293141
+      "importance": 0.005247667025243886
     },
     {
       "feature": "hotspots",
-      "importance": 0.00595432342898098
+      "importance": 0.00022569121066559934
     }
   ],
-  "trained_at": "2026-02-05T18:50:58.274122",
-  "model_path": "C:\\Users\\ASUS\\SDARS map\\backend\\models\\cyclone_risk_model.joblib"
+  "disaster_type": "cyclone",
+  "features": [
+    "temp",
+    "hum",
+    "wind",
+    "wind_gusts",
+    "press",
+    "dew_point",
+    "soil_moisture",
+    "elevation",
+    "rain_1h",
+    "forecast_rain_24h",
+    "ndvi",
+    "ndwi",
+    "hotspots"
+  ],
+  "trained_at": "2026-10-02T04:17:21.251112",
+  "model_path": "D:\\SDARS map\\backend\\models\\cyclone_risk_model.joblib"
 }

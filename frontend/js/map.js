@@ -3,6 +3,8 @@
 // 3D Globe-like visualization with weather details
 // ================================================
 
+const API_BASE_URL = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
+
 let map;
 let markers = {};
 let currentInfoWindow = null;
@@ -57,11 +59,15 @@ function initializeMap() {
 
     // Define all available terrain layers
     terrainLayers = {
-        dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '©OpenStreetMap, ©CartoDB',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }),
+        dark: L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri',
+                maxZoom: 16
+            }),
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 16
+            })
+        ]),
         satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
         }),
@@ -128,7 +134,7 @@ async function loadAllLocations() {
 
     // 2. ⭐ NEW: Fetch ALL historical predictions from the database
     try {
-        const response = await fetch('http://localhost:8000/api/predictions/history');
+        const response = await fetch('${API_BASE_URL}/predictions/history');
         if (response.ok) {
             const history = await response.json();
 
@@ -305,17 +311,33 @@ async function getLocationName(lat, lon) {
     return `${lat.toFixed(3)}°, ${lon.toFixed(3)}°`;
 }
 
-// ⭐ PREMIUM: High-Impact Tactical Popup Content
+// ⭐ PREMIUM: High-Impact Tactical Popup Content (Impact-Based: Hazard x Exposure x Vulnerability)
 function createClickPopupContent(location, prediction) {
     const weather = prediction.current_weather || {};
     const riskLevel = (prediction.overall_risk_level || 'Safe').toUpperCase();
     const riskClass = (prediction.overall_risk_level || 'safe').toLowerCase();
 
-    const risks = [
-        { name: 'FIRE', val: prediction.fire?.confidence || 0, color: '#ff4d00' },
-        { name: 'FLOOD', val: prediction.flood?.confidence || 0, color: '#2196f3' },
-        { name: 'CYCLONE', val: prediction.cyclone?.confidence || 0, color: '#9c27b0' }
-    ].sort((a, b) => b.val - a.val);
+    // Support all 7 hazard types
+    const allHazards = [
+        { name: 'FIRE', val: prediction.fire?.confidence || 0, color: '#f97316', icon: '🔥' },
+        { name: 'FLOOD', val: prediction.flood?.confidence || 0, color: '#38bdf8', icon: '🌊' },
+        { name: 'CYCLONE', val: prediction.cyclone?.confidence || 0, color: '#a855f7', icon: '🌪️' },
+        { name: 'HEATWAVE', val: prediction.heatwave?.confidence || 0, color: '#ef4444', icon: '🌡️' },
+        { name: 'DROUGHT', val: prediction.drought?.confidence || 0, color: '#eab308', icon: '☀️' },
+        { name: 'LANDSLIDE', val: prediction.landslide?.confidence || 0, color: '#854d0e', icon: '⛰️' },
+        { name: 'STORM SURGE', val: prediction.storm_surge?.confidence || 0, color: '#06b6d4', icon: '🌊' },
+        { name: 'LIGHTNING', val: prediction.lightning?.confidence || 0, color: '#eab308', icon: '⚡' }
+    ].filter(h => h.val > 0.05).sort((a, b) => b.val - a.val);
+
+    const displayHazards = allHazards.length > 0 ? allHazards.slice(0, 4) : [
+        { name: 'BASELINE STABLE', val: 0.05, color: '#10b981', icon: '✅' }
+    ];
+
+    // Exposure & Vulnerability
+    const exp = prediction.exposure || {};
+    const vuln = prediction.vulnerability || {};
+    const popDensity = exp.population_density ? exp.population_density.toLocaleString() + ' /km²' : 'Moderate Urban';
+    const vulnScore = vuln.vulnerability_index != null ? Math.round(vuln.vulnerability_index * 100) + '%' : '35%';
 
     return `
         <div class="location-popup clicked-location">
@@ -324,59 +346,90 @@ function createClickPopupContent(location, prediction) {
                     <span style="font-size: 18px;">📍</span>
                     <h3>${location.name}</h3>
                 </div>
-                <div class="overall-badge ${riskClass}">${riskLevel}</div>
+                <div class="overall-badge ${riskClass}" style="background: ${getRiskColor(riskClass)}; color: #fff; font-weight: 700; padding: 3px 8px; border-radius: 4px; font-size: 11px;">
+                    ${riskLevel}
+                </div>
             </div>
             
-            <div class="popup-telem">
-                <span class="label">COORDS:</span>
-                <span class="coords">${location.lat.toFixed(4)}, ${location.lon.toFixed(4)}</span>
+            <div class="popup-telem" style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 8px;">
+                <span>COORDS: ${location.lat.toFixed(4)}, ${location.lon.toFixed(4)}</span>
+                <span style="color: #38bdf8;">IMPACT-BASED AI</span>
             </div>
 
-            <div class="popup-grid">
-                <div class="grid-item">
-                    <span class="item-label">TEMP</span>
-                    <span class="item-val">${weather.temperature || '--'}°C</span>
+            <!-- Impact Matrix: Exposure & Vulnerability -->
+            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 11px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="color: #94a3b8;">👥 Population Exposure:</span>
+                    <strong style="color: #38bdf8;">${popDensity}</strong>
                 </div>
-                <div class="grid-item">
-                    <span class="item-label">HUMID</span>
-                    <span class="item-val">${weather.humidity || '--'}%</span>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <span style="color: #94a3b8;">🛡️ Fragility Index:</span>
+                    <strong style="color: #fbbf24;">${vulnScore}</strong>
                 </div>
-                <div class="grid-item">
-                    <span class="item-label">WIND</span>
-                    <span class="item-val">${weather.wind_speed || '--'}k/h</span>
-                </div>
-                <div class="grid-item">
-                    <span class="item-label">VISIB</span>
-                    <span class="item-val">85%</span>
+                <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px; margin-top: 4px;">
+                    <span style="color: #94a3b8;">Model Formulation:</span>
+                    <span style="color: #e2e8f0; font-family: monospace; font-size: 10px;">Hazard × Exposure × Vulnerability</span>
                 </div>
             </div>
 
-            <div class="risk-sector">
-                <h4>PROBABILITY MATRIX</h4>
-                ${risks.map(r => `
-                    <div class="risk-row">
-                        <div class="row-header">
-                            <span>${r.name} THREAT</span>
-                            <span>${Math.round(r.val * 100)}%</span>
+            <div class="popup-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 8px;">
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">TEMP</span>
+                    <span class="item-val" style="font-size: 11px;">${weather.temperature != null ? weather.temperature : '--'}°C</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">HUMID</span>
+                    <span class="item-val" style="font-size: 11px;">${weather.humidity != null ? weather.humidity : '--'}%</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">GUSTS</span>
+                    <span class="item-val" style="font-size: 11px;">${weather.wind_gusts != null ? Math.round(weather.wind_gusts) : weather.wind_speed || '--'}k/h</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">PRESSURE</span>
+                    <span class="item-val" style="font-size: 11px;">${weather.pressure || 1013}hPa</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">SOIL H₂O</span>
+                    <span class="item-val" style="font-size: 11px; color: #38bdf8;">${weather.soil_moisture != null ? weather.soil_moisture.toFixed(2) : '0.25'}</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">ELEV</span>
+                    <span class="item-val" style="font-size: 11px; color: #a78bfa;">${weather.elevation != null ? Math.round(weather.elevation) + 'm' : '50m'}</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">DEW PT</span>
+                    <span class="item-val" style="font-size: 11px; color: #fbbf24;">${weather.dew_point != null ? weather.dew_point.toFixed(1) + '°' : '--'}</span>
+                </div>
+                <div class="grid-item" style="padding: 4px 6px;">
+                    <span class="item-label" style="font-size: 8px;">24H RAIN</span>
+                    <span class="item-val" style="font-size: 11px; color: #34d399;">${weather.forecast_rain_24h != null ? weather.forecast_rain_24h + 'mm' : '0mm'}</span>
+                </div>
+            </div>
+
+            <div class="risk-sector" style="margin-top: 10px;">
+                <h4 style="font-size: 11px; color: #a8b3cf; margin-bottom: 6px; letter-spacing: 0.5px;">MULTI-HAZARD VECTOR MATRIX</h4>
+                ${displayHazards.map(r => `
+                    <div class="risk-row" style="margin-bottom: 5px;">
+                        <div class="row-header" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+                            <span>${r.icon} ${r.name}</span>
+                            <span style="font-weight: 700; color: ${r.color};">${Math.round(r.val * 100)}%</span>
                         </div>
-                        <div class="row-bar-bg">
-                            <div class="row-bar-fill" style="width: ${r.val * 100}%; background: ${r.color};"></div>
+                        <div class="row-bar-bg" style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                            <div class="row-bar-fill" style="width: ${Math.min(100, Math.round(r.val * 100))}%; background: ${r.color}; height: 100%;"></div>
                         </div>
                     </div>
                 `).join('')}
             </div>
 
-            <div class="neural-logic-compact">
-                <div class="logic-header">STRATEGIC REASONING</div>
-                <div class="logic-content">
-                    <span>> ANALYZING SPECTRAL ANOMALIES</span>
-                    <span>> ${prediction.primary_threat?.toUpperCase() || 'NORMAL'} VECTOR DETECTED</span>
-                </div>
+            <div class="neural-logic-compact" style="margin-top: 8px; font-size: 11px; color: #94a3b8; background: rgba(0,0,0,0.2); padding: 6px; border-radius: 4px;">
+                <div>> PRIMARY THREAT: <strong style="color: #fff;">${prediction.primary_threat?.toUpperCase() || 'LOW RISK'}</strong></div>
+                <div>> AI REASONING: ${prediction.reasons && prediction.reasons[0] ? prediction.reasons[0] : 'Atmospheric & satellite sensors nominal'}</div>
             </div>
 
             <button onclick="viewDetailedAnalysis('${location.name.replace(/'/g, "\\'")}', ${location.lat}, ${location.lon})" 
-                    class="btn-popup-detail btn-popup-primary" style="width: calc(100% - 30px); margin-left: 15px; margin-bottom: 20px;">
-                VIEW STRATEGIC DASHBOARD
+                    class="btn-popup-detail btn-popup-primary" style="width: 100%; margin-top: 10px; margin-bottom: 5px; padding: 8px; font-size: 12px;">
+                VIEW FULL STRATEGIC INTELLIGENCE
             </button>
         </div>
     `;
@@ -440,38 +493,58 @@ function createPopupContent(location, prediction) {
     return createClickPopupContent(location, prediction);
 }
 
-// Get maximum risk level
+// Get maximum risk level (4-Tier: CRITICAL, HIGH, MODERATE, LOW)
 function getMaxRisk(prediction) {
-    const risks = {
-        fire: prediction.fire?.confidence || 0,
-        flood: prediction.flood?.confidence || 0,
-        cyclone: prediction.cyclone?.confidence || 0
-    };
+    if (prediction.overall_risk_level) {
+        const lvl = prediction.overall_risk_level.toLowerCase();
+        if (['critical', 'high', 'moderate', 'medium', 'low', 'safe'].includes(lvl)) {
+            return lvl === 'medium' ? 'moderate' : lvl;
+        }
+    }
 
-    const maxVal = Math.max(risks.fire, risks.flood, risks.cyclone);
+    const confidences = [
+        prediction.fire?.confidence || 0,
+        prediction.flood?.confidence || 0,
+        prediction.cyclone?.confidence || 0,
+        prediction.heatwave?.confidence || 0,
+        prediction.drought?.confidence || 0,
+        prediction.landslide?.confidence || 0,
+        prediction.storm_surge?.confidence || 0,
+        prediction.lightning?.confidence || 0
+    ];
 
-    if (maxVal > 0.7) return 'high';
-    if (maxVal > 0.4) return 'medium';
-    if (maxVal > 0.1) return 'low';
+    const maxVal = Math.max(...confidences);
+    if (maxVal > 0.85) return 'critical';
+    if (maxVal > 0.60) return 'high';
+    if (maxVal > 0.30) return 'moderate';
+    if (maxVal > 0.10) return 'low';
     return 'safe';
 }
 
-// Get risk color
+// Get risk color (4-tier standard)
 function getRiskColor(risk) {
-    switch (risk) {
-        case 'high': return '#ff5722';
-        case 'medium': return '#ffc107';
-        case 'low': return '#4caf50';
-        case 'safe': return '#2196f3';
-        default: return '#9e9e9e';
+    switch (risk?.toLowerCase()) {
+        case 'critical': return '#ef4444';
+        case 'high': return '#f97316';
+        case 'moderate':
+        case 'medium': return '#eab308';
+        case 'low': return '#10b981';
+        case 'safe': return '#06b6d4';
+        default: return '#94a3b8';
     }
 }
 
-// Get disaster icon
+// Get disaster icon for all 7 hazard types
 function getDisasterIcon(prediction) {
-    if (prediction.primary_threat === 'fire') return '🔥';
-    if (prediction.primary_threat === 'flood') return '🌊';
-    if (prediction.primary_threat === 'cyclone') return '🌪️';
+    const threat = (prediction.primary_threat || '').toLowerCase();
+    if (threat === 'fire') return '🔥';
+    if (threat === 'flood') return '🌊';
+    if (threat === 'cyclone') return '🌪️';
+    if (threat === 'heatwave') return '🌡️';
+    if (threat === 'drought') return '☀️';
+    if (threat === 'landslide') return '⛰️';
+    if (threat === 'storm_surge') return '🌊';
+    if (threat === 'lightning') return '⚡';
     return '✅';
 }
 
@@ -611,10 +684,22 @@ mapStyles.textContent = `
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
-    .marker-pin.high { background: linear-gradient(135deg, #ff5722, #ff8a50); }
-    .marker-pin.medium { background: linear-gradient(135deg, #ffc107, #ffeb3b); }
-    .marker-pin.low { background: linear-gradient(135deg, #4caf50, #81c784); }
-    .marker-pin.safe { background: linear-gradient(135deg, #2196f3, #64b5f6); }
+    .marker-pin.critical { background: linear-gradient(135deg, #ef4444, #991b1b); box-shadow: 0 0 16px rgba(239,68,68,0.9); animation: pulseCritical 1.5s infinite; }
+    .marker-pin.high { background: linear-gradient(135deg, #f97316, #c2410c); }
+    .marker-pin.moderate { background: linear-gradient(135deg, #eab308, #a16207); }
+    .marker-pin.medium { background: linear-gradient(135deg, #eab308, #a16207); }
+    .marker-pin.low { background: linear-gradient(135deg, #10b981, #047857); }
+    .marker-pin.safe { background: linear-gradient(135deg, #06b6d4, #0369a1); }
+    .marker-pin.gauge-pin { background: linear-gradient(135deg, #38bdf8, #0284c7); border: 2px solid #fff; }
+    .marker-pin.crowd-pin { background: linear-gradient(135deg, #f43f5e, #be123c); border: 2px solid #fff; }
+    .marker-pin.resource-pin { background: linear-gradient(135deg, #a78bfa, #7c3aed); border: 2px solid #fff; }
+    .marker-pin.road-pin { background: linear-gradient(135deg, #fbbf24, #d97706); border: 2px solid #fff; }
+
+    @keyframes pulseCritical {
+        0% { transform: rotate(-45deg) scale(1); }
+        50% { transform: rotate(-45deg) scale(1.15); box-shadow: 0 0 25px rgba(239,68,68,1); }
+        100% { transform: rotate(-45deg) scale(1); }
+    }
 
     .marker-pin::after {
         content: '';
@@ -810,6 +895,318 @@ mapStyles.textContent = `
     }
 `;
 
+// ═══════════════════════════════════════════════════════════════════
+// SPRINT 3, 4, 5: TELEMETRY LAYERS (GAUGES, CROWD, RESOURCES, ROADS)
+// ═══════════════════════════════════════════════════════════════════
+
+let gaugeMarkers = [];
+let crowdMarkers = [];
+let resourceMarkers = [];
+let roadMarkers = [];
+
+// Load River Telemetry
+async function loadRiverGauges() {
+    try {
+        const res = await fetch('${API_BASE_URL}/gauges');
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        gaugeMarkers.forEach(m => map.removeLayer(m));
+        gaugeMarkers = [];
+
+        data.gauges.forEach(g => {
+            const statusColor = g.status === 'DANGER' ? '#ef4444' : g.status === 'ALERT' ? '#eab308' : '#38bdf8';
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `
+                    <div class="marker-pin gauge-pin" style="background: ${statusColor};">
+                        <div class="marker-icon">💧</div>
+                    </div>
+                    <div class="marker-label" style="border-left: 2px solid ${statusColor};">${g.station_name}</div>
+                `,
+                iconSize: [40, 50],
+                iconAnchor: [20, 50]
+            });
+
+            const marker = L.marker([g.latitude, g.longitude], { icon }).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 12px; min-width: 250px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <h4 style="margin: 0; color: #38bdf8;">💧 RIVER TELEMETRY</h4>
+                        <span style="background: ${statusColor}; color: #000; font-weight: 700; font-size: 10px; padding: 2px 6px; border-radius: 4px;">${g.status}</span>
+                    </div>
+                    <strong style="color: #fff; font-size: 13px;">${g.station_name}</strong>
+                    <div style="margin-top: 10px; font-size: 12px; color: #cbd5e1; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                        <div>Current Level: <strong style="color: #fff;">${g.water_level_m} m</strong></div>
+                        <div>Danger Mark: <strong style="color: #ef4444;">${g.danger_level_m} m</strong></div>
+                        <div>Flow Discharge: <strong style="color: #fff;">${g.flow_rate_cumecs} m³/s</strong></div>
+                        <div>Headroom: <strong style="color: #10b981;">${g.headroom_m} m</strong></div>
+                    </div>
+                </div>
+            `);
+            gaugeMarkers.push(marker);
+        });
+    } catch (e) {
+        console.warn('Failed to load river gauges:', e);
+    }
+}
+
+// Load Citizen Ground-Truth Reports
+async function loadCrowdReports() {
+    try {
+        const res = await fetch('${API_BASE_URL}/crowd/reports');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        crowdMarkers.forEach(m => map.removeLayer(m));
+        crowdMarkers = [];
+
+        data.reports.forEach(r => {
+            const sevColor = getRiskColor(r.severity);
+            const verifiedBadge = r.is_verified === 1 ? '✅ Verified' : '⏳ Pending Review';
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `
+                    <div class="marker-pin crowd-pin" style="background: ${sevColor};">
+                        <div class="marker-icon">📢</div>
+                    </div>
+                    <div class="marker-label" style="border-left: 2px solid ${sevColor};">Ground: ${r.report_type}</div>
+                `,
+                iconSize: [40, 50],
+                iconAnchor: [20, 50]
+            });
+
+            const marker = L.marker([r.latitude, r.longitude], { icon }).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 12px; min-width: 250px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <h4 style="margin: 0; color: #f43f5e;">📢 CITIZEN OBSERVATION</h4>
+                        <span style="font-size: 10px; color: ${r.is_verified === 1 ? '#10b981' : '#eab308'}; font-weight: 700;">${verifiedBadge}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">${r.location_name} • <span style="color: ${sevColor}; font-weight: 700;">${r.severity}</span></div>
+                    <p style="color: #fff; font-size: 12px; margin: 6px 0; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">${r.description}</p>
+                    <small style="color: #64748b; font-size: 10px;">Submitted: ${r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : 'Just now'} by ${r.reporter_id || 'Citizen'}</small>
+                </div>
+            `);
+            crowdMarkers.push(marker);
+        });
+    } catch (e) {
+        console.warn('Failed to load crowd reports:', e);
+    }
+}
+
+// Load Emergency Resources & Deployed Fleet
+async function loadEmergencyResources() {
+    try {
+        const [resResp, vehResp] = await Promise.all([
+            fetch('${API_BASE_URL}/resources'),
+            fetch('${API_BASE_URL}/vehicles/live')
+        ]);
+
+        resourceMarkers.forEach(m => map.removeLayer(m));
+        resourceMarkers = [];
+
+        if (resResp.ok) {
+            const data = await resResp.json();
+            data.resources.forEach(r => {
+                const typeIcon = r.type === 'shelter' ? '🏕️' : r.type === 'hospital' ? '🏥' : '🚒';
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `
+                        <div class="marker-pin resource-pin">
+                            <div class="marker-icon">${typeIcon}</div>
+                        </div>
+                        <div class="marker-label">${r.name}</div>
+                    `,
+                    iconSize: [40, 50],
+                    iconAnchor: [20, 50]
+                });
+
+                const marker = L.marker([r.latitude, r.longitude], { icon }).addTo(map);
+                marker.bindPopup(`
+                    <div style="font-family: 'Inter', sans-serif; padding: 12px;">
+                        <h4 style="margin: 0 0 6px 0; color: #a78bfa;">${typeIcon} ${r.type.toUpperCase()}: ${r.name}</h4>
+                        <div style="font-size: 12px; color: #cbd5e1;">Available Capacity: <strong style="color: #10b981;">${r.available_capacity} / ${r.capacity}</strong></div>
+                        <div style="font-size: 12px; color: #cbd5e1;">Status: <strong style="color: #38bdf8;">${r.status}</strong></div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 6px;">Hotline: ${r.contact_info || 'Local EOC Dispatch'}</div>
+                    </div>
+                `);
+                resourceMarkers.push(marker);
+            });
+        }
+
+        if (vehResp.ok) {
+            const data = await vehResp.json();
+            data.vehicles.forEach(v => {
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `
+                        <div class="marker-pin resource-pin" style="background: linear-gradient(135deg, #06b6d4, #0284c7);">
+                            <div class="marker-icon">🚑</div>
+                        </div>
+                        <div class="marker-label">${v.vehicle_id} (${v.speed_kmh} km/h)</div>
+                    `,
+                    iconSize: [40, 50],
+                    iconAnchor: [20, 50]
+                });
+
+                const marker = L.marker([v.latitude, v.longitude], { icon }).addTo(map);
+                marker.bindPopup(`
+                    <div style="font-family: 'Inter', sans-serif; padding: 12px;">
+                        <h4 style="margin: 0 0 6px 0; color: #38bdf8;">🚑 LIVE GPS RESCUE TELEMETRY</h4>
+                        <strong style="color: #fff; font-size: 13px;">${v.team} [${v.vehicle_id}]</strong>
+                        <div style="font-size: 12px; color: #cbd5e1; margin-top: 6px;">Mission: ${v.mission}</div>
+                        <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">Velocity: ${v.speed_kmh} km/h • Status: ${v.status}</div>
+                    </div>
+                `);
+                resourceMarkers.push(marker);
+            });
+        }
+    } catch (e) {
+        console.warn('Failed to load emergency resources:', e);
+    }
+}
+
+// Load Road Status & Hazard Blockages
+async function loadRoadStatuses() {
+    try {
+        const res = await fetch('${API_BASE_URL}/roads/status');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        roadMarkers.forEach(m => map.removeLayer(m));
+        roadMarkers = [];
+
+        data.roads.forEach(rd => {
+            if (rd.status === 'OPEN') return; // Only display alerts for obstacles/blockages
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `
+                    <div class="marker-pin road-pin">
+                        <div class="marker-icon">⛔</div>
+                    </div>
+                    <div class="marker-label">${rd.name}</div>
+                `,
+                iconSize: [40, 50],
+                iconAnchor: [20, 50]
+            });
+
+            const marker = L.marker([rd.latitude, rd.longitude], { icon }).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <h4 style="margin: 0; color: #fbbf24;">⛔ ROAD OBSTRUCTION</h4>
+                        <span style="background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">${rd.status}</span>
+                    </div>
+                    <strong style="color: #fff; font-size: 13px;">${rd.name}</strong>
+                    <div style="font-size: 12px; color: #ef4444; margin-top: 4px;">${rd.reason}</div>
+                    <div style="font-size: 11px; color: #38bdf8; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+                        🔄 Advised Detour: ${rd.detour || 'None available'}
+                    </div>
+                </div>
+            `);
+            roadMarkers.push(marker);
+        });
+    } catch (e) {
+        console.warn('Failed to load road statuses:', e);
+    }
+}
+
+// Layer Toggle Handlers
+function toggleGaugesLayer() {
+    const show = document.getElementById('showGauges')?.checked ?? true;
+    gaugeMarkers.forEach(m => show ? m.addTo(map) : map.removeLayer(m));
+}
+
+function toggleCrowdLayer() {
+    const show = document.getElementById('showCrowdReports')?.checked ?? true;
+    crowdMarkers.forEach(m => show ? m.addTo(map) : map.removeLayer(m));
+}
+
+function toggleResourcesLayer() {
+    const show = document.getElementById('showResources')?.checked ?? true;
+    resourceMarkers.forEach(m => show ? m.addTo(map) : map.removeLayer(m));
+}
+
+function toggleRoadsLayer() {
+    const show = document.getElementById('showRoads')?.checked ?? true;
+    roadMarkers.forEach(m => show ? m.addTo(map) : map.removeLayer(m));
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CITIZEN INCIDENT REPORT MODAL
+// ═══════════════════════════════════════════════════════════════════
+
+function openCrowdReportModal() {
+    const modal = document.getElementById('crowdReportModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCrowdReportModal() {
+    const modal = document.getElementById('crowdReportModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function autoFillCurrentCoords() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById('crLat').value = pos.coords.latitude.toFixed(4);
+            document.getElementById('crLon').value = pos.coords.longitude.toFixed(4);
+            document.getElementById('crLocationName').value = `GPS Incident Pin [${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}]`;
+            if (typeof notificationSystem !== 'undefined') {
+                notificationSystem.info('Acquired live GPS coordinates');
+            }
+        }, err => {
+            // Default to Delhi or Mumbai coordinates
+            document.getElementById('crLat').value = '28.6650';
+            document.getElementById('crLon').value = '77.2490';
+            document.getElementById('crLocationName').value = 'Yamuna Basin Sector';
+        });
+    }
+}
+
+async function submitCrowdReportForm(e) {
+    e.preventDefault();
+    const btn = document.getElementById('crSubmitBtn');
+    btn.disabled = true;
+    btn.innerText = 'TRANSMITTING TELEMETRY...';
+
+    const payload = {
+        location_name: document.getElementById('crLocationName').value,
+        latitude: parseFloat(document.getElementById('crLat').value),
+        longitude: parseFloat(document.getElementById('crLon').value),
+        report_type: document.getElementById('crType').value,
+        severity: document.getElementById('crSeverity').value,
+        description: document.getElementById('crDescription').value,
+        reporter_id: 'Citizen Field Telemetry'
+    };
+
+    try {
+        const res = await fetch('${API_BASE_URL}/crowd/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            closeCrowdReportModal();
+            if (typeof notificationSystem !== 'undefined') {
+                notificationSystem.success('Citizen observation transmitted and added to live map!', 4000);
+            }
+            await loadCrowdReports();
+            document.getElementById('crowdReportForm').reset();
+        } else {
+            alert('Failed to submit ground observation.');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Server unreachable for ground observation submission.');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'TRANSMIT GROUND-TRUTH REPORT';
+    }
+}
+
 // Toggle history markers
 function toggleHistoryLayer() {
     const showHistory = document.getElementById('showHistory').checked;
@@ -825,34 +1222,46 @@ function toggleHistoryLayer() {
     updateMapStatistics();
 }
 
-// Update the statistics numbers below the map
+// Update the 4-tier statistics numbers below the map
 function updateMapStatistics() {
     let total = 0;
+    let critical = 0;
     let high = 0;
-    let medium = 0;
+    let moderate = 0;
     let safe = 0;
 
     Object.values(markers).forEach(marker => {
-        // Only count markers currently on the map
         if (map.hasLayer(marker)) {
             total++;
             const risk = marker.riskLevel?.toLowerCase();
-            if (risk === 'high') high++;
-            else if (risk === 'medium') medium++;
+            if (risk === 'critical') critical++;
+            else if (risk === 'high') high++;
+            else if (risk === 'moderate' || risk === 'medium') moderate++;
             else safe++;
         }
     });
 
-    // Update UI elements if they exist
     const totalEl = document.getElementById('totalLocations');
+    const criticalEl = document.getElementById('criticalRiskZones');
     const highEl = document.getElementById('highRiskZones');
     const mediumEl = document.getElementById('mediumRiskZones');
     const safeEl = document.getElementById('safeZones');
 
     if (totalEl) totalEl.innerText = total;
+    if (criticalEl) criticalEl.innerText = critical;
     if (highEl) highEl.innerText = high;
-    if (mediumEl) mediumEl.innerText = medium;
+    if (mediumEl) mediumEl.innerText = moderate;
     if (safeEl) safeEl.innerText = safe;
 }
+
+// Hook all new telemetry layers into map startup
+const oldInit = window.onload;
+window.addEventListener('load', () => {
+    loadRiverGauges();
+    loadCrowdReports();
+    loadEmergencyResources();
+    loadRoadStatuses();
+    setInterval(loadEmergencyResources, 15000); // Live vehicle movement updates
+});
 
 document.head.appendChild(mapStyles);

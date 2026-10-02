@@ -76,6 +76,68 @@ class SystemSettings(Base):
     description = Column(String, nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class CrowdReport(Base):
+    """Sprint 3: Citizen ground-truth observations"""
+    __tablename__ = "crowd_reports"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    location_name = Column(String, nullable=True)
+    report_type = Column(String)  # smoke, flooding, tremor, blocked_road, storm_damage
+    description = Column(String)
+    severity = Column(String, default="MODERATE")  # LOW, MODERATE, HIGH, CRITICAL
+    reporter_id = Column(String, nullable=True)  # Anonymous if null
+    is_verified = Column(Integer, default=0)  # 0=pending, 1=verified, -1=rejected
+    photo_url = Column(String, nullable=True)
+
+class RiverGauge(Base):
+    """Sprint 5: River level monitoring (simulated for demo)"""
+    __tablename__ = "river_gauges"
+
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    station_name = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    water_level_m = Column(Float)  # Current water level in meters
+    danger_level_m = Column(Float, default=10.0)  # Threshold for danger
+    flow_rate = Column(Float, nullable=True)  # m3/s
+    status = Column(String, default="NORMAL")  # NORMAL, ALERT, DANGER, SEVERE
+
+class Resource(Base):
+    """Sprint 4: Emergency resource inventory"""
+    __tablename__ = "resources"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    resource_type = Column(String)  # shelter, hospital, fire_station, vehicle, warehouse
+    latitude = Column(Float)
+    longitude = Column(Float)
+    capacity = Column(Integer, default=0)
+    current_occupancy = Column(Integer, default=0)
+    status = Column(String, default="AVAILABLE")  # AVAILABLE, FULL, DAMAGED, OFFLINE
+    contact_info = Column(String, nullable=True)
+    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class HistoricalDisaster(Base):
+    """Sprint 5: Past disaster events for frequency analysis & benchmarking"""
+    __tablename__ = "historical_disasters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    disaster_name = Column(String)
+    disaster_type = Column(String)  # cyclone, flood, heatwave, landslide, drought
+    location_name = Column(String)
+    country = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    year = Column(Integer)
+    severity = Column(String)  # MODERATE, HIGH, CRITICAL
+    casualties = Column(Integer, default=0)
+    economic_loss_usd_m = Column(Float, default=0.0)
+    description = Column(String)
+
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)
