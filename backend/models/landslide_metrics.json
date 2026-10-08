@@ -1,0 +1,33 @@
+{
+  "hazard": "landslide",
+  "model_type": "XGBoostClassifier",
+  "dataset_source": "EM-DAT / NOAA Storm Events Benchmark Distribution",
+  "samples_trained": 4800,
+  "accuracy": 0.9442,
+  "f1_score": 0.2299,
+  "precision": 0.5882,
+  "recall": 0.1429,
+  "roc_auc": 0.9482,
+  "top_feature_importances": [
+    [
+      "slope",
+      0.3443745970726013
+    ],
+    [
+      "forecast_rain_24h",
+      0.20518004894256592
+    ],
+    [
+      "rain_1h",
+      0.053358860313892365
+    ],
+    [
+      "soil_moisture",
+      0.04464704543352127
+    ],
+    [
+      "hum",
+      0.04328563064336777
+    ]
+  ]
+}

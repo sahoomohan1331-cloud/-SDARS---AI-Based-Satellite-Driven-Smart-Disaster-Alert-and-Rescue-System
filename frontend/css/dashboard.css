@@ -343,52 +343,49 @@
 }
 
 /* ================================================
-   CRITICAL LAYOUT FIXES
+   LAYOUT RECONCILIATION
    ================================================ */
-/* Force horizontal navbar layout to prevent "black screen" overlay */
 .nav-container {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    flex-wrap: nowrap !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
 }
 
 .nav-menu {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 15px !important;
-    list-style: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    align-items: center !important;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
 }
 
 .nav-link {
-    display: inline-block !important;
-    white-space: nowrap !important;
-    width: auto !important;
-    border-left: none !important;
-    margin: 0 !important;
+    display: inline-block;
+    white-space: nowrap;
+    width: auto;
+    border-left: none;
+    margin: 0;
 }
 
 .nav-logo {
-    display: flex !important;
-    align-items: center !important;
-    flex-shrink: 0 !important;
-    margin-right: 20px !important;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 20px;
 }
 
-/* Ensure content is not hidden behind navbar */
 .main-content {
-    margin-top: 20px !important;
-    padding-top: 20px !important;
-    position: relative !important;
-    z-index: 1 !important;
+    margin-top: 20px;
+    padding-top: 20px;
+    position: relative;
+    z-index: 1;
 }
 
-/* Specific fix for Dashboard Hero overlap */
 .hero-dashboard {
-    padding-top: 40px !important;
-    margin-top: 10px !important;
+    padding-top: 40px;
+    margin-top: 10px;
 }

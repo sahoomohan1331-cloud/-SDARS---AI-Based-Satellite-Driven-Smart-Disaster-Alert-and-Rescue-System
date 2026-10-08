@@ -28,7 +28,7 @@ function toggleManualInput(e) {
 
 let spectralChart = null;
 
-// New: History loading
+// New: History loading with safe data attributes (XSS Fix)
 async function loadHistorySidebar() {
     const list = document.getElementById('historicalPredictionsList');
     if (!list) return;
@@ -37,18 +37,59 @@ async function loadHistorySidebar() {
         const response = await fetch(`${API_BASE_URL}/predictions/history`);
         const history = await response.json();
 
-        if (history.length === 0) {
+        if (!history || history.length === 0) {
             list.innerHTML = `<div class="history-item">No archives found.</div>`;
             return;
         }
 
-        list.innerHTML = history.map(item => `
-            <div class="history-item" onclick="fetchAndDisplayHistorical('${item.name}', ${item.lat}, ${item.lon})">
-                <div class="h-name">${item.name}</div>
-                <div class="h-meta">${item.primary_threat.toUpperCase()} • ${item.overall_risk}</div>
-                <div class="h-time">${new Date(item.timestamp).toLocaleTimeString()}</div>
-            </div>
-        `).join('');
+        list.innerHTML = '';
+        history.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.dataset.name = item.name;
+            div.dataset.lat = item.lat;
+            div.dataset.lon = item.lon;
+
+            // Map risk to Japan 5-Level badge
+            const riskLevel = item.overall_risk ? item.overall_risk.toUpperCase() : 'L1';
+            let japanLabel = 'L1 NORMAL';
+            let badgeClass = 'l1';
+            if (riskLevel === 'HIGH' || riskLevel === 'L4') {
+                japanLabel = '🔴 L4 EVACUATE';
+                badgeClass = 'l4';
+            } else if (riskLevel === 'EXTREME' || riskLevel === 'L5') {
+                japanLabel = '🟣 L5 EXTREME';
+                badgeClass = 'l5';
+            } else if (riskLevel === 'MEDIUM' || riskLevel === 'L3') {
+                japanLabel = '🟠 L3 PREPARE';
+                badgeClass = 'l3';
+            } else if (riskLevel === 'L2' || riskLevel === 'ADVISORY') {
+                japanLabel = '🟡 L2 WATCH';
+                badgeClass = 'l2';
+            }
+
+            const hName = document.createElement('div');
+            hName.className = 'h-name';
+            hName.textContent = item.name;
+
+            const hMeta = document.createElement('div');
+            hMeta.className = 'h-meta';
+            hMeta.innerHTML = `<span class="risk-badge ${badgeClass}" style="font-size: 10px; padding: 2px 6px;">${japanLabel}</span> ${(item.primary_threat || 'General').toUpperCase()}`;
+
+            const hTime = document.createElement('div');
+            hTime.className = 'h-time';
+            hTime.textContent = new Date(item.timestamp).toLocaleTimeString();
+
+            div.appendChild(hName);
+            div.appendChild(hMeta);
+            div.appendChild(hTime);
+
+            div.addEventListener('click', () => {
+                fetchAndDisplayHistorical(item.name, item.lat, item.lon);
+            });
+
+            list.appendChild(div);
+        });
     } catch (err) {
         list.innerHTML = `<div class="history-item error">Sync Error</div>`;
     }

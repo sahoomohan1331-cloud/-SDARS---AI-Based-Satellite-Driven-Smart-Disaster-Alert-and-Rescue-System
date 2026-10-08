@@ -1,0 +1,33 @@
+{
+  "hazard": "flood",
+  "model_type": "XGBoostClassifier",
+  "dataset_source": "EM-DAT / NOAA Storm Events Benchmark Distribution",
+  "samples_trained": 4800,
+  "accuracy": 0.9425,
+  "f1_score": 0.4812,
+  "precision": 0.7111,
+  "recall": 0.3636,
+  "roc_auc": 0.9468,
+  "top_feature_importances": [
+    [
+      "forecast_rain_24h",
+      0.4505942165851593
+    ],
+    [
+      "rain_1h",
+      0.07014494389295578
+    ],
+    [
+      "soil_moisture",
+      0.06708759069442749
+    ],
+    [
+      "elevation",
+      0.05688764527440071
+    ],
+    [
+      "wind_gusts",
+      0.045057263225317
+    ]
+  ]
+}

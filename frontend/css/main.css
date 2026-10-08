@@ -11,6 +11,7 @@
     --bg-elevated: #0d1117;
     --bg-surface: rgba(13, 17, 23, 0.8);
     --bg-card: rgba(19, 24, 37, 0.95);
+    --bg-card-hover: rgba(26, 33, 50, 0.98);
     --navbar-bg: rgba(5, 7, 10, 0.95);
 
     /* Accents - High Visibility */
@@ -19,6 +20,14 @@
     --accent-warning: #ffd000;
     --accent-positive: #00df82;
     --accent-primary: #6366f1;
+    --accent-blue: #6366f1;
+
+    /* Japan 5-Level Disaster Alert System Tokens */
+    --japan-l1-normal: #00df82;    /* 🟢 Level 1: Normal / Routine */
+    --japan-l2-watch: #00f2ff;     /* 🟡 Level 2: Watch / Advisory */
+    --japan-l3-prepare: #ffd000;   /* 🟠 Level 3: Warning / Prepare */
+    --japan-l4-evacuate: #ff4d00;  /* 🔴 Level 4: Evacuate Now */
+    --japan-l5-extreme: #a855f7;   /* 🟣 Level 5: Extreme / Emergency */
 
     /* Typography */
     --text-primary: #f0f6fc;
@@ -37,12 +46,24 @@
     --gradient-signal: linear-gradient(135deg, #00f2ff 0%, #70fdff 100%);
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-    /* Metrics */
+    /* Metrics & Spacing */
     --spacing-unit: 8px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Radii & Shadows */
     --radius-tactical: 2px;
+    --radius-sm: 4px;
+    --radius-md: 8px;
     --radius-lg: 12px;
     --border-color: rgba(255, 255, 255, 0.08);
     --border-main: 1px solid var(--border-color);
+    --shadow-main: 0 8px 32px rgba(0, 0, 0, 0.37);
+    --shadow-hover: 0 12px 40px rgba(0, 242, 255, 0.2);
+    --glass-bg: rgba(13, 17, 23, 0.7);
+    --card-bg: rgba(19, 24, 37, 0.95);
 }
 
 [data-theme="light"] {
@@ -509,25 +530,55 @@ body::before {
     border-color: rgba(102, 126, 234, 0.5);
 }
 
-/* ===== RISK BADGES ===== */
+/* ===== RISK BADGES (JAPAN 5-LEVEL SYSTEM) ===== */
 .risk-badge {
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.8rem;
     border-radius: var(--radius-sm);
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.5px;
 }
 
-.risk-badge.high {
-    background: rgba(255, 87, 34, 0.2);
-    color: #ff5722;
-    border: 1px solid rgba(255, 87, 34, 0.4);
+.risk-badge.l1, .risk-badge.low {
+    background: rgba(0, 223, 130, 0.15);
+    color: var(--japan-l1-normal);
+    border: 1px solid rgba(0, 223, 130, 0.4);
 }
 
-.risk-badge.medium {
-    background: rgba(255, 193, 7, 0.2);
-    color: #ffc107;
-    border: 1px solid rgba(255, 193, 7, 0.4);
+.risk-badge.l2 {
+    background: rgba(0, 242, 255, 0.15);
+    color: var(--japan-l2-watch);
+    border: 1px solid rgba(0, 242, 255, 0.4);
+}
+
+.risk-badge.l3, .risk-badge.medium {
+    background: rgba(255, 208, 0, 0.15);
+    color: var(--japan-l3-prepare);
+    border: 1px solid rgba(255, 208, 0, 0.4);
+}
+
+.risk-badge.l4, .risk-badge.high {
+    background: rgba(255, 77, 0, 0.2);
+    color: var(--japan-l4-evacuate);
+    border: 1px solid rgba(255, 77, 0, 0.5);
+    box-shadow: 0 0 10px rgba(255, 77, 0, 0.2);
+}
+
+.risk-badge.l5, .risk-badge.extreme {
+    background: rgba(168, 85, 247, 0.25);
+    color: var(--japan-l5-extreme);
+    border: 1px solid rgba(168, 85, 247, 0.6);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.03); }
 }
 
 /* ===== CARDS ===== */
@@ -560,21 +611,21 @@ body::before {
     transform: translateX(4px);
 }
 
-/* ===== BUTTONS ===== */
-.btn-primary {
+/* ===== BUTTON VARIANTS ===== */
+.btn-hazard {
     background: var(--accent-hazard);
     color: white;
     font-family: 'Syne', sans-serif;
     font-weight: 800;
     text-transform: uppercase;
-    padding: 1rem 2rem;
+    padding: 0.8rem 1.75rem;
     border: none;
     clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
+.btn-hazard:hover {
     background: #ff6a00;
     filter: drop-shadow(0 0 10px var(--hazard-glow));
     transform: scale(1.05);

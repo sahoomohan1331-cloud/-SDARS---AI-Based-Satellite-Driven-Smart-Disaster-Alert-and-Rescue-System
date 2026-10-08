@@ -1,0 +1,33 @@
+{
+  "hazard": "drought",
+  "model_type": "XGBoostClassifier",
+  "dataset_source": "EM-DAT / NOAA Storm Events Benchmark Distribution",
+  "samples_trained": 4800,
+  "accuracy": 0.8475,
+  "f1_score": 0.5734,
+  "precision": 0.7321,
+  "recall": 0.4713,
+  "roc_auc": 0.9,
+  "top_feature_importances": [
+    [
+      "soil_moisture",
+      0.38850852847099304
+    ],
+    [
+      "temp",
+      0.16271661221981049
+    ],
+    [
+      "forecast_rain_24h",
+      0.08069612830877304
+    ],
+    [
+      "elevation",
+      0.040782950818538666
+    ],
+    [
+      "wind_gusts",
+      0.0407472625374794
+    ]
+  ]
+}

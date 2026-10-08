@@ -1,598 +1,533 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDARS - Prediction Tool</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/prediction.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SDARS - Prediction Tool</title>
+<link href="css/main.css" rel="stylesheet"/>
+<link href="css/prediction.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&amp;family=Outfit:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-    <!-- Tactical Atmosphere -->
-    <div class="background-grid"></div>
-    <div class="background-gradient"></div>
+<!-- Tactical Atmosphere -->
+<div class="background-grid"></div>
+<div class="background-gradient"></div>
+<!-- Navigation -->
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="logo.png" alt="SDARS Logo" class="logo-image"
-                    onerror="this.parentElement.classList.add('img-error')"><span class="logo-fallback">🛰️</span>
-                <div class="logo-text">
-                    <h1>SDARS</h1>
-                    <p>TACTICAL INTELLIGENCE HUB</p>
-                </div>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">DASHBOARD</a></li>
-                <li><a href="map.html" class="nav-link">STRATEGIC MAP</a></li>
-                <li><a href="navigation.html" class="nav-link">NAVIGATOR</a></li>
-                <li><a href="3d-view.html" class="nav-link">WAR ROOM</a></li>
-                <li><a href="prediction.html" class="nav-link active">AI SCAN</a></li>
-                <li><a href="zones.html" class="nav-link">ZONES</a></li>
-                <li><a href="alerts.html" class="nav-link">ALERTS</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Page Header -->
-        <section class="page-header reveal-staggered">
-            <h1 class="page-title">
+<!-- Main Content -->
+<main class="main-content">
+<!-- Page Header -->
+<section class="page-header reveal-staggered">
+<h1 class="page-title">
                 MULTI-MODAL SCAN
-                <span class="gradient-text"
-                    style="background: var(--gradient-signal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">AI
+                <span class="gradient-text" style="background: var(--gradient-signal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">AI
                     ANALYSIS CENTER</span>
-            </h1>
-            <p class="page-subtitle"
-                style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">
+</h1>
+<p class="page-subtitle" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">
                 [PROTOCOL: TARGETED_SURVEILLANCE] • [DATASET: NASA_EONET_GIBBS]
             </p>
-        </section>
-
-        <!-- AI Command Center Layout -->
-        <div class="prediction-layout">
-            <!-- Sidebar: Global History -->
-            <aside class="prediction-sidebar">
-                <div class="sidebar-header">
-                    <h3>📜 AI Output History</h3>
-                    <p>Recent Strategic Scans</p>
-                </div>
-                <div id="historicalPredictionsList" class="history-list">
-                    <!-- Populated by JS -->
-                    <div class="history-item loading">Loading AI Archives...</div>
-                </div>
-            </aside>
-
-            <!-- Main Analysis Area -->
-            <div class="analysis-main">
-                <!-- Input Section -->
-                <section class="prediction-input">
-                    <div class="input-card">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-                            <h2>🌍 Targeted Strategic Scan</h2>
-                            <div class="ai-status-pill">
-                                <span class="pulse-dot"></span>
+</section>
+<!-- AI Command Center Layout -->
+<div class="prediction-layout">
+<!-- Sidebar: Global History -->
+<aside class="prediction-sidebar">
+<div class="sidebar-header">
+<h3>📜 AI Output History</h3>
+<p>Recent Strategic Scans</p>
+</div>
+<div class="history-list" id="historicalPredictionsList">
+<!-- Populated by JS -->
+<div class="history-item loading">Loading AI Archives...</div>
+</div>
+</aside>
+<!-- Main Analysis Area -->
+<div class="analysis-main">
+<!-- Input Section -->
+<section class="prediction-input">
+<div class="input-card">
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+<h2>🌍 Targeted Strategic Scan</h2>
+<div class="ai-status-pill">
+<span class="pulse-dot"></span>
                                 RF-Ensemble Active
                             </div>
-                        </div>
-
-                        <!-- 🔍 Google Maps Style Search -->
-                        <div class="search-section" style="margin-bottom: 20px;">
-                            <div class="search-box" style="position: relative;">
-                                <div
-                                    style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 5px;">
-                                    <span style="padding: 0 12px; font-size: 18px;">🔍</span>
-                                    <input type="text" id="predictionSearchInput"
-                                        placeholder="Search any location... Cuttack, Dasapalla, remote areas..."
-                                        style="flex: 1; padding: 12px 10px; background: transparent; border: none; color: white; font-size: 15px; outline: none;"
-                                        autocomplete="off" onkeyup="handlePredictionSearch(event)">
-                                    <button onclick="usePredictionGPS()" title="Use my current location"
-                                        style="padding: 8px 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600; margin-right: 5px;">
+</div>
+<!-- 🔍 Google Maps Style Search -->
+<div class="search-section" style="margin-bottom: 20px;">
+<div class="search-box" style="position: relative;">
+<div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 5px;">
+<span style="padding: 0 12px; font-size: 18px;">🔍</span>
+<input autocomplete="off" id="predictionSearchInput" onkeyup="handlePredictionSearch(event)" placeholder="Search any location... Cuttack, Dasapalla, remote areas..." style="flex: 1; padding: 12px 10px; background: transparent; border: none; color: white; font-size: 15px; outline: none;" type="text"/>
+<button onclick="usePredictionGPS()" style="padding: 8px 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600; margin-right: 5px;" title="Use my current location">
                                         📍 GPS
                                     </button>
-                                </div>
-
-                                <!-- Autocomplete Dropdown -->
-                                <div id="predictionSuggestions"
-                                    style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(19, 24, 37, 0.98); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-top: 5px; max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
-                                </div>
-                            </div>
-                            <small style="color: #6b7a99; display: block; margin-top: 8px; text-align: center;">
+</div>
+<!-- Autocomplete Dropdown -->
+<div id="predictionSuggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(19, 24, 37, 0.98); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-top: 5px; max-height: 250px; overflow-y: auto; z-index: 100; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+</div>
+</div>
+<small style="color: #6b7a99; display: block; margin-top: 8px; text-align: center;">
                                 💡 Works for ANY location worldwide - cities, villages, remote areas
                             </small>
-                        </div>
-
-                        <!-- Quick Select - Global Locations -->
-                        <div class="quick-select">
-                            <small style="color: #a8b3cf; margin-bottom: 8px; display: block;">🌍 Quick Select
+</div>
+<!-- Quick Select - Global Locations -->
+<div class="quick-select">
+<small style="color: #a8b3cf; margin-bottom: 8px; display: block;">🌍 Quick Select
                                 (Global):</small>
-                            <div class="location-chips">
-                                <button class="chip" onclick="selectLocation(40.7128, -74.0060, 'New York')">🇺🇸 New
+<div class="location-chips">
+<button class="chip" onclick="selectLocation(40.7128, -74.0060, 'New York')">🇺🇸 New
                                     York</button>
-                                <button class="chip" onclick="selectLocation(51.5074, -0.1278, 'London')">🇬🇧
+<button class="chip" onclick="selectLocation(51.5074, -0.1278, 'London')">🇬🇧
                                     London</button>
-                                <button class="chip" onclick="selectLocation(35.6762, 139.6503, 'Tokyo')">🇯🇵
+<button class="chip" onclick="selectLocation(35.6762, 139.6503, 'Tokyo')">🇯🇵
                                     Tokyo</button>
-                                <button class="chip" onclick="selectLocation(-33.8688, 151.2093, 'Sydney')">🇦🇺
+<button class="chip" onclick="selectLocation(-33.8688, 151.2093, 'Sydney')">🇦🇺
                                     Sydney</button>
-                                <button class="chip" onclick="selectLocation(19.0760, 72.8777, 'Mumbai')">🇮🇳
+<button class="chip" onclick="selectLocation(19.0760, 72.8777, 'Mumbai')">🇮🇳
                                     Mumbai</button>
-                                <button class="chip" onclick="selectLocation(-23.5505, -46.6333, 'São Paulo')">🇧🇷 São
+<button class="chip" onclick="selectLocation(-23.5505, -46.6333, 'São Paulo')">🇧🇷 São
                                     Paulo</button>
-                                <button class="chip" onclick="selectLocation(30.0444, 31.2357, 'Cairo')">🇪🇬
+<button class="chip" onclick="selectLocation(30.0444, 31.2357, 'Cairo')">🇪🇬
                                     Cairo</button>
-                                <button class="chip" onclick="selectLocation(1.3521, 103.8198, 'Singapore')">🇸🇬
+<button class="chip" onclick="selectLocation(1.3521, 103.8198, 'Singapore')">🇸🇬
                                     Singapore</button>
-                            </div>
-                        </div>
-
-                        <!-- Analyze Button -->
-                        <button class="btn-analyze" onclick="runPrediction()">
-                            <span class="btn-icon">⚡</span>
-                            <span>Execute Multi-Modal Analysis</span>
-                        </button>
-
-                        <div style="margin-top: 15px; text-align: center;">
-                            <a href="#" onclick="toggleManualInput(event)"
-                                style="color: #667eea; font-size: 12px; text-decoration: none;">+ Manual Coordinate
+</div>
+</div>
+<!-- Analyze Button -->
+<button class="btn-analyze" onclick="runPrediction()">
+<span class="btn-icon">⚡</span>
+<span>Execute Multi-Modal Analysis</span>
+</button>
+<div style="margin-top: 15px; text-align: center;">
+<a href="#" onclick="toggleManualInput(event)" style="color: #667eea; font-size: 12px; text-decoration: none;">+ Manual Coordinate
                                 Entry</a>
-                        </div>
+</div>
+<div class="manual-input-zone hidden" id="manualInput" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+<div class="input-grid">
+<div class="input-field">
+<label>Latitude</label>
+<input id="latitude" placeholder="19.0760" step="0.0001" type="number"/>
+</div>
+<div class="input-field">
+<label>Longitude</label>
+<input id="longitude" placeholder="72.8777" step="0.0001" type="number"/>
+</div>
+<div class="input-field">
+<label>Location Name</label>
+<input id="locationName" placeholder="Custom Target" type="text"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Loading State -->
+<div class="loading-container hidden" id="loading">
+<div class="loading-spinner"></div>
+<h3>AI Neural Processing...</h3>
+<div class="loading-steps">
+<div class="step active"><span>🛰️ Fetching NASA Imagery</span></div>
+<div class="step"><span>🌡️ Atmospheric Profiling</span></div>
+<div class="step"><span>🧠 Running RF-Inference</span></div>
+</div>
+</div>
+<!-- Results Section -->
+<div class="results-section hidden" id="results">
+<!-- AI Neural Log (The "Brain Output" for testers) -->
+<div class="neural-log-box">
+<div class="log-header">
+<span>&gt;_ AI_NEURAL_LOG</span>
+<span id="logStatus">INFRENECE_COMPLETE</span>
+</div>
+<div class="log-lines" id="neuralLogOutput">
+<!-- Populated line by line by JS -->
+</div>
+</div>
+<div class="results-header">
+<div>
+<h2 id="resultLocation">Analysis Results</h2>
+<p class="timestamp" id="resultTimestamp"></p>
+</div>
+<button class="btn-export" onclick="exportResults()">📥 Export Intelligence PDF</button>
+</div>
+<!-- Primary Threat Banner -->
+<div class="threat-banner" id="primaryThreat"></div>
+<!-- AI Model Calibration & Accuracy KPI Header -->
+<div style="background: rgba(102, 126, 234, 0.08); border: 1px solid rgba(102, 126, 234, 0.25); border-radius: 12px; padding: 14px 20px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+<div style="display: flex; align-items: center; gap: 10px;">
+<span style="font-size: 22px;">🧠</span>
+<div>
+<strong style="color: #fff; font-size: 14px;">High-Precision Random Forest Ensemble</strong>
+<p style="margin: 0; font-size: 11px; color: #a8b3cf;">Trained on 16,000 multi-modal physics telemetry samples across all 8 hazard vectors</p>
+</div>
+</div>
+<div style="display: flex; gap: 15px; flex-wrap: wrap;">
+<div style="text-align: right;">
+<div style="font-size: 16px; font-weight: 800; color: #4ecdc4;">99.57%</div>
+<small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean Accuracy</small>
+</div>
+<div style="text-align: right;">
+<div style="font-size: 16px; font-weight: 800; color: #667eea;">97.63%</div>
+<small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean F1 Score</small>
+</div>
+<div style="text-align: right;">
+<div style="font-size: 16px; font-weight: 800; color: #66bb6a;">13 / 13</div>
+<small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Physical Signals</small>
+</div>
+</div>
+</div>
+<!-- Disaster Risk Cards - ALL 8 HAZARDS -->
+<div class="risk-grid">
+<!-- 1. Cyclone Risk -->
+<div class="risk-card-detailed cyclone-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">🌪️</div>
+<div>
+<h3>Cyclone Vortex</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 98.5%</small>
+</div>
+</div>
+<div class="risk-badge" id="cycloneRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="cycloneConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="cycloneConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="cycloneFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="cycloneSatelliteBar"></div></div>
+<div class="bar-value" id="cycloneSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="cycloneWeatherBar"></div></div>
+<div class="bar-value" id="cycloneWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Flood Risk -->
+<div class="risk-card-detailed flood-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">🌊</div>
+<div>
+<h3>Basin Inundation Flood</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
+</div>
+</div>
+<div class="risk-badge" id="floodRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="floodConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="floodConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="floodFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="floodSatelliteBar"></div></div>
+<div class="bar-value" id="floodSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="floodWeatherBar"></div></div>
+<div class="bar-value" id="floodWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Drought Risk -->
+<div class="risk-card-detailed drought-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">🌾</div>
+<div>
+<h3>Agricultural Drought</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.3% | F1: 96.3%</small>
+</div>
+</div>
+<div class="risk-badge" id="droughtRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="droughtConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="droughtConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="droughtFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="droughtSatelliteBar"></div></div>
+<div class="bar-value" id="droughtSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="droughtWeatherBar"></div></div>
+<div class="bar-value" id="droughtWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. Heatwave Risk -->
+<div class="risk-card-detailed heatwave-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">☀️</div>
+<div>
+<h3>IMD / NWS Heatwave</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 97.8%</small>
+</div>
+</div>
+<div class="risk-badge" id="heatwaveRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="heatwaveConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="heatwaveConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="heatwaveFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="heatwaveSatelliteBar"></div></div>
+<div class="bar-value" id="heatwaveSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="heatwaveWeatherBar"></div></div>
+<div class="bar-value" id="heatwaveWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. Lightning Risk -->
+<div class="risk-card-detailed lightning-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">⚡</div>
+<div>
+<h3>Convective Lightning</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
+</div>
+</div>
+<div class="risk-badge" id="lightningRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="lightningConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="lightningConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="lightningFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="lightningSatelliteBar"></div></div>
+<div class="bar-value" id="lightningSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="lightningWeatherBar"></div></div>
+<div class="bar-value" id="lightningWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. Landslide Risk -->
+<div class="risk-card-detailed landslide-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">⛰️</div>
+<div>
+<h3>Geotechnical Landslide</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 98.0%</small>
+</div>
+</div>
+<div class="risk-badge" id="landslideRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="landslideConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="landslideConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="landslideFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="landslideSatelliteBar"></div></div>
+<div class="bar-value" id="landslideSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="landslideWeatherBar"></div></div>
+<div class="bar-value" id="landslideWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 7. Storm Surge Risk -->
+<div class="risk-card-detailed storm_surge-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">🌊</div>
+<div>
+<h3>Coastal Storm Surge</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 97.4%</small>
+</div>
+</div>
+<div class="risk-badge" id="storm_surgeRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="storm_surgeConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="storm_surgeConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="storm_surgeFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="storm_surgeSatelliteBar"></div></div>
+<div class="bar-value" id="storm_surgeSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="storm_surgeWeatherBar"></div></div>
+<div class="bar-value" id="storm_surgeWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 8. Wildfire Risk -->
+<div class="risk-card-detailed fire-theme">
+<div class="card-header">
+<div class="header-left">
+<div class="risk-icon">🔥</div>
+<div>
+<h3>Wildfire &amp; Forest Fire</h3>
+<small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.6%</small>
+</div>
+</div>
+<div class="risk-badge" id="fireRiskBadge">-</div>
+</div>
+<div class="confidence-section">
+<div class="confidence-label">
+<span>Confidence Score</span>
+<span id="fireConfidenceNum">-</span>
+</div>
+<div class="confidence-bar">
+<div class="confidence-fill" id="fireConfidenceFill"></div>
+</div>
+</div>
+<div class="factors-section">
+<h4>Contributing Factors:</h4>
+<div class="factors-list" id="fireFactors"></div>
+</div>
+<div class="contribution-chart">
+<div class="chart-header"><h4>Data Source Breakdown</h4></div>
+<div class="chart-bars">
+<div class="chart-bar">
+<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-track"><div class="bar-fill satellite" id="fireSatelliteBar"></div></div>
+<div class="bar-value" id="fireSatelliteValue">-</div>
+</div>
+<div class="chart-bar">
+<div class="bar-label">🌡️ Weather</div>
+<div class="bar-track"><div class="bar-fill weather" id="fireWeatherBar"></div></div>
+<div class="bar-value" id="fireWeatherValue">-</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Weather Details -->
+<div class="weather-details">
+<h3>🌡️ Current Weather Conditions</h3>
+<div class="weather-grid" id="weatherGrid">
+<!-- Skeletons while loading -->
+<div class="skeleton skeleton-card"></div>
+<div class="skeleton skeleton-card"></div>
+<div class="skeleton skeleton-card"></div>
+<div class="skeleton skeleton-card"></div>
+</div>
+</div> <!-- End results -->
+ <!-- End prediction-input -->
+</div> <!-- End analysis-main -->
+</div> <!-- End prediction-layout -->
+</div></main>
+<!-- Footer -->
 
-                        <div id="manualInput" class="manual-input-zone hidden"
-                            style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-                            <div class="input-grid">
-                                <div class="input-field">
-                                    <label>Latitude</label>
-                                    <input type="number" id="latitude" placeholder="19.0760" step="0.0001">
-                                </div>
-                                <div class="input-field">
-                                    <label>Longitude</label>
-                                    <input type="number" id="longitude" placeholder="72.8777" step="0.0001">
-                                </div>
-                                <div class="input-field">
-                                    <label>Location Name</label>
-                                    <input type="text" id="locationName" placeholder="Custom Target">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Loading State -->
-                <div id="loading" class="loading-container hidden">
-                    <div class="loading-spinner"></div>
-                    <h3>AI Neural Processing...</h3>
-                    <div class="loading-steps">
-                        <div class="step active"><span>🛰️ Fetching NASA Imagery</span></div>
-                        <div class="step"><span>🌡️ Atmospheric Profiling</span></div>
-                        <div class="step"><span>🧠 Running RF-Inference</span></div>
-                    </div>
-                </div>
-
-                <!-- Results Section -->
-                <div id="results" class="results-section hidden">
-                    <!-- AI Neural Log (The "Brain Output" for testers) -->
-                    <div class="neural-log-box">
-                        <div class="log-header">
-                            <span>>_ AI_NEURAL_LOG</span>
-                            <span id="logStatus">INFRENECE_COMPLETE</span>
-                        </div>
-                        <div id="neuralLogOutput" class="log-lines">
-                            <!-- Populated line by line by JS -->
-                        </div>
-                    </div>
-
-                    <div class="results-header">
-                        <div>
-                            <h2 id="resultLocation">Analysis Results</h2>
-                            <p id="resultTimestamp" class="timestamp"></p>
-                        </div>
-                        <button class="btn-export" onclick="exportResults()">📥 Export Intelligence PDF</button>
-                    </div>
-
-                    <!-- Primary Threat Banner -->
-                    <div id="primaryThreat" class="threat-banner"></div>
-
-                    <!-- AI Model Calibration & Accuracy KPI Header -->
-                    <div style="background: rgba(102, 126, 234, 0.08); border: 1px solid rgba(102, 126, 234, 0.25); border-radius: 12px; padding: 14px 20px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 22px;">🧠</span>
-                            <div>
-                                <strong style="color: #fff; font-size: 14px;">High-Precision Random Forest Ensemble</strong>
-                                <p style="margin: 0; font-size: 11px; color: #a8b3cf;">Trained on 16,000 multi-modal physics telemetry samples across all 8 hazard vectors</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                            <div style="text-align: right;">
-                                <div style="font-size: 16px; font-weight: 800; color: #4ecdc4;">99.57%</div>
-                                <small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean Accuracy</small>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 16px; font-weight: 800; color: #667eea;">97.63%</div>
-                                <small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean F1 Score</small>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 16px; font-weight: 800; color: #66bb6a;">13 / 13</div>
-                                <small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Physical Signals</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Disaster Risk Cards - ALL 8 HAZARDS -->
-                    <div class="risk-grid">
-                        <!-- 1. Cyclone Risk -->
-                        <div class="risk-card-detailed cyclone-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">🌪️</div>
-                                    <div>
-                                        <h3>Cyclone Vortex</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 98.5%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="cycloneRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="cycloneConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="cycloneConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="cycloneFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="cycloneSatelliteBar"></div></div>
-                                        <div class="bar-value" id="cycloneSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="cycloneWeatherBar"></div></div>
-                                        <div class="bar-value" id="cycloneWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 2. Flood Risk -->
-                        <div class="risk-card-detailed flood-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">🌊</div>
-                                    <div>
-                                        <h3>Basin Inundation Flood</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="floodRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="floodConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="floodConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="floodFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="floodSatelliteBar"></div></div>
-                                        <div class="bar-value" id="floodSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="floodWeatherBar"></div></div>
-                                        <div class="bar-value" id="floodWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 3. Drought Risk -->
-                        <div class="risk-card-detailed drought-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">🌾</div>
-                                    <div>
-                                        <h3>Agricultural Drought</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.3% | F1: 96.3%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="droughtRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="droughtConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="droughtConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="droughtFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="droughtSatelliteBar"></div></div>
-                                        <div class="bar-value" id="droughtSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="droughtWeatherBar"></div></div>
-                                        <div class="bar-value" id="droughtWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. Heatwave Risk -->
-                        <div class="risk-card-detailed heatwave-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">☀️</div>
-                                    <div>
-                                        <h3>IMD / NWS Heatwave</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 97.8%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="heatwaveRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="heatwaveConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="heatwaveConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="heatwaveFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="heatwaveSatelliteBar"></div></div>
-                                        <div class="bar-value" id="heatwaveSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="heatwaveWeatherBar"></div></div>
-                                        <div class="bar-value" id="heatwaveWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 5. Lightning Risk -->
-                        <div class="risk-card-detailed lightning-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">⚡</div>
-                                    <div>
-                                        <h3>Convective Lightning</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="lightningRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="lightningConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="lightningConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="lightningFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="lightningSatelliteBar"></div></div>
-                                        <div class="bar-value" id="lightningSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="lightningWeatherBar"></div></div>
-                                        <div class="bar-value" id="lightningWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 6. Landslide Risk -->
-                        <div class="risk-card-detailed landslide-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">⛰️</div>
-                                    <div>
-                                        <h3>Geotechnical Landslide</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 98.0%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="landslideRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="landslideConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="landslideConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="landslideFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="landslideSatelliteBar"></div></div>
-                                        <div class="bar-value" id="landslideSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="landslideWeatherBar"></div></div>
-                                        <div class="bar-value" id="landslideWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 7. Storm Surge Risk -->
-                        <div class="risk-card-detailed storm_surge-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">🌊</div>
-                                    <div>
-                                        <h3>Coastal Storm Surge</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 97.4%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="storm_surgeRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="storm_surgeConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="storm_surgeConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="storm_surgeFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="storm_surgeSatelliteBar"></div></div>
-                                        <div class="bar-value" id="storm_surgeSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="storm_surgeWeatherBar"></div></div>
-                                        <div class="bar-value" id="storm_surgeWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 8. Wildfire Risk -->
-                        <div class="risk-card-detailed fire-theme">
-                            <div class="card-header">
-                                <div class="header-left">
-                                    <div class="risk-icon">🔥</div>
-                                    <div>
-                                        <h3>Wildfire & Forest Fire</h3>
-                                        <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.6%</small>
-                                    </div>
-                                </div>
-                                <div class="risk-badge" id="fireRiskBadge">-</div>
-                            </div>
-                            <div class="confidence-section">
-                                <div class="confidence-label">
-                                    <span>Confidence Score</span>
-                                    <span id="fireConfidenceNum">-</span>
-                                </div>
-                                <div class="confidence-bar">
-                                    <div class="confidence-fill" id="fireConfidenceFill"></div>
-                                </div>
-                            </div>
-                            <div class="factors-section">
-                                <h4>Contributing Factors:</h4>
-                                <div id="fireFactors" class="factors-list"></div>
-                            </div>
-                            <div class="contribution-chart">
-                                <div class="chart-header"><h4>Data Source Breakdown</h4></div>
-                                <div class="chart-bars">
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🛰️ Satellite</div>
-                                        <div class="bar-track"><div class="bar-fill satellite" id="fireSatelliteBar"></div></div>
-                                        <div class="bar-value" id="fireSatelliteValue">-</div>
-                                    </div>
-                                    <div class="chart-bar">
-                                        <div class="bar-label">🌡️ Weather</div>
-                                        <div class="bar-track"><div class="bar-fill weather" id="fireWeatherBar"></div></div>
-                                        <div class="bar-value" id="fireWeatherValue">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- Weather Details -->
-                    <div class="weather-details">
-                        <h3>🌡️ Current Weather Conditions</h3>
-                        <div class="weather-grid" id="weatherGrid">
-                            <!-- Skeletons while loading -->
-                            <div class="skeleton skeleton-card"></div>
-                            <div class="skeleton skeleton-card"></div>
-                            <div class="skeleton skeleton-card"></div>
-                            <div class="skeleton skeleton-card"></div>
-                        </div>
-                    </div> <!-- End results -->
-                    </section> <!-- End prediction-input -->
-                </div> <!-- End analysis-main -->
-            </div> <!-- End prediction-layout -->
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <p>SDARS - AI-Based Satellite-Driven Smart Disaster Alert and Rescue System</p>
-        <p>Powered by Multi-Modal AI | 48 Features Analyzed</p>
-    </footer>
-
-    <script src="js/main.js"></script>
-    <script src="js/prediction.js"></script>
-</body>
-
+<script src="js/main.js"></script>
+<script src="js/prediction.js"></script>
+<script src="js/nav.js"></script></body>
 </html>

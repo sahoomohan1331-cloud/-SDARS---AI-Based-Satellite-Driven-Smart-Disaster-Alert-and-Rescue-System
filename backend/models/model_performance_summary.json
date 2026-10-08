@@ -1,0 +1,42 @@
+{
+  "fire": {
+    "accuracy": 0.94,
+    "f1_score": 0.5263,
+    "roc_auc": 0.9451
+  },
+  "flood": {
+    "accuracy": 0.9425,
+    "f1_score": 0.4812,
+    "roc_auc": 0.9468
+  },
+  "cyclone": {
+    "accuracy": 0.9517,
+    "f1_score": 0.5246,
+    "roc_auc": 0.9257
+  },
+  "landslide": {
+    "accuracy": 0.9442,
+    "f1_score": 0.2299,
+    "roc_auc": 0.9482
+  },
+  "drought": {
+    "accuracy": 0.8475,
+    "f1_score": 0.5734,
+    "roc_auc": 0.9
+  },
+  "heatwave": {
+    "accuracy": 0.975,
+    "f1_score": 0.8125,
+    "roc_auc": 0.9632
+  },
+  "storm_surge": {
+    "accuracy": 0.9883,
+    "f1_score": 0.125,
+    "roc_auc": 0.8912
+  },
+  "lightning": {
+    "accuracy": 0.8458,
+    "f1_score": 0.7503,
+    "roc_auc": 0.9202
+  }
+}

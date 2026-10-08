@@ -1,19 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDARS - 3D War Room</title>
-
-    <!-- Cesium -->
-    <script src="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js"></script>
-    <link href="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SDARS - 3D War Room</title>
+<!-- Cesium -->
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -488,133 +485,106 @@
         }
     </style>
 </head>
-
 <body>
-    <!-- Engine Initializing Overlay -->
-    <div id="engineLoader" style="position: fixed; inset: 0; background: #070913; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: #fff; transition: opacity 0.5s ease;">
-        <div style="font-size: 48px; margin-bottom: 16px; animation: floatSat 2s infinite ease-in-out;">🛰️</div>
-        <h2 style="font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, #667eea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">INITIALIZING 3D WAR ROOM</h2>
-        <p id="loaderStatus" style="color: #6b7a99; font-size: 13px; margin-bottom: 24px;">Loading Cesium 3D Globe & Orbital Telemetry...</p>
-        <div style="width: 260px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-            <div id="loaderBar" style="width: 45%; height: 100%; background: linear-gradient(90deg, #667eea, #00f2ff); border-radius: 4px; transition: width 0.4s ease;"></div>
-        </div>
-    </div>
-    <div class="scanlines"></div>
-    <div id="toast"></div>
-    <div class="war-room-overlay">
-        <div class="control-panel">
-            <div class="panel-header">
-                <h2 class="panel-title"><span>🛰️</span><span>SDARS THREAT-3D</span></h2>
-                <p style="color: #6b7a99; font-size: 11px;">Nasa/Sentinel Data Fusion Architecture</p>
-            </div>
-            <div class="status-indicator">
-                <div class="status-pulse"></div>
-                <div class="status-text" id="vLink">System Ready</div>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">ALERTS ACTIVE</div>
-                    <div class="stat-val" id="alertCount">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">CITY NODES</div>
-                    <div class="stat-val" id="nodeCount">0</div>
-                </div>
-            </div>
-            <div class="telemetry-console" id="console"></div>
-            <div class="visual-controls">
-                <div class="control-item"><span>3D Buildings</span><label class="switch"><input type="checkbox"
-                            id="buildingsToggle"><span class="slider"></span></label></div>
-                <div class="control-item"><span>3D Terrain (Elevation)</span><label class="switch"><input
-                            type="checkbox" id="terrainElevationToggle"><span class="slider"></span></label>
-                </div>
-                <div class="control-item"><span>Atmos Fog</span><label class="switch"><input type="checkbox"
-                            id="fogToggle"><span class="slider"></span></label></div>
-                <div class="control-item"><span>Day/Night Lighting</span><label class="switch"><input type="checkbox"
-                            id="sunToggle"><span class="slider"></span></label></div>
-                <!-- ⭐ SATELLITE ORBITS -->
-                <div class="orbit-section">
-                    <div class="orbit-section-title">🛰️ LIVE SATELLITE ORBITS</div>
-                    <div class="control-item">
-                        <span style="color: white; font-weight: 600;">Show Orbits</span>
-                        <label class="switch"><input type="checkbox" id="orbitToggle" checked><span
-                                class="slider"></span></label>
-                    </div>
-                    <div class="control-item" style="margin-top: 8px;">
-                        <span style="color: #a8b3cf;">Orbit Trails</span>
-                        <label class="switch"><input type="checkbox" id="orbitTrailToggle" checked><span
-                                class="slider"></span></label>
-                    </div>
-                    <div class="control-item" style="margin-top: 8px;">
-                        <span style="color: #a8b3cf;">Ground Track</span>
-                        <label class="switch"><input type="checkbox" id="groundTrackToggle" checked><span
-                                class="slider"></span></label>
-                    </div>
-                    <div class="sat-legend" id="satLegend">
-                        <div class="sat-legend-item">
-                            <div class="sat-dot" style="background:#00f2ff; color:#00f2ff;"></div><span
-                                class="sat-name">ISS</span><span class="sat-alt">408 km</span>
-                        </div>
-                        <div class="sat-legend-item">
-                            <div class="sat-dot" style="background:#a78bfa; color:#a78bfa;"></div><span
-                                class="sat-name">Sentinel-2A</span><span class="sat-alt">786 km</span>
-                        </div>
-                        <div class="sat-legend-item">
-                            <div class="sat-dot" style="background:#34d399; color:#34d399;"></div><span
-                                class="sat-name">NOAA-20</span><span class="sat-alt">824 km</span>
-                        </div>
-                        <div class="sat-legend-item">
-                            <div class="sat-dot" style="background:#fbbf24; color:#fbbf24;"></div><span
-                                class="sat-name">Landsat-9</span><span class="sat-alt">705 km</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ⭐ STRATEGIC SIMULATORS -->
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <div
-                        style="color: #00f2ff; font-size: 10px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px;">
+<!-- Engine Initializing Overlay -->
+<div id="engineLoader" style="position: fixed; inset: 0; background: #070913; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: #fff; transition: opacity 0.5s ease;">
+<div style="font-size: 48px; margin-bottom: 16px; animation: floatSat 2s infinite ease-in-out;">🛰️</div>
+<h2 style="font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, #667eea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">INITIALIZING 3D WAR ROOM</h2>
+<p id="loaderStatus" style="color: #6b7a99; font-size: 13px; margin-bottom: 24px;">Loading Cesium 3D Globe &amp; Orbital Telemetry...</p>
+<div style="width: 260px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+<div id="loaderBar" style="width: 45%; height: 100%; background: linear-gradient(90deg, #667eea, #00f2ff); border-radius: 4px; transition: width 0.4s ease;"></div>
+</div>
+</div>
+<div class="scanlines"></div>
+<div id="toast"></div>
+<div class="war-room-overlay">
+<div class="control-panel">
+<div class="panel-header">
+<h2 class="panel-title"><span>🛰️</span><span>SDARS THREAT-3D</span></h2>
+<p style="color: #6b7a99; font-size: 11px;">Nasa/Sentinel Data Fusion Architecture</p>
+</div>
+<div class="status-indicator">
+<div class="status-pulse"></div>
+<div class="status-text" id="vLink">System Ready</div>
+</div>
+<div class="stats-grid">
+<div class="stat-box">
+<div class="stat-label">ALERTS ACTIVE</div>
+<div class="stat-val" id="alertCount">0</div>
+</div>
+<div class="stat-box">
+<div class="stat-label">CITY NODES</div>
+<div class="stat-val" id="nodeCount">0</div>
+</div>
+</div>
+<div class="telemetry-console" id="console"></div>
+<div class="visual-controls">
+<div class="control-item"><span>3D Buildings</span><label class="switch"><input id="buildingsToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="control-item"><span>3D Terrain (Elevation)</span><label class="switch"><input id="terrainElevationToggle" type="checkbox"/><span class="slider"></span></label>
+</div>
+<div class="control-item"><span>Atmos Fog</span><label class="switch"><input id="fogToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div class="control-item"><span>Day/Night Lighting</span><label class="switch"><input id="sunToggle" type="checkbox"/><span class="slider"></span></label></div>
+<!-- ⭐ SATELLITE ORBITS -->
+<div class="orbit-section">
+<div class="orbit-section-title">🛰️ LIVE SATELLITE ORBITS</div>
+<div class="control-item">
+<span style="color: white; font-weight: 600;">Show Orbits</span>
+<label class="switch"><input checked="" id="orbitToggle" type="checkbox"/><span class="slider"></span></label>
+</div>
+<div class="control-item" style="margin-top: 8px;">
+<span style="color: #a8b3cf;">Orbit Trails</span>
+<label class="switch"><input checked="" id="orbitTrailToggle" type="checkbox"/><span class="slider"></span></label>
+</div>
+<div class="control-item" style="margin-top: 8px;">
+<span style="color: #a8b3cf;">Ground Track</span>
+<label class="switch"><input checked="" id="groundTrackToggle" type="checkbox"/><span class="slider"></span></label>
+</div>
+<div class="sat-legend" id="satLegend">
+<div class="sat-legend-item">
+<div class="sat-dot" style="background:#00f2ff; color:#00f2ff;"></div><span class="sat-name">ISS</span><span class="sat-alt">408 km</span>
+</div>
+<div class="sat-legend-item">
+<div class="sat-dot" style="background:#a78bfa; color:#a78bfa;"></div><span class="sat-name">Sentinel-2A</span><span class="sat-alt">786 km</span>
+</div>
+<div class="sat-legend-item">
+<div class="sat-dot" style="background:#34d399; color:#34d399;"></div><span class="sat-name">NOAA-20</span><span class="sat-alt">824 km</span>
+</div>
+<div class="sat-legend-item">
+<div class="sat-dot" style="background:#fbbf24; color:#fbbf24;"></div><span class="sat-name">Landsat-9</span><span class="sat-alt">705 km</span>
+</div>
+</div>
+</div>
+<!-- ⭐ STRATEGIC SIMULATORS -->
+<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+<div style="color: #00f2ff; font-size: 10px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px;">
                         ⚠️ STRATEGIC CRISIS SIMULATOR </div>
-                    <div class="control-item" style="margin-bottom: 10px;"><span
-                            style="color: white; font-weight: 600;">Flood Engine</span><label class="switch"><input
-                                type="checkbox" id="floodSimToggle"><span class="slider"></span></label></div>
-                    <div id="floodControls" style="display: none;">
-                        <div
-                            style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7a99; margin-bottom: 5px;">
-                            <span>WATER LEVEL (m)</span><span id="waterLevelVal" style="color: #00f2ff;">0m</span>
-                        </div>
-                        <input type="range" id="waterLevelSlider" min="0" max="200" value="0"
-                            style="width: 100%; height: 4px; background: rgba(0, 242, 255, 0.2); border-radius: 2px; appearance: none; cursor: pointer;">
-                        <div
-                            style="margin-top: 10px; font-size: 9px; color: #ff4d00; text-align: center; border: 1px solid rgba(255, 77, 0, 0.2); padding: 5px; border-radius: 4px;">
+<div class="control-item" style="margin-bottom: 10px;"><span style="color: white; font-weight: 600;">Flood Engine</span><label class="switch"><input id="floodSimToggle" type="checkbox"/><span class="slider"></span></label></div>
+<div id="floodControls" style="display: none;">
+<div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7a99; margin-bottom: 5px;">
+<span>WATER LEVEL (m)</span><span id="waterLevelVal" style="color: #00f2ff;">0m</span>
+</div>
+<input id="waterLevelSlider" max="200" min="0" style="width: 100%; height: 4px; background: rgba(0, 242, 255, 0.2); border-radius: 2px; appearance: none; cursor: pointer;" type="range" value="0"/>
+<div style="margin-top: 10px; font-size: 9px; color: #ff4d00; text-align: center; border: 1px solid rgba(255, 77, 0, 0.2); padding: 5px; border-radius: 4px;">
                             Simulation active: Topographic analysis running... </div>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div
-                        style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">
+</div>
+</div>
+<div style="margin-top: 10px;">
+<div style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">
                         Map Base Imagery</div>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-                        <button class="terrain-btn active" onclick="setImagery('tactical')" title="Tactical Dark"
-                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🌌</button>
-                        <button class="terrain-btn" onclick="setImagery('satellite')" title="NASA Satellite"
-                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🛰️</button>
-                        <button class="terrain-btn" onclick="setImagery('topo')" title="Topographic"
-                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🏔️</button>
-                        <button class="terrain-btn" onclick="setImagery('streets')" title="OpenStreetMap"
-                            style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;">🏙️</button>
-                    </div>
-                </div>
-            </div>
-            <button class="btn-action btn-tour" id="tourBtn"><span>🎬</span>Start Crisis Tour </button><a
-                href="map.html" class="btn-action btn-secondary">← Exit War Room </a>
-        </div>
-    </div>
-    <nav class="floating-nav"><a href="index.html" class="float-link">🏠 Home</a><a href="map.html"
-            class="float-link">🗺️ Map</a><a href="prediction.html" class="float-link">🔮 Predict</a><a
-            href="3d-view.html" class="float-link active">🌍 3D View</a></nav>
-    <div id="cesiumContainer"></div>
-    <script> // Set your Ion token
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+<button class="terrain-btn active" onclick="setImagery('tactical')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Tactical Dark">🌌</button>
+<button class="terrain-btn" onclick="setImagery('satellite')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="NASA Satellite">🛰️</button>
+<button class="terrain-btn" onclick="setImagery('topo')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Topographic">🏔️</button>
+<button class="terrain-btn" onclick="setImagery('streets')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="OpenStreetMap">🏙️</button>
+</div>
+</div>
+</div>
+<button class="btn-action btn-tour" id="tourBtn"><span>🎬</span>Start Crisis Tour </button><a class="btn-action btn-secondary" href="map.html">← Exit War Room </a>
+</div>
+</div>
+
+<div id="cesiumContainer"></div>
+<script> // Set your Ion token
         Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWE3NzQ1OS1mZjU4LTRiYTUtOTRkYS03MzQ0MTU3NGNkODkiLCJpZCI6MzkwNjAzLCJpYXQiOjE3NzEwNzg4NDN9.z5MYsq0_R1Ah5oU7zAHObrYEXVeH-Gywq-JN5DZRZD8';
 
         let viewer;
@@ -958,6 +928,10 @@
                             <p style="font-size: 10px; line-height: 1.4; color: #d1d5db; margin-bottom: 15px;">
                                 ${prediction ? 'Satellite analysis confirmed anomalies in spectral bands. High probability of event occurrence.' : 'Monitoring station active. No current anomalies detected.'}
                             </p>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                                <button onclick="runImpactAssessment(${loc.lat}, ${loc.lon}, '${threat}', ${prediction ? (prediction.risk_scores && prediction.risk_scores[threat] ? prediction.risk_scores[threat] : (prediction.confidence || 0.8)) : 0.1})" style="background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">📊 IMPACT</button>
+                                <button onclick="dispatchRescueTeam('${loc.name.replace(/'/g, "\\'")}', ${loc.lat}, ${loc.lon})" style="background: rgba(244, 67, 54, 0.2); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">🚀 DISPATCH</button>
+                            </div>
                             <a href="prediction.html?lat=${loc.lat}&lon=${loc.lon}&name=${encodeURIComponent(loc.name)}" style="display: block; text-align: center; background: ${color.toCssColorString()}; color: black; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 10px; font-weight: 700;">VIEW STRATEGIC DASHBOARD</a>
                         </div>`;
 
@@ -1633,6 +1607,79 @@
 
         const floodSim = new FloodSimulator();
 
+        // API Functions for Dispatch & Impact
+        async function runImpactAssessment(lat, lon, threat, score) {
+            addLog(`IMPACT ENGINE: RUNNING FOR ${threat.toUpperCase()}...`, 'warn');
+            try {
+                const apiBase = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
+                const res = await fetch(`${apiBase}/command/impact`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        latitude: lat,
+                        longitude: lon,
+                        hazard_type: threat,
+                        risk_score: score,
+                        radius_km: 10.0
+                    })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`IMPACT: ${data.estimated_affected_population.toLocaleString()} at risk | ${data.infrastructure_at_risk.schools} Schools | ${data.infrastructure_at_risk.hospitals} Hospitals`);
+                    addLog(`IMPACT CALC: ${data.estimated_affected_population} POP | ${data.evacuation_plan.recommended_shelters_count} SHELTERS REQ`, 'ai');
+                } else {
+                    addLog('IMPACT ASSESSMENT FAILED', 'danger');
+                }
+            } catch (err) {
+                console.error(err);
+                addLog('IMPACT ASSESSMENT ERROR', 'danger');
+            }
+        }
+
+        async function dispatchRescueTeam(zone, lat, lon) {
+            addLog(`COMMAND: AUTHORIZING DISPATCH TO ${zone.toUpperCase()}...`, 'warn');
+            try {
+                const apiBase = window.API_BASE_URL || `http://${(window.location.hostname === 'localhost' || !window.location.hostname) ? '127.0.0.1' : window.location.hostname}:8000/api`;
+                const res = await fetch(`${apiBase}/command/dispatch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action_type: "DEPLOY_RESCUE_TEAM",
+                        target_zone: zone,
+                        latitude: lat,
+                        longitude: lon,
+                        commander_id: "CMD-AUTO-01",
+                        notes: "Immediate automated dispatch from 3D War Room"
+                    })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`DISPATCHED: Rescue Unit deployed to ${zone}`);
+                    addLog(`DISPATCH CONFIRMED: ${data.dispatch_id}`, 'success');
+                    // Add dispatch visual feedback marker
+                    if (viewer) {
+                        viewer.entities.add({
+                            position: Cesium.Cartesian3.fromDegrees(lon, lat),
+                            ellipse: {
+                                semiMinorAxis: 100,
+                                semiMajorAxis: 100,
+                                material: Cesium.Color.RED.withAlpha(0.8),
+                                outline: true,
+                                outlineColor: Cesium.Color.RED
+                            }
+                        });
+                    }
+                } else {
+                    addLog('DISPATCH FAILED: RESOURCE UNAVAILABLE', 'danger');
+                }
+            } catch (err) {
+                console.error(err);
+                addLog('DISPATCH COMM ERROR', 'danger');
+            }
+        }
+
         // Initialize on load
         window.addEventListener('load', async () => {
             await initCesium();
@@ -1640,7 +1687,6 @@
             satOrbitSystem.init();
         });
     </script>
-    <script src="js/main.js"></script>
-</body>
-
+<script src="js/main.js"></script>
+<script src="js/nav.js"></script></body>
 </html>

@@ -1,0 +1,33 @@
+{
+  "hazard": "heatwave",
+  "model_type": "XGBoostClassifier",
+  "dataset_source": "EM-DAT / NOAA Storm Events Benchmark Distribution",
+  "samples_trained": 4800,
+  "accuracy": 0.975,
+  "f1_score": 0.8125,
+  "precision": 0.8784,
+  "recall": 0.7558,
+  "roc_auc": 0.9632,
+  "top_feature_importances": [
+    [
+      "temp",
+      0.6637635231018066
+    ],
+    [
+      "hum",
+      0.056808196008205414
+    ],
+    [
+      "pressure",
+      0.038694217801094055
+    ],
+    [
+      "slope",
+      0.02640550211071968
+    ],
+    [
+      "rain_1h",
+      0.0256769061088562
+    ]
+  ]
+}

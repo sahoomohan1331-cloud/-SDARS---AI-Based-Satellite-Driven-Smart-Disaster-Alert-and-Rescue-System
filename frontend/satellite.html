@@ -1,246 +1,199 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SDARS - Satellite Visualization</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/satellite.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Leaflet for map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <!-- Chart.js for time-series -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SDARS - Satellite Visualization</title>
+<link href="css/main.css" rel="stylesheet"/>
+<link href="css/satellite.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Leaflet for map -->
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Chart.js for time-series -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-
 <body>
-    <!-- Background Effects -->
-    <div class="background-grid"></div>
-    <div class="background-gradient"></div>
+<!-- Background Effects -->
+<div class="background-grid"></div>
+<div class="background-gradient"></div>
+<!-- Navigation -->
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <img src="logo.png" alt="SDARS Logo" class="logo-image"
-                    onerror="this.parentElement.classList.add('img-error')"><span class="logo-fallback">🛰️</span>
-                <div class="logo-text">
-                    <h1>SDARS</h1>
-                    <p>Satellite Visualization</p>
-                </div>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">🏠 Dashboard</a></li>
-                <li><a href="map.html" class="nav-link">🗺️ Live Map</a></li>
-                <li><a href="navigation.html" class="nav-link">🚀 Navigation</a></li>
-                <li><a href="3d-view.html" class="nav-link">🌍 3D View</a></li>
-                <li><a href="prediction.html" class="nav-link">🔮 Prediction</a></li>
-                <li><a href="zones.html" class="nav-link">📍 Zones</a></li>
-                <li><a href="alerts.html" class="nav-link">🚨 Alerts</a></li>
-                <li><a href="about.html" class="nav-link">📚 About</a></li>
-            </ul>
-            <div class="status-badge">
-                <span class="status-dot"></span>
-                <span>Live</span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Shared Scripts -->
-    <script src="js/main.js"></script>
-
-    <!-- Main Content -->
-    <main class="satellite-main">
-        <!-- Sidebar Controls -->
-        <aside class="satellite-sidebar">
-            <div class="sidebar-header">
-                <h2>🛰️ Satellite Analysis</h2>
-                <p>Multi-spectral imaging and analysis</p>
-            </div>
-
-            <!-- Location Input -->
-            <div class="control-section">
-                <h3>📍 Location</h3>
-                <div class="input-group">
-                    <label>Latitude</label>
-                    <input type="number" id="latInput" value="19.0760" step="0.0001">
-                </div>
-                <div class="input-group">
-                    <label>Longitude</label>
-                    <input type="number" id="lonInput" value="72.8777" step="0.0001">
-                </div>
-                <button class="btn-primary" onclick="useMyLocation()">📍 Use My Location</button>
-            </div>
-
-            <!-- Layer Selection -->
-            <div class="control-section">
-                <h3>🌍 Layer Type</h3>
-                <div id="layerOptions" class="layer-buttons">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Date Selection -->
-            <div class="control-section">
-                <h3>📅 Date</h3>
-                <input type="date" id="dateInput" class="date-input">
-                <button class="btn-secondary" onclick="setToday()">Today</button>
-            </div>
-
-            <!-- Analysis Tools -->
-            <div class="control-section">
-                <h3>🔬 Analysis Tools</h3>
-                <button class="tool-btn" onclick="calculateNDVI()">
-                    <span>🌱</span>
-                    <div>
+<!-- Shared Scripts -->
+<script src="js/main.js"></script>
+<!-- Main Content -->
+<main class="satellite-main">
+<!-- Sidebar Controls -->
+<aside class="satellite-sidebar">
+<div class="sidebar-header">
+<h2>🛰️ Satellite Analysis</h2>
+<p>Multi-spectral imaging and analysis</p>
+</div>
+<!-- Location Input -->
+<div class="control-section">
+<h3>📍 Location</h3>
+<div class="input-group">
+<label>Latitude</label>
+<input id="latInput" step="0.0001" type="number" value="19.0760"/>
+</div>
+<div class="input-group">
+<label>Longitude</label>
+<input id="lonInput" step="0.0001" type="number" value="72.8777"/>
+</div>
+<button class="btn-primary" onclick="useMyLocation()">📍 Use My Location</button>
+</div>
+<!-- Layer Selection -->
+<div class="control-section">
+<h3>🌍 Layer Type</h3>
+<div class="layer-buttons" id="layerOptions">
+<!-- Populated by JavaScript -->
+</div>
+</div>
+<!-- Date Selection -->
+<div class="control-section">
+<h3>📅 Date</h3>
+<input class="date-input" id="dateInput" type="date"/>
+<button class="btn-secondary" onclick="setToday()">Today</button>
+</div>
+<!-- Analysis Tools -->
+<div class="control-section">
+<h3>🔬 Analysis Tools</h3>
+<button class="tool-btn" onclick="calculateNDVI()">
+<span>🌱</span>
+<div>
                         VEGETATION INDEX (NDVI)
                     </div>
-                </button>
-                <button class="tool-btn" onclick="getThermalData()">
-                    <span>🔥</span>
-                    <div>
+</button>
+<button class="tool-btn" onclick="getThermalData()">
+<span>🔥</span>
+<div>
                         THERMAL HOTSPOTS
                     </div>
-                </button>
-                <button class="tool-btn" onclick="showTimeSeriesModal()">
-                    <span>📈</span>
-                    <div>
+</button>
+<button class="tool-btn" onclick="showTimeSeriesModal()">
+<span>📈</span>
+<div>
                         TIME-SERIES ANALYSIS
                     </div>
-                </button>
-                <button class="tool-btn" onclick="showCompareModal()">
-                    <span>🔄</span>
-                    <div>
+</button>
+<button class="tool-btn" onclick="showCompareModal()">
+<span>🔄</span>
+<div>
                         BEFORE/AFTER COMPARE
                     </div>
-                </button>
-            </div>
-
-            <!-- NDVI Result -->
-            <div id="ndviResult" class="result-section" style="display: none;">
-                <h3>🌱 NDVI Analysis</h3>
-                <div id="ndviDisplay"></div>
-            </div>
-
-            <!-- Thermal Result -->
-            <div id="thermalResult" class="result-section" style="display: none;">
-                <h3>🔥 Thermal Hotspots</h3>
-                <div id="thermalDisplay"></div>
-            </div>
-        </aside>
-
-        <!-- Map Container -->
-        <div class="satellite-map-container">
-            <div id="satelliteMap" class="satellite-map"></div>
-
-            <!-- Map Overlay Info -->
-            <div class="map-info-overlay">
-                <div class="info-card">
-                    <div class="info-label">Current Layer</div>
-                    <div id="currentLayer" class="info-value">TRUE_COLOR</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Date</div>
-                    <div id="currentDate" class="info-value">-</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Resolution</div>
-                    <div id="currentResolution" class="info-value">256x256</div>
-                </div>
-            </div>
-
-            <!-- Loading Overlay -->
-            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-                <div class="spinner"></div>
-                <div>Loading satellite data...</div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Time Series Modal -->
-    <div id="timeSeriesModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📈 Time-Series Analysis</h2>
-                <button onclick="closeModal('timeSeriesModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="input-row">
-                    <div class="input-group">
-                        <label>Start Date</label>
-                        <input type="date" id="tsStartDate">
-                    </div>
-                    <div class="input-group">
-                        <label>End Date</label>
-                        <input type="date" id="tsEndDate">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Metric</label>
-                    <select id="tsMetric">
-                        <option value="NDVI">Vegetation Index (NDVI)</option>
-                        <option value="TEMPERATURE">Surface Temperature</option>
-                        <option value="MOISTURE">Soil Moisture</option>
-                    </select>
-                </div>
-                <button class="btn-primary" onclick="loadTimeSeries()">Load Data</button>
-
-                <div id="timeSeriesChart" style="margin-top: 20px; display: none;">
-                    <canvas id="tsCanvas"></canvas>
-                    <div id="tsStats" class="stats-grid"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Compare Modal -->
-    <div id="compareModal" class="modal" style="display: none;">
-        <div class="modal-content large">
-            <div class="modal-header">
-                <h2>🔄 Before/After Comparison</h2>
-                <button onclick="closeModal('compareModal')">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="input-row">
-                    <div class="input-group">
-                        <label>Before Date</label>
-                        <input type="date" id="compareDate1">
-                    </div>
-                    <div class="input-group">
-                        <label>After Date</label>
-                        <input type="date" id="compareDate2">
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="loadComparison()">Compare</button>
-
-                <div id="comparisonResult" style="margin-top: 20px; display: none;">
-                    <div class="comparison-grid">
-                        <div class="comparison-panel">
-                            <h4>Before</h4>
-                            <div id="beforeImage"></div>
-                            <div id="beforeDate"></div>
-                        </div>
-                        <div class="comparison-panel">
-                            <h4>After</h4>
-                            <div id="afterImage"></div>
-                            <div id="afterDate"></div>
-                        </div>
-                    </div>
-                    <div id="changeDetection" class="change-detection"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="js/satellite.js?v=2.5"></script>
-</body>
-
+</button>
+</div>
+<!-- NDVI Result -->
+<div class="result-section" id="ndviResult" style="display: none;">
+<h3>🌱 NDVI Analysis</h3>
+<div id="ndviDisplay"></div>
+</div>
+<!-- Thermal Result -->
+<div class="result-section" id="thermalResult" style="display: none;">
+<h3>🔥 Thermal Hotspots</h3>
+<div id="thermalDisplay"></div>
+</div>
+</aside>
+<!-- Map Container -->
+<div class="satellite-map-container">
+<div class="satellite-map" id="satelliteMap"></div>
+<!-- Map Overlay Info -->
+<div class="map-info-overlay">
+<div class="info-card">
+<div class="info-label">Current Layer</div>
+<div class="info-value" id="currentLayer">TRUE_COLOR</div>
+</div>
+<div class="info-card">
+<div class="info-label">Date</div>
+<div class="info-value" id="currentDate">-</div>
+</div>
+<div class="info-card">
+<div class="info-label">Resolution</div>
+<div class="info-value" id="currentResolution">256x256</div>
+</div>
+</div>
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+<div class="spinner"></div>
+<div>Loading satellite data...</div>
+</div>
+</div>
+</main>
+<!-- Time Series Modal -->
+<div class="modal" id="timeSeriesModal" style="display: none;">
+<div class="modal-content">
+<div class="modal-header">
+<h2>📈 Time-Series Analysis</h2>
+<button onclick="closeModal('timeSeriesModal')">×</button>
+</div>
+<div class="modal-body">
+<div class="input-row">
+<div class="input-group">
+<label>Start Date</label>
+<input id="tsStartDate" type="date"/>
+</div>
+<div class="input-group">
+<label>End Date</label>
+<input id="tsEndDate" type="date"/>
+</div>
+</div>
+<div class="input-group">
+<label>Metric</label>
+<select id="tsMetric">
+<option value="NDVI">Vegetation Index (NDVI)</option>
+<option value="TEMPERATURE">Surface Temperature</option>
+<option value="MOISTURE">Soil Moisture</option>
+</select>
+</div>
+<button class="btn-primary" onclick="loadTimeSeries()">Load Data</button>
+<div id="timeSeriesChart" style="margin-top: 20px; display: none;">
+<canvas id="tsCanvas"></canvas>
+<div class="stats-grid" id="tsStats"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Compare Modal -->
+<div class="modal" id="compareModal" style="display: none;">
+<div class="modal-content large">
+<div class="modal-header">
+<h2>🔄 Before/After Comparison</h2>
+<button onclick="closeModal('compareModal')">×</button>
+</div>
+<div class="modal-body">
+<div class="input-row">
+<div class="input-group">
+<label>Before Date</label>
+<input id="compareDate1" type="date"/>
+</div>
+<div class="input-group">
+<label>After Date</label>
+<input id="compareDate2" type="date"/>
+</div>
+</div>
+<button class="btn-primary" onclick="loadComparison()">Compare</button>
+<div id="comparisonResult" style="margin-top: 20px; display: none;">
+<div class="comparison-grid">
+<div class="comparison-panel">
+<h4>Before</h4>
+<div id="beforeImage"></div>
+<div id="beforeDate"></div>
+</div>
+<div class="comparison-panel">
+<h4>After</h4>
+<div id="afterImage"></div>
+<div id="afterDate"></div>
+</div>
+</div>
+<div class="change-detection" id="changeDetection"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Scripts -->
+<script src="js/satellite.js?v=2.5"></script>
+<script src="js/nav.js"></script></body>
 </html>
