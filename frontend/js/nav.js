@@ -114,21 +114,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 5000);
     };
 
-    body.insertBefore(navContainer.firstElementChild, body.firstChild);
+    // Set active nav link
+    const path = window.location.pathname;
+    const page = path.split("/").pop() || "index.html";
+    
+    // We only inject the generic nav and footer if it's NOT the 3D War Room
+    if (page !== "3d-view.html") {
+        body.insertBefore(navContainer.firstElementChild, body.firstChild);
+        
+        // Footer
+        const footerContainer = document.createElement('div');
+        footerContainer.innerHTML = footerHTML;
+        body.appendChild(footerContainer.firstElementChild);
+    }
     
     // Auth modal
     const authContainer = document.createElement('div');
     authContainer.innerHTML = authHTML;
     body.appendChild(authContainer.firstElementChild);
-    
-    // Footer
-    const footerContainer = document.createElement('div');
-    footerContainer.innerHTML = footerHTML;
-    body.appendChild(footerContainer.firstElementChild);
-    
-    // Set active nav link
-    const path = window.location.pathname;
-    const page = path.split("/").pop() || "index.html";
+
     document.querySelectorAll(".nav-link").forEach(link => {
         if (link.getAttribute("href") === page) {
             link.classList.add("active");
