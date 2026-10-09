@@ -2,7 +2,7 @@
 
 const errorBannerHTML = `
 <div id="globalErrorBanner" style="display: none; background: #ef4444; color: white; text-align: center; padding: 10px; font-weight: bold; position: fixed; top: 0; width: 100%; z-index: 9999; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-    ⚠️ SYSTEM OFFLINE: Unable to reach SDARS Backend Servers. Please check your connection.
+    [SYSTEM OFFLINE] Unable to reach SDARS Backend Servers. Please check your network connection.
 </div>
 `;
 
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <img src="logo.png" alt="SDARS"
             style="height: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));">
         <button onclick="closeAuthModal()"
-            style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer;">✕</button>
+            style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer; font-size: 16px;">&times;</button>
         <h2
             style="margin-bottom: 10px; color: white; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
             SECURE ACCESS</h2>
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="stepOTP" style="display: none;">
             <p style="color: #a8b3cf; font-size: 14px; margin-bottom: 20px;">Enter the 6-digit code sent to your
                 email.</p>
-            <div style="margin-bottom: 10px; font-weight: bold; color: #6366f1;" id="otpDemoHint"></div>
+            <div style="margin-bottom: 10px; font-weight: bold; color: #00f2ff;" id="otpDemoHint"></div>
             <input type="text" id="authOTP" placeholder="000000" maxlength="6"
                 style="width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 6px; letter-spacing: 5px; text-align: center; font-size: 18px;">
             <button class="btn-primary" onclick="verifyOTP()" style="width: 100%; justify-content: center;">VERIFY
@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     window.showApiFailure = (message) => {
         const banner = document.getElementById('globalErrorBanner');
-        banner.innerHTML = `⚠️ ${message || "API ERROR: Unable to reach SDARS Backend."}`;
+        banner.innerHTML = `[API ERROR] ${message || "Unable to reach SDARS Backend."}`;
         banner.style.display = 'block';
         setTimeout(() => {
             banner.style.display = 'none';

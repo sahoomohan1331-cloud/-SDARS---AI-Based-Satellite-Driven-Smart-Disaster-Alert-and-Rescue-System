@@ -124,7 +124,7 @@ function setTerrain(type) {
 // Load all monitored and historical locations
 async function loadAllLocations() {
     // 1. Parallel load all primary strategic monitored locations
-    console.log("📡 Map: Parallel intelligence gathering for global monitored locations...");
+    console.log(" Map: Parallel intelligence gathering for global monitored locations...");
 
     // Create an array of promises for monitored locations
     const monitoredPromises = monitoredLocations.map(location => addLocationMarker(location));
@@ -142,7 +142,7 @@ async function loadAllLocations() {
                 // Skip if it's already in monitoredLocations (based on name)
                 if (monitoredLocations.some(m => m.name === record.name)) return;
 
-                // 🛑 CLEANUP: Skip generic waypoints/sectors from the main map history
+                //  CLEANUP: Skip generic waypoints/sectors from the main map history
                 if (record.name.includes('Route Waypoint') || record.name.includes('Sector')) {
                     return;
                 }
@@ -194,7 +194,7 @@ async function showWeatherForLocation(lat, lon, latlng) {
                 <div class="popup-loading-state">
                     <div class="tactical-loader">
                         <div class="loader-ring"></div>
-                        <div class="loader-core">🛰️</div>
+                        <div class="loader-core">️</div>
                     </div>
                     <div class="loading-info">
                         <h3>INITIALIZING SENSOR FUSION</h3>
@@ -212,7 +212,7 @@ async function showWeatherForLocation(lat, lon, latlng) {
         if (!prediction) {
             loadingPopup.setContent(`
                 <div class="popup-error">
-                    <div class="error-icon">⚠️</div>
+                    <div class="error-icon" style="display:flex; justify-content:center; margin-bottom:8px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <h3>SATELLITE LINK FAILURE</h3>
                     <p>Unable to establish secure connection to predictive engine.</p>
                     <button onclick="map.closePopup()" class="btn-retry">Close</button>
@@ -317,20 +317,20 @@ function createClickPopupContent(location, prediction) {
     const riskLevel = (prediction.overall_risk_level || 'Safe').toUpperCase();
     const riskClass = (prediction.overall_risk_level || 'safe').toLowerCase();
 
-    // Support all 7 hazard types
+    // Support all 8 hazard types
     const allHazards = [
-        { name: 'FIRE', val: prediction.fire?.confidence || 0, color: '#f97316', icon: '🔥' },
-        { name: 'FLOOD', val: prediction.flood?.confidence || 0, color: '#38bdf8', icon: '🌊' },
-        { name: 'CYCLONE', val: prediction.cyclone?.confidence || 0, color: '#a855f7', icon: '🌪️' },
-        { name: 'HEATWAVE', val: prediction.heatwave?.confidence || 0, color: '#ef4444', icon: '🌡️' },
-        { name: 'DROUGHT', val: prediction.drought?.confidence || 0, color: '#eab308', icon: '☀️' },
-        { name: 'LANDSLIDE', val: prediction.landslide?.confidence || 0, color: '#854d0e', icon: '⛰️' },
-        { name: 'STORM SURGE', val: prediction.storm_surge?.confidence || 0, color: '#06b6d4', icon: '🌊' },
-        { name: 'LIGHTNING', val: prediction.lightning?.confidence || 0, color: '#eab308', icon: '⚡' }
+        { name: 'FIRE', val: prediction.fire?.confidence || 0, color: '#f97316' },
+        { name: 'FLOOD', val: prediction.flood?.confidence || 0, color: '#38bdf8' },
+        { name: 'CYCLONE', val: prediction.cyclone?.confidence || 0, color: '#00e5ff' },
+        { name: 'HEATWAVE', val: prediction.heatwave?.confidence || 0, color: '#ef4444' },
+        { name: 'DROUGHT', val: prediction.drought?.confidence || 0, color: '#eab308' },
+        { name: 'LANDSLIDE', val: prediction.landslide?.confidence || 0, color: '#854d0e' },
+        { name: 'STORM SURGE', val: prediction.storm_surge?.confidence || 0, color: '#06b6d4' },
+        { name: 'LIGHTNING', val: prediction.lightning?.confidence || 0, color: '#eab308' }
     ].filter(h => h.val > 0.05).sort((a, b) => b.val - a.val);
 
     const displayHazards = allHazards.length > 0 ? allHazards.slice(0, 4) : [
-        { name: 'BASELINE STABLE', val: 0.05, color: '#10b981', icon: '✅' }
+        { name: 'BASELINE STABLE', val: 0.05, color: '#10b981' }
     ];
 
     // Exposure & Vulnerability
@@ -343,7 +343,7 @@ function createClickPopupContent(location, prediction) {
         <div class="location-popup clicked-location">
             <div class="popup-header">
                 <div class="target-title">
-                    <span style="font-size: 18px;">📍</span>
+                    <span style="display:flex; align-items:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></span>
                     <h3>${location.name}</h3>
                 </div>
                 <div class="overall-badge ${riskClass}" style="background: ${getRiskColor(riskClass)}; color: #fff; font-weight: 700; padding: 3px 8px; border-radius: 4px; font-size: 11px;">
@@ -359,11 +359,11 @@ function createClickPopupContent(location, prediction) {
             <!-- Impact Matrix: Exposure & Vulnerability -->
             <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 11px;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span style="color: #94a3b8;">👥 Population Exposure:</span>
+                    <span style="color: #94a3b8;">Population Exposure:</span>
                     <strong style="color: #38bdf8;">${popDensity}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <span style="color: #94a3b8;">🛡️ Fragility Index:</span>
+                    <span style="color: #94a3b8;">Fragility Index:</span>
                     <strong style="color: #fbbf24;">${vulnScore}</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 4px; margin-top: 4px;">
@@ -412,7 +412,7 @@ function createClickPopupContent(location, prediction) {
                 ${displayHazards.map(r => `
                     <div class="risk-row" style="margin-bottom: 5px;">
                         <div class="row-header" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-                            <span>${r.icon} ${r.name}</span>
+                            <span style="font-weight: 600;">${r.name}</span>
                             <span style="font-weight: 700; color: ${r.color};">${Math.round(r.val * 100)}%</span>
                         </div>
                         <div class="row-bar-bg" style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
@@ -534,18 +534,28 @@ function getRiskColor(risk) {
     }
 }
 
-// Get disaster icon for all 7 hazard types
+// Get disaster icon for all hazard types
 function getDisasterIcon(prediction) {
     const threat = (prediction.primary_threat || '').toLowerCase();
-    if (threat === 'fire') return '🔥';
-    if (threat === 'flood') return '🌊';
-    if (threat === 'cyclone') return '🌪️';
-    if (threat === 'heatwave') return '🌡️';
-    if (threat === 'drought') return '☀️';
-    if (threat === 'landslide') return '⛰️';
-    if (threat === 'storm_surge') return '🌊';
-    if (threat === 'lightning') return '⚡';
-    return '✅';
+    if (threat === 'fire') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+    }
+    if (threat === 'flood' || threat === 'storm_surge') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>';
+    }
+    if (threat === 'cyclone') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/></svg>';
+    }
+    if (threat === 'heatwave' || threat === 'drought') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>';
+    }
+    if (threat === 'landslide') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
+    }
+    if (threat === 'lightning') {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+    }
+    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>';
 }
 
 // Fallback marker (when API fails)
@@ -559,7 +569,7 @@ function addFallbackMarker(location) {
         className: 'custom-marker',
         html: `
             <div class="marker-pin low">
-                <div class="marker-icon">📍</div>
+                <div class="marker-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg></div>
             </div>
             <div class="marker-label">${location.name}</div>
         `,
@@ -868,7 +878,7 @@ mapStyles.textContent = `
     .btn-popup-detail {
         width: 100%;
         padding: 10px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: #00f2ff;
         color: white;
         border: none;
         border-radius: 8px;
@@ -920,7 +930,7 @@ async function loadRiverGauges() {
                 className: 'custom-marker',
                 html: `
                     <div class="marker-pin gauge-pin" style="background: ${statusColor};">
-                        <div class="marker-icon">💧</div>
+                        <div class="marker-icon"></div>
                     </div>
                     <div class="marker-label" style="border-left: 2px solid ${statusColor};">${g.station_name}</div>
                 `,
@@ -932,7 +942,7 @@ async function loadRiverGauges() {
             marker.bindPopup(`
                 <div style="font-family: 'Inter', sans-serif; padding: 12px; min-width: 250px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <h4 style="margin: 0; color: #38bdf8;">💧 RIVER TELEMETRY</h4>
+                        <h4 style="margin: 0; color: #38bdf8;"> RIVER TELEMETRY</h4>
                         <span style="background: ${statusColor}; color: #000; font-weight: 700; font-size: 10px; padding: 2px 6px; border-radius: 4px;">${g.status}</span>
                     </div>
                     <strong style="color: #fff; font-size: 13px;">${g.station_name}</strong>
@@ -963,12 +973,12 @@ async function loadCrowdReports() {
 
         data.reports.forEach(r => {
             const sevColor = getRiskColor(r.severity);
-            const verifiedBadge = r.is_verified === 1 ? '✅ Verified' : '⏳ Pending Review';
+            const verifiedBadge = r.is_verified === 1 ? '<span style="color:#10b981;font-weight:600;">[VERIFIED]</span>' : '<span style="color:#f59e0b;font-weight:600;">[PENDING]</span>';
             const icon = L.divIcon({
                 className: 'custom-marker',
                 html: `
                     <div class="marker-pin crowd-pin" style="background: ${sevColor};">
-                        <div class="marker-icon">📢</div>
+                        <div class="marker-icon"></div>
                     </div>
                     <div class="marker-label" style="border-left: 2px solid ${sevColor};">Ground: ${r.report_type}</div>
                 `,
@@ -980,7 +990,7 @@ async function loadCrowdReports() {
             marker.bindPopup(`
                 <div style="font-family: 'Inter', sans-serif; padding: 12px; min-width: 250px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <h4 style="margin: 0; color: #f43f5e;">📢 CITIZEN OBSERVATION</h4>
+                        <h4 style="margin: 0; color: #f43f5e;">CITIZEN OBSERVATION</h4>
                         <span style="font-size: 10px; color: ${r.is_verified === 1 ? '#10b981' : '#eab308'}; font-weight: 700;">${verifiedBadge}</span>
                     </div>
                     <div style="font-size: 12px; color: #94a3b8; margin-bottom: 6px;">${r.location_name} • <span style="color: ${sevColor}; font-weight: 700;">${r.severity}</span></div>
@@ -1009,7 +1019,7 @@ async function loadEmergencyResources() {
         if (resResp.ok) {
             const data = await resResp.json();
             data.resources.forEach(r => {
-                const typeIcon = r.type === 'shelter' ? '🏕️' : r.type === 'hospital' ? '🏥' : '🚒';
+                const typeIcon = r.type === 'shelter' ? '️' : r.type === 'hospital' ? '' : '';
                 const icon = L.divIcon({
                     className: 'custom-marker',
                     html: `
@@ -1042,7 +1052,7 @@ async function loadEmergencyResources() {
                     className: 'custom-marker',
                     html: `
                         <div class="marker-pin resource-pin" style="background: linear-gradient(135deg, #06b6d4, #0284c7);">
-                            <div class="marker-icon">🚑</div>
+                            <div class="marker-icon"></div>
                         </div>
                         <div class="marker-label">${v.vehicle_id} (${v.speed_kmh} km/h)</div>
                     `,
@@ -1053,7 +1063,7 @@ async function loadEmergencyResources() {
                 const marker = L.marker([v.latitude, v.longitude], { icon }).addTo(map);
                 marker.bindPopup(`
                     <div style="font-family: 'Inter', sans-serif; padding: 12px;">
-                        <h4 style="margin: 0 0 6px 0; color: #38bdf8;">🚑 LIVE GPS RESCUE TELEMETRY</h4>
+                        <h4 style="margin: 0 0 6px 0; color: #38bdf8;">LIVE GPS RESCUE TELEMETRY</h4>
                         <strong style="color: #fff; font-size: 13px;">${v.team} [${v.vehicle_id}]</strong>
                         <div style="font-size: 12px; color: #cbd5e1; margin-top: 6px;">Mission: ${v.mission}</div>
                         <div style="font-size: 12px; color: #38bdf8; margin-top: 4px;">Velocity: ${v.speed_kmh} km/h • Status: ${v.status}</div>
@@ -1083,7 +1093,7 @@ async function loadRoadStatuses() {
                 className: 'custom-marker',
                 html: `
                     <div class="marker-pin road-pin">
-                        <div class="marker-icon">⛔</div>
+                        <div class="marker-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
                     </div>
                     <div class="marker-label">${rd.name}</div>
                 `,
@@ -1095,13 +1105,13 @@ async function loadRoadStatuses() {
             marker.bindPopup(`
                 <div style="font-family: 'Inter', sans-serif; padding: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <h4 style="margin: 0; color: #fbbf24;">⛔ ROAD OBSTRUCTION</h4>
+                        <h4 style="margin: 0; color: #fbbf24; display: flex; align-items: center; gap: 4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> ROAD OBSTRUCTION</h4>
                         <span style="background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">${rd.status}</span>
                     </div>
                     <strong style="color: #fff; font-size: 13px;">${rd.name}</strong>
                     <div style="font-size: 12px; color: #ef4444; margin-top: 4px;">${rd.reason}</div>
                     <div style="font-size: 11px; color: #38bdf8; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
-                        🔄 Advised Detour: ${rd.detour || 'None available'}
+                         Advised Detour: ${rd.detour || 'None available'}
                     </div>
                 </div>
             `);

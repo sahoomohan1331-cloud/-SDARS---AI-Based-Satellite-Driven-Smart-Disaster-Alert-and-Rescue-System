@@ -211,11 +211,11 @@ function updateSubscriptionButtons() {
         if (!zone) return;
 
         if (currentUser && currentUser.subscribed_zones.includes(zone)) {
-            btn.innerText = '🔕 Unsubscribe';
+            btn.innerText = 'Unsubscribe';
             btn.classList.add('active');
             btn.style.background = 'rgba(255,255,255,0.1)';
         } else {
-            btn.innerText = '🔔 Subscribe to Alerts';
+            btn.innerText = 'Subscribe to Alerts';
             btn.classList.remove('active');
             btn.style.background = ''; // reset to default class style
         }
@@ -264,7 +264,7 @@ async function sendTestAlert(zoneName, btnElement) {
         showError('Failed to trigger test alert');
         if (btnElement) {
             btnElement.disabled = false;
-            btnElement.innerText = '⚠️ Error';
+            btnElement.innerText = 'Error';
         }
     }
 }

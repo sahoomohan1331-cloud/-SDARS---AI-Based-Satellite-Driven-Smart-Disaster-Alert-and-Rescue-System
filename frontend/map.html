@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/lucide.min.js"></script>
 </head>
 <body>
 <!-- Background Effects -->
@@ -24,22 +25,22 @@
 <!-- Page Header -->
 <section class="page-header">
 <h1 class="page-title">
-                🗺️ Live Risk Map
+                Live Risk Map
                 <span class="gradient-text">Worldwide Monitoring</span>
 </h1>
 <p class="page-subtitle">
                 Interactive map showing real-time disaster risk zones across all continents • Click anywhere to analyze
             </p>
 </section>
-<!-- 🔍 Google Maps Style Search Box -->
+<!-- Google Maps Style Search Box -->
 <section class="google-search-section">
 <div class="search-container">
 <!-- Search Input with GPS Button -->
 <div class="search-box">
-<span class="search-icon">🔍</span>
+<span class="search-icon" style="color: var(--accent-signal); font-family: monospace; font-size: 12px;">[FIND]</span>
 <input autocomplete="off" id="locationSearchInput" placeholder="Search any location... Cuttack, Dasapalla, Mumbai..." type="text"/>
 <button class="gps-button" id="gpsButton" onclick="useCurrentLocation()" title="Use my current location">
-<span class="gps-icon">📍</span>
+
 <span class="gps-text">My Location</span>
 </button>
 </div>
@@ -50,7 +51,7 @@
 <!-- Search Tips -->
 <div class="search-tips">
 <small>
-                        💡 Tip: Type any city, village, or place name. Works for remote areas like Dasapalla, Cuttack,
+                        Tip: Type any city, village, or place name. Works for remote areas like Dasapalla, Cuttack,
                         etc.
                     </small>
 </div>
@@ -63,47 +64,47 @@
 <div class="checkbox-group">
 <label class="checkbox-label">
 <input checked="" id="showFire" onchange="toggleLayer('fire')" type="checkbox"/>
-<span>🔥 Fire</span>
+<span>Fire Hotspots</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showFlood" onchange="toggleLayer('flood')" type="checkbox"/>
-<span>🌊 Flood</span>
+<span>Flood Watch</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showCyclone" onchange="toggleLayer('cyclone')" type="checkbox"/>
-<span>🌪️ Cyclone</span>
+<span>Cyclone Vortex</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showGauges" onchange="toggleGaugesLayer()" type="checkbox"/>
-<span style="color: #38bdf8;">💧 River Gauges</span>
+<span style="color: #38bdf8;">River Gauges</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showCrowdReports" onchange="toggleCrowdLayer()" type="checkbox"/>
-<span style="color: #fb7185;">📢 Citizen Reports</span>
+<span style="color: #fb7185;">Citizen Reports</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showResources" onchange="toggleResourcesLayer()" type="checkbox"/>
-<span style="color: #a78bfa;">🚑 Units &amp; Shelters</span>
+<span style="color: #a78bfa;">Units &amp; Shelters</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showRoads" onchange="toggleRoadsLayer()" type="checkbox"/>
-<span style="color: #fbbf24;">⛔ Road Status</span>
+<span style="color: #fbbf24;">Road Status</span>
 </label>
 <label class="checkbox-label">
 <input checked="" id="showHistory" onchange="toggleHistoryLayer()" type="checkbox"/>
-<span style="color: #94a3b8;">📜 Archives</span>
+<span style="color: #94a3b8;">Archives</span>
 </label>
 </div>
 </div>
 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-<button class="btn-primary" onclick="openCrowdReportModal()" style="background: linear-gradient(135deg, #f43f5e, #be123c); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);">
-                    📢 Report Incident
+<button class="btn-primary" onclick="openCrowdReportModal()" style="background: #ef4444; border: 1px solid rgba(255,255,255,0.2);">
+                    Report Incident
                 </button>
 <button class="btn-primary" onclick="refreshMap()">
-                    🔄 Refresh Data
+                    Refresh Data
                 </button>
 <a class="btn-secondary btn-3d-war-room" href="3d-view.html">
-                    🛰️ 3D War Room
+                    3D War Room
                 </a>
 </div>
 </div>
@@ -112,10 +113,10 @@
 <div class="map-container" id="map"></div>
 <!-- ⭐ Floating Terrain Selector -->
 <div class="terrain-selector">
-<button class="terrain-btn active" onclick="setTerrain('dark')" title="Dark Tactical">🌌</button>
-<button class="terrain-btn" onclick="setTerrain('satellite')" title="Satellite View">🛰️</button>
-<button class="terrain-btn" onclick="setTerrain('terrain')" title="Topographic Terrain">🏔️</button>
-<button class="terrain-btn" onclick="setTerrain('streets')" title="Standard Streets">🏙️</button>
+<button class="terrain-btn active" onclick="setTerrain('dark')" title="Dark Tactical">Dark</button>
+<button class="terrain-btn" onclick="setTerrain('satellite')" title="Satellite View">Sat</button>
+<button class="terrain-btn" onclick="setTerrain('terrain')" title="Topographic Terrain">Terr</button>
+<button class="terrain-btn" onclick="setTerrain('streets')" title="Standard Streets">Street</button>
 </div>
 <!-- Map Legend: 4-Tier Impact Classification -->
 <div class="map-legend">
@@ -138,19 +139,19 @@
 </div>
 <hr style="margin: 8px 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);"/>
 <div class="legend-item">
-<span style="font-size: 14px;">💧</span>
+<span style="display:flex; align-items:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span>
 <span style="font-size: 11px; color: #38bdf8;">River Telemetry</span>
 </div>
 <div class="legend-item">
-<span style="font-size: 14px;">📢</span>
+<span style="display:flex; align-items:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fb7185" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
 <span style="font-size: 11px; color: #fb7185;">Citizen Ground-Truth</span>
 </div>
 <div class="legend-item">
-<span style="font-size: 14px;">🚑</span>
+<span style="display:flex; align-items:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></span>
 <span style="font-size: 11px; color: #a78bfa;">Emergency Resource</span>
 </div>
 <div class="legend-item">
-<span style="font-size: 14px;">⛔</span>
+<span style="display:flex; align-items:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg></span>
 <span style="font-size: 11px; color: #fbbf24;">Road Block / Hazard</span>
 </div>
 </div>
@@ -158,50 +159,50 @@
 <div class="location-info hidden" id="locationInfo">
 <div class="info-header">
 <h3 id="infoTitle">Location Details</h3>
-<button class="close-btn" onclick="closeLocationInfo()">✕</button>
+<button class="close-btn" onclick="closeLocationInfo()">&times;</button>
 </div>
 <div class="info-content" id="infoContent">
 <!-- Populated dynamically -->
 </div>
 <div class="info-actions">
 <button class="btn-secondary" onclick="viewDetailedAnalysis()">
-                        📊 Detailed Analysis
-                    </button>
+    Detailed Analysis
+</button>
 </div>
 </div>
 </div>
 <!-- Map Statistics -->
 <section class="map-stats">
 <div class="stat-box">
-<div class="stat-icon">📍</div>
+<div class="stat-icon" style="color: #00f2ff;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
 <div class="stat-info">
 <h4 id="totalLocations">17</h4>
 <p>Monitored Sectors</p>
 </div>
 </div>
 <div class="stat-box">
-<div class="stat-icon" style="color: #ef4444;">🚨</div>
+<div class="stat-icon" style="color: #ef4444;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
 <div class="stat-info">
 <h4 id="criticalRiskZones" style="color: #ef4444;">0</h4>
 <p>Critical Impact</p>
 </div>
 </div>
 <div class="stat-box">
-<div class="stat-icon" style="color: #f97316;">⚠️</div>
+<div class="stat-icon" style="color: #f97316;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
 <div class="stat-info">
 <h4 id="highRiskZones" style="color: #f97316;">0</h4>
 <p>High Threat</p>
 </div>
 </div>
 <div class="stat-box">
-<div class="stat-icon" style="color: #eab308;">🟡</div>
+<div class="stat-icon" style="color: #eab308;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
 <div class="stat-info">
 <h4 id="mediumRiskZones" style="color: #eab308;">1</h4>
 <p>Moderate Watch</p>
 </div>
 </div>
 <div class="stat-box">
-<div class="stat-icon" style="color: #10b981;">✅</div>
+<div class="stat-icon" style="color: #10b981;"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
 <div class="stat-info">
 <h4 id="safeZones" style="color: #10b981;">16</h4>
 <p>Low / Normal</p>
@@ -209,12 +210,12 @@
 </div>
 </section>
 </main>
-<!-- 📢 Citizen Ground-Truth Incident Modal -->
+<!-- Citizen Ground-Truth Incident Modal -->
 <div class="modal-backdrop" id="crowdReportModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px);">
 <div style="background: #0f172a; border: 1px solid rgba(244,63,94,0.4); box-shadow: 0 0 30px rgba(244,63,94,0.25); border-radius: 16px; width: 440px; max-width: 90vw; padding: 25px; color: #fff; position: relative;">
-<button onclick="closeCrowdReportModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">✕</button>
+<button onclick="closeCrowdReportModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;">&times;</button>
 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-<span style="font-size: 26px;">📢</span>
+<span style="color: #f43f5e; display:flex; align-items:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
 <div>
 <h3 style="margin: 0; font-size: 18px; font-weight: 700; color: #f43f5e;">CITIZEN GROUND INCIDENT</h3>
 <p style="margin: 0; font-size: 11px; color: #94a3b8;">Crowdsourced early-warning telemetry feed</p>
@@ -225,7 +226,7 @@
 <label style="font-size: 12px; color: #cbd5e1; display: block; margin-bottom: 4px;">Incident Location Name</label>
 <div style="display: flex; gap: 8px;">
 <input id="crLocationName" placeholder="e.g. Kashmere Gate Ring Road" required="" style="flex: 1; padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 13px;" type="text"/>
-<button onclick="autoFillCurrentCoords()" style="padding: 8px 12px; background: rgba(56,189,248,0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; cursor: pointer; font-size: 12px;" title="Fill GPS" type="button">📍 GPS</button>
+<button onclick="autoFillCurrentCoords()" style="padding: 8px 12px; background: rgba(56,189,248,0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;" title="Fill GPS" type="button">GPS</button>
 </div>
 </div>
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
@@ -242,21 +243,21 @@
 <div>
 <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Hazard Observation</label>
 <select id="crType" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
-<option value="flooding">🌊 Waterlogging / Flood</option>
-<option value="blocked_road">⛔ Blocked Road / Tree Fall</option>
-<option value="smoke">🔥 Dense Smoke / Fire</option>
-<option value="landslide">⛰️ Landslide / Rockfall</option>
-<option value="tremor">📳 Ground Tremor</option>
-<option value="storm_damage">🌪️ Squall / Roof Damage</option>
+<option value="flooding">Waterlogging / Flood</option>
+<option value="blocked_road">Blocked Road / Tree Fall</option>
+<option value="smoke">Dense Smoke / Fire</option>
+<option value="landslide">Landslide / Rockfall</option>
+<option value="tremor">Ground Tremor</option>
+<option value="storm_damage">Squall / Storm Damage</option>
 </select>
 </div>
 <div>
 <label style="font-size: 11px; color: #cbd5e1; display: block; margin-bottom: 4px;">Severity</label>
 <select id="crSeverity" style="width: 100%; padding: 8px; border-radius: 6px; background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 12px;">
-<option value="MODERATE">🟡 MODERATE</option>
-<option value="HIGH">🟠 HIGH</option>
-<option value="CRITICAL">🔴 CRITICAL</option>
-<option value="LOW">🟢 LOW</option>
+<option value="MODERATE">MODERATE</option>
+<option value="HIGH">HIGH</option>
+<option value="CRITICAL">CRITICAL</option>
+<option value="LOW">LOW</option>
 </select>
 </div>
 </div>
@@ -275,5 +276,6 @@
 <script src="js/main.js?v=2.5"></script>
 <script src="js/map.js?v=2.5"></script>
 <script src="js/location-search.js?v=2.5"></script>
-<script src="js/nav.js"></script></body>
+<script src="js/nav.js"></script><script>document.addEventListener("DOMContentLoaded", function() { if (window.lucide) lucide.createIcons(); });</script>
+</body>
 </html>

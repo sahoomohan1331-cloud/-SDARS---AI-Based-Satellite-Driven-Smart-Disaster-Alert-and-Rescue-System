@@ -17,7 +17,7 @@ const zonesState = {
  * Initialize the zones page
  */
 function initZonesPage() {
-    console.log('🎯 Initializing Custom Alert Zones...');
+    console.log(' Initializing Custom Alert Zones...');
 
     // Check for Leaflet
     if (typeof L === 'undefined') {
@@ -37,7 +37,7 @@ function initZonesPage() {
     }
 
 
-    console.log('✅ Zones page initialized');
+    console.log('[ZONES] Initialized successfully');
 }
 
 /**
@@ -87,8 +87,8 @@ function initMap() {
             polygon: {
                 allowIntersection: false,
                 shapeOptions: {
-                    color: '#667eea',
-                    fillColor: '#667eea',
+                    color: '#00f2ff',
+                    fillColor: '#00f2ff',
                     fillOpacity: 0.2,
                     weight: 2
                 }
@@ -207,7 +207,7 @@ async function saveZone() {
     // Disable button to prevent double-clicks during synchronous verification
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.innerHTML = '🛰️ Establishing Link...';
+        saveBtn.innerHTML = '️ Establishing Link...';
     }
 
     // Get coordinates
@@ -251,12 +251,12 @@ async function saveZone() {
         // Detailed Feedback based on Active Verification
         if (v.status === 'success') {
             if (v.failure_count > 0) {
-                showSuccess(`Zone established! 📡 ${v.success_count} emails verified. ⚠ ${v.failure_count} delivery failures detected.`);
+                showSuccess(`Zone established! ${v.success_count} emails verified. [${v.failure_count} delivery failures detected]`);
             } else {
-                showSuccess(`Tactical Zone "${name}" established and verified! 📡 All target recipients notified.`);
+                showSuccess(`Tactical Zone "${name}" established and verified! All target recipients notified.`);
             }
         } else if (v.status === 'skipped') {
-            showSuccess(`Tactical Zone "${name}" established! 📡 No verification emails were required.`);
+            showSuccess(`Tactical Zone "${name}" established! No verification emails were required.`);
         } else if (v.status === 'error') {
             showError(`Zone saved, but Verification System failed: ${v.message}`);
         } else {
@@ -269,7 +269,7 @@ async function saveZone() {
         // Restore button
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = '💾 Save Zone';
+            saveBtn.innerHTML = ' Save Zone';
         }
 
     } catch (error) {
@@ -279,7 +279,7 @@ async function saveZone() {
         // Re-enable button on error
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = '💾 Save Zone';
+            saveBtn.innerHTML = ' Save Zone';
         }
     }
 }
@@ -365,7 +365,7 @@ function displayZones() {
     if (zonesState.zones.length === 0) {
         zonesList.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">🗺️</div>
+                <div class="empty-icon">️</div>
                 <p>No zones created yet</p>
                 <small>Draw a zone on the map to get started</small>
             </div>
@@ -383,18 +383,18 @@ function displayZones() {
             <div class="zone-item-header">
                 <div class="zone-name">${zone.name}</div>
                 <div class="zone-actions">
-                    <button class="zone-action-btn" onclick="flyToZone('${zone.zone_id}')" title="Locate">📍</button>
-                    <button class="zone-action-btn" onclick="deleteZone('${zone.zone_id}')" title="Delete">🗑️</button>
-                    <a href="alerts.html?zone=${encodeURIComponent(zone.name)}&zoneId=${zone.zone_id}" class="zone-link-btn" title="View Alerts" style="text-decoration: none; font-size: 14px;">🚨</a>
+                    <button class="zone-action-btn" onclick="flyToZone('${zone.zone_id}')" title="Locate"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></button>
+                    <button class="zone-action-btn" onclick="deleteZone('${zone.zone_id}')" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    <a href="alerts.html?zone=${encodeURIComponent(zone.name)}&zoneId=${zone.zone_id}" class="zone-link-btn" title="View Alerts" style="text-decoration: none; font-size: 14px; display: flex; align-items: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
                 </div>
             </div>
 
             <div class="zone-meta">
-                <span>⚡ ${zone.severity_threshold}</span>
+                <span>THRESHOLD: ${zone.severity_threshold}</span>
             </div>
 
             <div class="zone-emails" style="font-size: 11px; color: #6b7a99; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px;">
-                📧 <strong style="color:#a8b3cf">Alert emails:</strong> ${emails}
+                 <strong style="color:#a8b3cf">Alert emails:</strong> ${emails}
             </div>
         </div>
     `}).join('');
@@ -508,7 +508,7 @@ function locateMe() {
 
                 L.marker([latitude, longitude])
                     .addTo(zonesState.map)
-                    .bindPopup('📍 You are here')
+                    .bindPopup(' You are here')
                     .openPopup();
             },
             error => {
@@ -530,7 +530,7 @@ function getSeverityColor(severity) {
         'HIGH': '#ef4444',
         'CRITICAL': '#dc2626'
     };
-    return colors[severity] || '#667eea';
+    return colors[severity] || '#00f2ff';
 }
 
 /**
@@ -540,7 +540,7 @@ function showSuccess(message) {
     const toast = document.createElement('div');
     toast.className = 'toast-notification success';
     toast.innerHTML = `
-        <div class="toast-icon">✅</div>
+        <div class="toast-icon" style="display:flex; align-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div class="toast-message">${message}</div>
     `;
 
@@ -560,7 +560,7 @@ function showError(message) {
     const toast = document.createElement('div');
     toast.className = 'toast-notification error';
     toast.innerHTML = `
-        <div class="toast-icon">❌</div>
+        <div class="toast-icon" style="display:flex; align-items:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
         <div class="toast-message">${message}</div>
     `;
 

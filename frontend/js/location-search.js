@@ -115,7 +115,7 @@
             if (results.length === 0) {
                 suggestionsBox.innerHTML = `
                     <div style="padding: 20px; text-align: center; color: #6b7a99;">
-                        <span style="font-size: 24px;">🔍</span>
+                        <span style="font-size: 24px;"></span>
                         <p style="margin: 10px 0 0;">No locations found for "${query}"</p>
                         <small>Try a different spelling or add state/country name</small>
                     </div>
@@ -153,7 +153,7 @@
                         data-index="${index}"
                         style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; position: relative; overflow: hidden;">
                         <div style="display: flex; align-items: center; gap: 12px; position: relative; z-index: 1;">
-                            <span style="font-size: 20px;">${this.window.getLocationIcon ? window.getLocationIcon(result) : '📍'}</span>
+                            <span style="font-size: 20px;">${this.window.getLocationIcon ? window.getLocationIcon(result) : ''}</span>
                             <div style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <div style="color: white; font-weight: 600; font-size: 14px;">${shortName}</div>
@@ -163,7 +163,7 @@
                                     ${displayName}
                                 </div>
                             </div>
-                            <span style="color: #667eea; font-size: 10px; background: rgba(102,126,234,0.1); padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                            <span style="color: #00f2ff; font-size: 10px; background: rgba(0,242,255,0.1); padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
                                 ${locationType}
                             </span>
                         </div>
@@ -182,7 +182,7 @@
                     searchInput.parentElement.classList.remove('crisis-glow');
                 });
                 item.addEventListener('mouseenter', () => {
-                    item.style.background = 'rgba(102, 126, 234, 0.1)';
+                    item.style.background = 'rgba(0, 242, 255, 0.08)';
                     if (isRisk) {
                         searchInput.parentElement.classList.add('crisis-glow');
                         searchInput.parentElement.style.boxShadow = '0 0 15px rgba(239, 68, 68, 0.5)';
@@ -192,7 +192,7 @@
                     item.style.background = 'transparent';
                     if (isRisk) {
                         searchInput.parentElement.classList.remove('crisis-glow');
-                        searchInput.parentElement.style.boxShadow = searchInput === document.activeElement ? '0 0 0 3px rgba(102, 126, 234, 0.3)' : 'none';
+                        searchInput.parentElement.style.boxShadow = searchInput === document.activeElement ? '0 0 0 2px rgba(0, 242, 255, 0.3)' : 'none';
                     }
                 });
             });
@@ -203,7 +203,7 @@
             console.error('Search error:', error);
             suggestionsBox.innerHTML = `
                 <div style="padding: 20px; text-align: center; color: #ff5722;">
-                    <span style="font-size: 24px;">⚠️</span>
+                    <div style="margin-bottom: 8px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff5722" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                     <p style="margin: 10px 0 0;">Search service unavailable</p>
                     <small>Please try again later</small>
                 </div>
@@ -245,16 +245,19 @@
         const address = result.address || {};
         const type = result.type || '';
 
-        if (address.city) return '🏙️';
-        if (address.town) return '🏘️';
-        if (address.village) return '🏡';
-        if (type.includes('water') || type.includes('river')) return '🌊';
-        if (type.includes('mountain') || type.includes('peak')) return '⛰️';
-        if (type.includes('forest') || type.includes('park')) return '🌲';
-        if (type.includes('airport')) return '✈️';
-        if (type.includes('hospital')) return '🏥';
-
-        return '📍';
+        if (address.city || address.town) {
+            return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>';
+        }
+        if (type.includes('water') || type.includes('river')) {
+            return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>';
+        }
+        if (type.includes('mountain') || type.includes('peak')) {
+            return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
+        }
+        if (type.includes('airport')) {
+            return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="m17.8 19.2 1.7-1.7-4.2-7 3.5-3.5a2.4 2.4 0 0 0 0-3.4 2.4 2.4 0 0 0-3.4 0l-3.5 3.5-7-4.2-1.7 1.7 5.2 4.5-4.2 4.2-2.3-.5-1.4 1.4 3.2 1.9 1.9 3.2 1.4-1.4-.5-2.3 4.2-4.2Z"/></svg>';
+        }
+        return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>';
     }
 
     // Select a suggestion
@@ -469,7 +472,7 @@
             width: 24px;
             height: 24px;
             border: 3px solid rgba(102, 126, 234, 0.3);
-            border-top: 3px solid #667eea;
+            border-top: 3px solid #00f2ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -545,5 +548,5 @@
     window.searchLocation = searchLocation;
     window.selectSuggestion = selectSuggestion;
 
-    console.log('🔍 Google Maps style search initialized!');
+    console.log(' Google Maps style search initialized!');
 })();

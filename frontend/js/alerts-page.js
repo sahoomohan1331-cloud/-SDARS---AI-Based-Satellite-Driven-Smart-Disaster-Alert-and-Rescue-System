@@ -32,7 +32,7 @@ function switchView(viewName) {
     const activeBtn = document.getElementById(`tab-${viewName}`);
     if (activeBtn) {
         activeBtn.classList.add('active');
-        activeBtn.style.borderBottom = '2px solid #6366f1';
+        activeBtn.style.borderBottom = '2px solid #00f2ff';
         activeBtn.style.color = 'white';
     }
 
@@ -51,7 +51,7 @@ window.switchView = switchView;
  * Initialize the alerts page
  */
 function initAlertsPage() {
-    console.log('🚨 Initializing Alerts Page...');
+    console.log(' Initializing Alerts Page...');
 
     // Load alerts
     loadAlerts(true);
@@ -59,7 +59,7 @@ function initAlertsPage() {
     // Set up auto-refresh (every 30 seconds, no loader)
     setInterval(() => loadAlerts(false), 30000);
 
-    console.log('✅ Alerts Page initialized');
+    console.log('[ALERTS-PAGE] Initialized successfully');
 }
 
 /**
@@ -99,7 +99,7 @@ async function loadAlerts(showLoader = true) {
         if (zonesData && zonesData.zones) {
             alertsPageState.zones = zonesData.zones;
             alertsPageState.allZoneNames = zonesData.zones.map(z => z.name);
-            console.log(`📍 Loaded ${alertsPageState.zones.length} zones for alert filtering`);
+            console.log(` Loaded ${alertsPageState.zones.length} zones for alert filtering`);
         }
 
         // Helper: does this alert belong to any created zone?
@@ -135,24 +135,24 @@ async function loadAlerts(showLoader = true) {
             let active = activeData.alerts || [];
 
             if (targetZoneName) {
-                // ⭐ SPECIFIC ZONE VIEW (came from Zones page 🚨 button)
+                // ⭐ SPECIFIC ZONE VIEW (came from Zones page  button)
                 active = active.filter(alert => {
                     const matched = alert.metadata?.matched_zones || [];
                     const inMeta = matched.some(z => z.name === targetZoneName || String(z.id) === targetZoneId);
                     const inLocation = (alert.location?.name || '').includes(`Zone: ${targetZoneName}`);
                     return inMeta || inLocation;
                 });
-                console.log(`🎯 Zone filter '${targetZoneName}' → ${active.length} active alerts`);
+                console.log(` Zone filter '${targetZoneName}' → ${active.length} active alerts`);
 
                 // Auto-switch tab and update title
                 switchView('zones');
                 const title = document.querySelector('.page-title');
-                if (title) title.innerHTML = `🚨 <span class="gradient-text">${targetZoneName}</span> Alerts`;
+                if (title) title.innerHTML = ` <span class="gradient-text">${targetZoneName}</span> Alerts`;
 
             } else {
                 // ⭐ ALL ZONES VIEW — show alerts from ANY created zone
                 active = active.filter(isZoneAlert);
-                console.log(`📍 All-zones filter → ${active.length} active zone alerts`);
+                console.log(` All-zones filter → ${active.length} active zone alerts`);
             }
             alertsPageState.activeAlerts = active;
         }
@@ -248,7 +248,7 @@ function displayPredictions() {
     if (!alertsPageState.predictions || alertsPageState.predictions.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">🧠</div>
+                <div class="empty-icon"></div>
                 <h3>No Intelligence Data</h3>
                 <p>Waiting for satellite analysis stream...</p>
             </div>
@@ -267,8 +267,8 @@ function displayPredictions() {
                 </div>
             </div>
             <div class="alert-meta">
-                <div>🕒 ${new Date(pred.timestamp).toLocaleString()}</div>
-                <div>📍 ${pred.lat.toFixed(4)}, ${pred.lon.toFixed(4)}</div>
+                <div> ${new Date(pred.timestamp).toLocaleString()}</div>
+                <div> ${pred.lat.toFixed(4)}, ${pred.lon.toFixed(4)}</div>
             </div>
             <div class="alert-message">
                 <strong>AI Confidence:</strong> ${(pred.risk_scores[pred.primary_threat] * 100).toFixed(1)}%<br>
@@ -276,7 +276,7 @@ function displayPredictions() {
             </div>
             <div class="alert-actions" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
                  <button class="alert-btn ack" onclick="createAlertFromPrediction(${index})" style="width: 100%;">
-                    🚨 Confirm & Send Alert
+                     Confirm & Send Alert
                  </button>
             </div>
         </div>
@@ -359,7 +359,7 @@ function displayAlerts() {
     } else {
         activeList.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">✅</div>
+                <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                 <h3>No Active Alerts</h3>
                 <p>All systems are operating normally.</p>
             </div>
@@ -372,7 +372,7 @@ function displayAlerts() {
     } else {
         historyList.innerHTML = `
             <div class="empty-state">
-                <div class="empty-icon">📭</div>
+                <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b7a99" stroke-width="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
                 <h3>No Alert History</h3>
                 <p>Acknowledged alerts will appear here.</p>
             </div>
@@ -397,26 +397,24 @@ function filterAlertsByCurrentSettings(alerts) {
  * Create alert card HTML
  */
 function createAlertCard(alert, isActive) {
-    const disasterEmoji = {
-        'fire': '🔥',
-        'flood': '🌊',
-        'cyclone': '🌪️',
-        'earthquake': '🏚️',
-        'tsunami': '🌊',
-        'drought': '🌵'
+    const disasterIcons = {
+        'fire': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff4d00" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+        'flood': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>',
+        'cyclone': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/></svg>',
+        'drought': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
     };
 
     const timeAgo = formatTimeAgo(alert.created_at);
     const location = alert.location?.name || 'Unknown Location';
-    const emoji = disasterEmoji[alert.disaster_type] || '⚠️';
+    const icon = disasterIcons[alert.disaster_type] || '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
 
     // Show which zone this alert belongs to
     const zoneName = alertsPageState._getAlertZoneName
         ? alertsPageState._getAlertZoneName(alert)
         : null;
     const zoneBadge = zoneName
-        ? `<div style="margin: 8px 0 4px; padding: 4px 10px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.35); border-radius: 20px; display: inline-block; font-size: 11px; color: #a5b4fc; font-weight: 600;">
-               📍 Zone: ${zoneName}
+        ? `<div style="margin: 8px 0 4px; padding: 4px 10px; background: rgba(0,242,255,0.1); border: 1px solid rgba(0,242,255,0.3); border-radius: 20px; display: inline-block; font-size: 11px; color: #00f2ff; font-weight: 600;">
+                Zone: ${zoneName}
            </div>`
         : '';
 
@@ -427,13 +425,13 @@ function createAlertCard(alert, isActive) {
                     <span class="alert-severity ${alert.severity.toLowerCase()}">${alert.severity}</span>
                     <h3 class="alert-title">${alert.title}</h3>
                 </div>
-                <div class="alert-emoji">${emoji}</div>
+                <div class="alert-emoji" style="display:flex; align-items:center;">${icon}</div>
             </div>
 
             <div class="alert-meta">
-                <div class="alert-meta-item"><span>📍</span><span>${location}</span></div>
-                <div class="alert-meta-item"><span>🕒</span><span>${timeAgo}</span></div>
-                <div class="alert-meta-item"><span>📡</span><span>SIG-INT: ${alert.alert_id.substring(0, 8)}</span></div>
+                <div class="alert-meta-item"><span></span><span>${location}</span></div>
+                <div class="alert-meta-item"><span></span><span>${timeAgo}</span></div>
+                <div class="alert-meta-item"><span></span><span>SIG-INT: ${alert.alert_id.substring(0, 8)}</span></div>
             </div>
 
             ${zoneBadge}
@@ -545,7 +543,7 @@ function closeModal() {
  */
 async function acknowledgeAlertFromPage(alertId) {
     try {
-        console.log(`📤 Acknowledging Alert: ${alertId}`);
+        console.log(` Acknowledging Alert: ${alertId}`);
 
         const response = await fetch(`${API_BASE_URL}/alerts/acknowledge`, {
             method: 'POST',
@@ -644,13 +642,13 @@ function filterAlerts() {
  * Show success message
  */
 function showSuccess(message) {
-    console.log('✅ ' + message);
+    console.log('[SUCCESS] ' + message);
 
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'toast-notification success';
     toast.innerHTML = `
-        <div class="toast-icon">✅</div>
+        <div class="toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
         <div class="toast-message">${message}</div>
     `;
 
@@ -670,13 +668,13 @@ function showSuccess(message) {
  * Show error message
  */
 function showError(message) {
-    console.error('❌ ' + message);
+    console.error('[ERROR] ' + message);
 
     // Create toast notification
     const toast = document.createElement('div');
     toast.className = 'toast-notification error';
     toast.innerHTML = `
-        <div class="toast-icon">❌</div>
+        <div class="toast-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
         <div class="toast-message">${message}</div>
     `;
 

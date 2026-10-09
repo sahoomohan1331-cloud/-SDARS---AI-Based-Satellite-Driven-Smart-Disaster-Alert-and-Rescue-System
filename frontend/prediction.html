@@ -11,6 +11,7 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&amp;family=Outfit:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/lucide.min.js"></script>
 </head>
 <body>
 <!-- Tactical Atmosphere -->
@@ -24,8 +25,7 @@
 <section class="page-header reveal-staggered">
 <h1 class="page-title">
                 MULTI-MODAL SCAN
-                <span class="gradient-text" style="background: var(--gradient-signal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">AI
-                    ANALYSIS CENTER</span>
+                <span style="color: var(--accent-signal); font-family: var(--font-display, sans-serif);">AI ANALYSIS CENTER</span>
 </h1>
 <p class="page-subtitle" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-secondary);">
                 [PROTOCOL: TARGETED_SURVEILLANCE] • [DATASET: NASA_EONET_GIBBS]
@@ -36,7 +36,7 @@
 <!-- Sidebar: Global History -->
 <aside class="prediction-sidebar">
 <div class="sidebar-header">
-<h3>📜 AI Output History</h3>
+<h3>AI Output History</h3>
 <p>Recent Strategic Scans</p>
 </div>
 <div class="history-list" id="historicalPredictionsList">
@@ -50,20 +50,20 @@
 <section class="prediction-input">
 <div class="input-card">
 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
-<h2>🌍 Targeted Strategic Scan</h2>
+<h2>Targeted Strategic Scan</h2>
 <div class="ai-status-pill">
 <span class="pulse-dot"></span>
                                 RF-Ensemble Active
                             </div>
 </div>
-<!-- 🔍 Google Maps Style Search -->
+<!-- Google Maps Style Search -->
 <div class="search-section" style="margin-bottom: 20px;">
 <div class="search-box" style="position: relative;">
 <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 5px;">
-<span style="padding: 0 12px; font-size: 18px;">🔍</span>
+<span style="padding: 0 12px; font-size: 14px; color: var(--accent-signal); font-family: monospace;">[SCAN]</span>
 <input autocomplete="off" id="predictionSearchInput" onkeyup="handlePredictionSearch(event)" placeholder="Search any location... Cuttack, Dasapalla, remote areas..." style="flex: 1; padding: 12px 10px; background: transparent; border: none; color: white; font-size: 15px; outline: none;" type="text"/>
-<button onclick="usePredictionGPS()" style="padding: 8px 12px; background: linear-gradient(135deg, #667eea, #764ba2); border: none; border-radius: 10px; color: white; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600; margin-right: 5px;" title="Use my current location">
-                                        📍 GPS
+<button onclick="usePredictionGPS()" style="padding: 8px 12px; background: var(--accent-signal); color: #05070a; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 600; margin-right: 5px;" title="Use my current location">
+                                        GPS
                                     </button>
 </div>
 <!-- Autocomplete Dropdown -->
@@ -71,39 +71,30 @@
 </div>
 </div>
 <small style="color: #6b7a99; display: block; margin-top: 8px; text-align: center;">
-                                💡 Works for ANY location worldwide - cities, villages, remote areas
+                                Works for any location worldwide - cities, villages, remote areas
                             </small>
 </div>
-<!-- Quick Select - Global Locations -->
+<!-- Quick Select - Global Strategic Sectors -->
 <div class="quick-select">
-<small style="color: #a8b3cf; margin-bottom: 8px; display: block;">🌍 Quick Select
-                                (Global):</small>
+<small style="color: #a8b3cf; margin-bottom: 8px; display: block;">Quick Select Strategic Sectors:</small>
 <div class="location-chips">
-<button class="chip" onclick="selectLocation(40.7128, -74.0060, 'New York')">🇺🇸 New
-                                    York</button>
-<button class="chip" onclick="selectLocation(51.5074, -0.1278, 'London')">🇬🇧
-                                    London</button>
-<button class="chip" onclick="selectLocation(35.6762, 139.6503, 'Tokyo')">🇯🇵
-                                    Tokyo</button>
-<button class="chip" onclick="selectLocation(-33.8688, 151.2093, 'Sydney')">🇦🇺
-                                    Sydney</button>
-<button class="chip" onclick="selectLocation(19.0760, 72.8777, 'Mumbai')">🇮🇳
-                                    Mumbai</button>
-<button class="chip" onclick="selectLocation(-23.5505, -46.6333, 'São Paulo')">🇧🇷 São
-                                    Paulo</button>
-<button class="chip" onclick="selectLocation(30.0444, 31.2357, 'Cairo')">🇪🇬
-                                    Cairo</button>
-<button class="chip" onclick="selectLocation(1.3521, 103.8198, 'Singapore')">🇸🇬
-                                    Singapore</button>
+<button class="chip" onclick="selectLocation(40.7128, -74.0060, 'New York')">New York</button>
+<button class="chip" onclick="selectLocation(51.5074, -0.1278, 'London')">London</button>
+<button class="chip" onclick="selectLocation(35.6762, 139.6503, 'Tokyo')">Tokyo</button>
+<button class="chip" onclick="selectLocation(-33.8688, 151.2093, 'Sydney')">Sydney</button>
+<button class="chip" onclick="selectLocation(19.0760, 72.8777, 'Mumbai')">Mumbai</button>
+<button class="chip" onclick="selectLocation(-23.5505, -46.6333, 'São Paulo')">São Paulo</button>
+<button class="chip" onclick="selectLocation(30.0444, 31.2357, 'Cairo')">Cairo</button>
+<button class="chip" onclick="selectLocation(1.3521, 103.8198, 'Singapore')">Singapore</button>
 </div>
 </div>
 <!-- Analyze Button -->
 <button class="btn-analyze" onclick="runPrediction()">
-<span class="btn-icon">⚡</span>
+
 <span>Execute Multi-Modal Analysis</span>
 </button>
 <div style="margin-top: 15px; text-align: center;">
-<a href="#" onclick="toggleManualInput(event)" style="color: #667eea; font-size: 12px; text-decoration: none;">+ Manual Coordinate
+<a href="#" onclick="toggleManualInput(event)" style="color: var(--accent-signal); font-size: 12px; text-decoration: none;">+ Manual Coordinate
                                 Entry</a>
 </div>
 <div class="manual-input-zone hidden" id="manualInput" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
@@ -129,9 +120,9 @@
 <div class="loading-spinner"></div>
 <h3>AI Neural Processing...</h3>
 <div class="loading-steps">
-<div class="step active"><span>🛰️ Fetching NASA Imagery</span></div>
-<div class="step"><span>🌡️ Atmospheric Profiling</span></div>
-<div class="step"><span>🧠 Running RF-Inference</span></div>
+<div class="step active"><span>Fetching NASA Imagery</span></div>
+<div class="step"><span>Atmospheric Profiling</span></div>
+<div class="step"><span>Running RF-Inference</span></div>
 </div>
 </div>
 <!-- Results Section -->
@@ -151,14 +142,14 @@
 <h2 id="resultLocation">Analysis Results</h2>
 <p class="timestamp" id="resultTimestamp"></p>
 </div>
-<button class="btn-export" onclick="exportResults()">📥 Export Intelligence PDF</button>
+<button class="btn-export" onclick="exportResults()">Export Intelligence PDF</button>
 </div>
 <!-- Primary Threat Banner -->
 <div class="threat-banner" id="primaryThreat"></div>
 <!-- AI Model Calibration & Accuracy KPI Header -->
-<div style="background: rgba(102, 126, 234, 0.08); border: 1px solid rgba(102, 126, 234, 0.25); border-radius: 12px; padding: 14px 20px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+<div style="background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 12px; padding: 14px 20px; margin-bottom: 25px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
 <div style="display: flex; align-items: center; gap: 10px;">
-<span style="font-size: 22px;">🧠</span>
+<span style="font-size: 18px; color: var(--accent-signal); font-family: monospace;">[AI]</span>
 <div>
 <strong style="color: #fff; font-size: 14px;">High-Precision Random Forest Ensemble</strong>
 <p style="margin: 0; font-size: 11px; color: #a8b3cf;">Trained on 16,000 multi-modal physics telemetry samples across all 8 hazard vectors</p>
@@ -170,7 +161,7 @@
 <small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean Accuracy</small>
 </div>
 <div style="text-align: right;">
-<div style="font-size: 16px; font-weight: 800; color: #667eea;">97.63%</div>
+<div style="font-size: 16px; font-weight: 800; color: var(--accent-signal);">97.63%</div>
 <small style="font-size: 10px; color: #6b7a99; text-transform: uppercase;">Mean F1 Score</small>
 </div>
 <div style="text-align: right;">
@@ -185,7 +176,7 @@
 <div class="risk-card-detailed cyclone-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">🌪️</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[CYCL]</div>
 <div>
 <h3>Cyclone Vortex</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 98.5%</small>
@@ -210,12 +201,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="cycloneSatelliteBar"></div></div>
 <div class="bar-value" id="cycloneSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="cycloneWeatherBar"></div></div>
 <div class="bar-value" id="cycloneWeatherValue">-</div>
 </div>
@@ -226,7 +217,7 @@
 <div class="risk-card-detailed flood-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">🌊</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[WATE]</div>
 <div>
 <h3>Basin Inundation Flood</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
@@ -251,12 +242,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="floodSatelliteBar"></div></div>
 <div class="bar-value" id="floodSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="floodWeatherBar"></div></div>
 <div class="bar-value" id="floodWeatherValue">-</div>
 </div>
@@ -267,7 +258,7 @@
 <div class="risk-card-detailed drought-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">🌾</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[AGRI]</div>
 <div>
 <h3>Agricultural Drought</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.3% | F1: 96.3%</small>
@@ -292,12 +283,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="droughtSatelliteBar"></div></div>
 <div class="bar-value" id="droughtSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="droughtWeatherBar"></div></div>
 <div class="bar-value" id="droughtWeatherValue">-</div>
 </div>
@@ -308,7 +299,7 @@
 <div class="risk-card-detailed heatwave-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">☀️</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[DROU]</div>
 <div>
 <h3>IMD / NWS Heatwave</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 97.8%</small>
@@ -333,12 +324,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="heatwaveSatelliteBar"></div></div>
 <div class="bar-value" id="heatwaveSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="heatwaveWeatherBar"></div></div>
 <div class="bar-value" id="heatwaveWeatherValue">-</div>
 </div>
@@ -349,7 +340,7 @@
 <div class="risk-card-detailed lightning-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">⚡</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[LIGH]</div>
 <div>
 <h3>Convective Lightning</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.7%</small>
@@ -374,12 +365,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="lightningSatelliteBar"></div></div>
 <div class="bar-value" id="lightningSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="lightningWeatherBar"></div></div>
 <div class="bar-value" id="lightningWeatherValue">-</div>
 </div>
@@ -390,7 +381,7 @@
 <div class="risk-card-detailed landslide-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">⛰️</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[LAND]</div>
 <div>
 <h3>Geotechnical Landslide</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.7% | F1: 98.0%</small>
@@ -415,12 +406,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="landslideSatelliteBar"></div></div>
 <div class="bar-value" id="landslideSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="landslideWeatherBar"></div></div>
 <div class="bar-value" id="landslideWeatherValue">-</div>
 </div>
@@ -431,7 +422,7 @@
 <div class="risk-card-detailed storm_surge-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">🌊</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[WATE]</div>
 <div>
 <h3>Coastal Storm Surge</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.5% | F1: 97.4%</small>
@@ -456,12 +447,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="storm_surgeSatelliteBar"></div></div>
 <div class="bar-value" id="storm_surgeSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="storm_surgeWeatherBar"></div></div>
 <div class="bar-value" id="storm_surgeWeatherValue">-</div>
 </div>
@@ -472,7 +463,7 @@
 <div class="risk-card-detailed fire-theme">
 <div class="card-header">
 <div class="header-left">
-<div class="risk-icon">🔥</div>
+<div class="risk-icon" style="font-size: 12px; font-weight: 700; color: var(--accent-signal); font-family: monospace;">[WILD]</div>
 <div>
 <h3>Wildfire &amp; Forest Fire</h3>
 <small style="color: #4ecdc4; font-size: 11px;">Acc: 99.6% | F1: 97.6%</small>
@@ -497,12 +488,12 @@
 <div class="chart-header"><h4>Data Source Breakdown</h4></div>
 <div class="chart-bars">
 <div class="chart-bar">
-<div class="bar-label">🛰️ Satellite</div>
+<div class="bar-label"><i data-lucide="satellite" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Satellite</div>
 <div class="bar-track"><div class="bar-fill satellite" id="fireSatelliteBar"></div></div>
 <div class="bar-value" id="fireSatelliteValue">-</div>
 </div>
 <div class="chart-bar">
-<div class="bar-label">🌡️ Weather</div>
+<div class="bar-label"><i data-lucide="cloud" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>Weather</div>
 <div class="bar-track"><div class="bar-fill weather" id="fireWeatherBar"></div></div>
 <div class="bar-value" id="fireWeatherValue">-</div>
 </div>
@@ -512,7 +503,7 @@
 </div>
 <!-- Weather Details -->
 <div class="weather-details">
-<h3>🌡️ Current Weather Conditions</h3>
+<h3><i data-lucide="cloud-sun" style="width:20px;height:20px;vertical-align:middle;margin-right:8px;color:var(--accent-signal);"></i>Current Weather Conditions</h3>
 <div class="weather-grid" id="weatherGrid">
 <!-- Skeletons while loading -->
 <div class="skeleton skeleton-card"></div>
@@ -529,5 +520,6 @@
 
 <script src="js/main.js"></script>
 <script src="js/prediction.js"></script>
-<script src="js/nav.js"></script></body>
+<script src="js/nav.js"></script><script>document.addEventListener("DOMContentLoaded", function() { if (window.lucide) lucide.createIcons(); });</script>
+</body>
 </html>

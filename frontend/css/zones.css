@@ -76,9 +76,9 @@ body {
 }
 
 .tool-btn.active {
-    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    background: #00f2ff;
     border-color: #a78bfa;
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+    border: 1px solid rgba(0, 242, 255, 0.3);
 }
 
 .tool-icon {
@@ -148,7 +148,7 @@ body {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #00f2ff;
 }
 
 .checkbox-group {
@@ -189,13 +189,13 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 242, 255, 0.2);
 }
 
 .btn-secondary {
@@ -231,7 +231,7 @@ body {
 
 .badge {
     padding: 4px 10px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
     color: white;
     border-radius: 10px;
     font-size: 12px;
@@ -330,7 +330,7 @@ body {
 .preferences-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    background: rgba(0, 242, 255, 0.08);
     border: 1px solid rgba(102, 126, 234, 0.3);
     border-radius: 8px;
     color: white;
@@ -340,7 +340,7 @@ body {
 }
 
 .preferences-btn:hover {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+    background: rgba(0, 242, 255, 0.15);
     transform: translateY(-2px);
 }
 
@@ -382,7 +382,7 @@ body {
 
 .map-control-btn:hover {
     transform: scale(1.1);
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
 }
 
 /* Modal */
@@ -512,7 +512,7 @@ body {
 }
 
 input:checked+.slider {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
 }
 
 input:checked+.slider:before {

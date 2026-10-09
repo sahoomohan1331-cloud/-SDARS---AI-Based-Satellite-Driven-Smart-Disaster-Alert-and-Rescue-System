@@ -65,7 +65,7 @@ async function calculateSafeRoute() {
         const [startPoint, endPoint] = await Promise.all([resolveLocation(startText), resolveLocation(endText)]);
         if (!startPoint || !endPoint) {
             navBtn.disabled = false;
-            navBtn.innerHTML = `🚀 Start Navigation`;
+            navBtn.innerHTML = ` Start Navigation`;
             return alert("Location not found.");
         }
 
@@ -94,16 +94,16 @@ async function calculateSafeRoute() {
                 steps: true,
                 overview: 'full'
             }),
-            lineOptions: { styles: [{ color: '#6366f1', opacity: 0, weight: 0 }] }
+            lineOptions: { styles: [{ color: '#00f2ff', opacity: 0, weight: 0 }] }
         }).addTo(map);
 
         routingControl.on('routesfound', async function (e) {
             navBtn.disabled = false;
-            navBtn.innerHTML = `🚀 Start Navigation`;
+            navBtn.innerHTML = ` Start Navigation`;
             allRoutes = e.routes;
             activeRouteIndex = 0;
 
-            const routeColors = ['#6366f1', '#9333ea', '#14b8a6'];
+            const routeColors = ['#00f2ff', '#9333ea', '#14b8a6'];
             allRoutes.forEach((route, index) => {
                 const polyline = L.polyline(route.coordinates.map(c => [c.lat, c.lng]), {
                     color: routeColors[index] || '#6b7a99',
@@ -129,13 +129,13 @@ async function calculateSafeRoute() {
         routingControl.on('routingerror', function (err) {
             console.warn("Routing notice:", err);
             navBtn.disabled = false;
-            navBtn.innerHTML = `🚀 Start Navigation`;
+            navBtn.innerHTML = ` Start Navigation`;
         });
 
     } catch (err) {
         console.error("Navigation error:", err);
         navBtn.disabled = false;
-        navBtn.innerHTML = `🚀 Start Navigation`;
+        navBtn.innerHTML = ` Start Navigation`;
     }
 }
 
@@ -191,10 +191,10 @@ function updateRouteBadge(index, data) {
     
     if (hasBlocked) {
         badge.className = 'route-safety-badge danger';
-        badge.textContent = '⛔ Road Blocked';
+        badge.textContent = 'ROAD BLOCKED';
     } else {
         badge.className = `route-safety-badge ${score > 80 ? 'safe' : score > 50 ? 'warning' : 'danger'}`;
-        badge.textContent = score > 80 ? '✓ Safe' : score > 50 ? '⚠ Caution' : '⛔ High Risk';
+        badge.textContent = score > 80 ? 'SECURE' : score > 50 ? 'CAUTION' : 'HIGH RISK';
     }
 }
 
@@ -208,10 +208,10 @@ function displaySafetyDetails(data) {
     
     indicator.className = `safety-indicator ${isSafe ? 'safe' : 'danger'}`;
     indicator.innerHTML = isSafe 
-        ? `✅ ROUTE SECURE: No disaster risks detected.` 
+        ? `ROUTE SECURE: No disaster risks detected.` 
         : hasBlocked 
-            ? `🛑 BLOCKED CORRIDOR AVOIDED: Detour engaged!` 
-            : `⚠️ DANGER: Hazard zones detected on path!`;
+            ? `BLOCKED CORRIDOR AVOIDED: Detour engaged!` 
+            : `DANGER: Hazard zones detected on path!`;
             
     updateMapStatus(
         isSafe ? 'Path Verified Safe' : hasBlocked ? 'DETOUR ACTIVE: Blocked Road Detected' : 'CRISIS ALERT: Hazards Intercepted', 
@@ -223,7 +223,7 @@ function displaySafetyDetails(data) {
             detourBox.style.display = 'block';
             detourBox.innerHTML = `
                 <div style="font-weight: 700; color: #f87171; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-                    <span>🛑</span> ROADWAY IMPASSIBLE — DETOUR ROUTING ENGAGED
+                    <span></span> ROADWAY IMPASSIBLE — DETOUR ROUTING ENGAGED
                 </div>
                 ${data.blocked_roads.map(b => `
                     <div style="background: rgba(0,0,0,0.25); border-left: 3px solid #ef4444; padding: 6px 8px; margin-bottom: 6px; border-radius: 4px;">
@@ -265,21 +265,27 @@ async function toggleRoadStatuses(show) {
             const isWaterlogged = r.status === 'WATERLOGGED';
             const isLandslide = r.status === 'LANDSLIDE';
             const color = isBlocked ? '#ef4444' : isWaterlogged ? '#0284c7' : isLandslide ? '#ea580c' : '#10b981';
-            const iconChar = isBlocked ? '🛑' : isWaterlogged ? '🌊' : isLandslide ? '⛰️' : '🚗';
+            const iconSvg = isBlocked
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+                : isWaterlogged
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>'
+                : isLandslide
+                ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>'
+                : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
             
             const icon = L.divIcon({
                 className: 'road-status-marker',
-                html: `<div style="background: ${color}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: 0 0 12px ${color}; border: 2px solid #fff; cursor: pointer;">${iconChar}</div>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
+                html: `<div style="background: ${color}; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff; cursor: pointer;">${iconSvg}</div>`,
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
             });
 
             const m = L.marker([r.latitude, r.longitude], { icon }).addTo(map).bindPopup(`
                 <div style="font-family: 'Inter', sans-serif; min-width: 220px; color: #fff;">
-                    <div style="color: ${color}; font-size: 13px; font-weight: 700; margin-bottom: 4px;">${iconChar} ${r.status} CORRIDOR</div>
+                    <div style="color: ${color}; font-size: 13px; font-weight: 700; margin-bottom: 4px;">${r.status} CORRIDOR</div>
                     <strong style="color: #fff; font-size: 13px;">${r.name}</strong><br>
                     <div style="color: #94a3b8; font-size: 11px; margin-top: 4px;">${r.reason}</div>
-                    ${r.detour ? `<div style="margin-top: 8px; padding: 6px 8px; background: rgba(56,189,248,0.12); border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 11px; color: #38bdf8;"><strong>↪ Tactical Detour:</strong> ${r.detour}</div>` : ''}
+                    ${r.detour ? `<div style="margin-top: 8px; padding: 6px 8px; background: rgba(56,189,248,0.12); border-left: 3px solid #38bdf8; border-radius: 4px; font-size: 11px; color: #38bdf8;"><strong>Tactical Detour:</strong> ${r.detour}</div>` : ''}
                 </div>
             `);
             roadMarkers.push(m);
@@ -339,7 +345,7 @@ async function toggleHazards(show) {
         const resp = await fetch(`${API_BASE_URL}/route/hazards?start_lat=${start.lat}&start_lon=${start.lng}&end_lat=${end.lat}&end_lon=${end.lng}`);
         const data = await resp.json();
         data.fire_hotspots.forEach(h => {
-            const c = L.circle([h.latitude, h.longitude], { radius: 5000, color: '#ff4444', fillOpacity: 0.4 }).addTo(map).bindPopup('🔥 Fire Hotspot');
+            const c = L.circle([h.latitude, h.longitude], { radius: 5000, color: '#ff4444', fillOpacity: 0.4 }).addTo(map).bindPopup(' Fire Hotspot');
             hazardMarkers.push(c);
         });
     } catch (e) { }
@@ -465,7 +471,7 @@ function displayRouteOptions(routes) {
         <div class="route-option-card ${i === 0 ? 'active' : ''}" onclick="switchToRoute(${i})">
             <div class="route-option-info">
                 <div class="route-option-title">Route ${i + 1}</div>
-                <div class="route-option-meta">⏱️ ${Math.round(r.summary.totalTime / 60)}m | 📏 ${(r.summary.totalDistance / 1000).toFixed(1)}km</div>
+                <div class="route-option-meta">⏱️ ${Math.round(r.summary.totalTime / 60)}m |  ${(r.summary.totalDistance / 1000).toFixed(1)}km</div>
             </div>
             <div class="route-safety-badge analyzing" id="safety-badge-${i}">Analyzing...</div>
         </div>

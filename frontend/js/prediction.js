@@ -9,7 +9,7 @@ Chart.defaults.font.family = 'Inter, sans-serif';
 
 // Standardized API Base URL - Dynamic detection to handle localhost vs 127.0.0.1
 const API_BASE_URL = window.API_BASE_URL || `http://${window.location.hostname}:8000/api`;
-console.log("📡 API Connection Point:", API_BASE_URL);
+console.log(" API Connection Point:", API_BASE_URL);
 
 // Global Error Tracker for user feedback
 window.onerror = function (message, source, lineno, colno, error) {
@@ -55,16 +55,16 @@ async function loadHistorySidebar() {
             let japanLabel = 'L1 NORMAL';
             let badgeClass = 'l1';
             if (riskLevel === 'HIGH' || riskLevel === 'L4') {
-                japanLabel = '🔴 L4 EVACUATE';
+                japanLabel = ' L4 EVACUATE';
                 badgeClass = 'l4';
             } else if (riskLevel === 'EXTREME' || riskLevel === 'L5') {
-                japanLabel = '🟣 L5 EXTREME';
+                japanLabel = ' L5 EXTREME';
                 badgeClass = 'l5';
             } else if (riskLevel === 'MEDIUM' || riskLevel === 'L3') {
-                japanLabel = '🟠 L3 PREPARE';
+                japanLabel = ' L3 PREPARE';
                 badgeClass = 'l3';
             } else if (riskLevel === 'L2' || riskLevel === 'ADVISORY') {
-                japanLabel = '🟡 L2 WATCH';
+                japanLabel = ' L2 WATCH';
                 badgeClass = 'l2';
             }
 
@@ -151,7 +151,7 @@ async function runPrediction() {
         if (!response.ok) throw new Error("Satellite Link Timeout");
 
         const data = await response.json();
-        console.log("🧠 Intelligence Data Received:", data);
+        console.log(" Intelligence Data Received:", data);
 
         if (!data || !data.primary_threat) {
             throw new Error("Invalid AI Response Structure");
@@ -183,7 +183,7 @@ async function runPrediction() {
 
 // Consolidated function to fill all inputs and trigger analysis
 async function fillPredictionInputs(lat, lon, name) {
-    console.log("🛠️ Filling Intelligence Inputs:", { lat, lon, name });
+    console.log("️ Filling Intelligence Inputs:", { lat, lon, name });
 
     const latInput = document.getElementById('latitude');
     const lonInput = document.getElementById('longitude');
@@ -201,7 +201,7 @@ async function fillPredictionInputs(lat, lon, name) {
 
     if (isGeneric && lat && lon) {
         try {
-            console.log("🏙️ Resolving location name for coordinates:", { lat, lon });
+            console.log("️ Resolving location name for coordinates:", { lat, lon });
             const geoRes = await fetch(
                 `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
                 { headers: { 'User-Agent': 'SDARS-System/1.0' } }
@@ -209,7 +209,7 @@ async function fillPredictionInputs(lat, lon, name) {
             const geoData = await geoRes.json();
             const addr = geoData.address || {};
             displayName = addr.city || addr.town || addr.village || addr.suburb || addr.state || addr.country || `${lat}, ${lon}`;
-            console.log("✅ Location resolved:", displayName);
+            console.log("[SDARS] Location resolved:", displayName);
         } catch (e) {
             console.warn("Location resolution failed, using fallback:", e);
         }
@@ -375,9 +375,9 @@ function renderWeatherGrid(w) {
 
     const weather = w || {};
     const items = [
-        { label: 'Surface Temp', val: `${weather.temperature || '??'}°C`, icon: '🌡️' },
-        { label: 'Relative Humidity', val: `${weather.humidity || '??'}%`, icon: '💧' },
-        { label: 'Wind Velocity', val: `${weather.wind_speed || '??'} km/h`, icon: '💨' },
+        { label: 'Surface Temp', val: `${weather.temperature || '??'}°C`, icon: '️' },
+        { label: 'Relative Humidity', val: `${weather.humidity || '??'}%`, icon: '' },
+        { label: 'Wind Velocity', val: `${weather.wind_speed || '??'} km/h`, icon: '' },
         { label: 'Barometric Pres', val: `${weather.pressure || '??'} hPa`, icon: '⏲️' }
     ];
 
@@ -403,7 +403,7 @@ function renderSpectralAnalysis(data) {
         chartContainer.id = 'spectralContainer';
         chartContainer.className = 'spectral-analysis-card';
         chartContainer.innerHTML = `
-            <h3>🛰️ Multispectral Satellite Signature</h3>
+            <h3>Multispectral Satellite Signature</h3>
             <p style="color: #6b7a99; font-size: 12px; margin-bottom: 20px;">AI analysis of Sentinel-2 and VIIRS spectral bands</p>
             <div style="height: 300px;"><canvas id="spectralChart"></canvas></div>
         `;
@@ -425,7 +425,7 @@ function renderSpectralAnalysis(data) {
             datasets: [{
                 label: 'AI-Derived Spectral Profile',
                 data: data.spectral_signature || [0.1, 0.2, 0.15, 0.4, 0.2, 0.1, 0.3],
-                borderColor: '#667eea',
+                borderColor: '#00f2ff',
                 backgroundColor: 'rgba(102, 126, 234, 0.2)',
                 borderWidth: 3,
                 tension: 0.4,
@@ -451,7 +451,7 @@ function exportResults() {
 }
 
 // ================================================
-// 🔍 Google Maps Style Search for Prediction Page
+//  Google Maps Style Search for Prediction Page
 // ================================================
 
 let predictionSearchTimeout = null;
@@ -517,7 +517,7 @@ async function fetchPredictionSuggestions(query) {
                      onmouseenter="this.style.background='rgba(102,126,234,0.1)'"
                      onmouseleave="this.style.background='transparent'">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 18px;">📍</span>
+                        <span style="font-size: 18px;"></span>
                         <div>
                             <div style="color: white; font-weight: 600;">${name}</div>
                             <div style="color: #6b7a99; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 350px;">${r.display_name}</div>
@@ -641,8 +641,8 @@ function showNoPredictionMessage() {
     if (primaryThreat) {
         primaryThreat.innerHTML = `
             <div style="text-align: center; padding: 30px;">
-                <div style="font-size: 48px; margin-bottom: 15px;">🌍</div>
-                <h3 style="color: #667eea; margin-bottom: 10px;">Ready for Analysis</h3>
+                <div style="font-size: 48px; margin-bottom: 15px;"></div>
+                <h3 style="color: #00f2ff; margin-bottom: 10px;">Ready for Analysis</h3>
                 <p style="color: #a8b3cf;">Enter a location in the search box above, use GPS, or select a quick location to begin AI analysis.</p>
             </div>
         `;
@@ -667,13 +667,13 @@ window.addEventListener('load', () => {
     const lon = params.get('lon');
     const name = params.get('name');
 
-    console.log("📍 Deep Link Detection:", { lat, lon, name });
+    console.log(" Deep Link Detection:", { lat, lon, name });
 
     const hasLat = lat !== null && lat !== undefined && lat !== 'undefined' && lat !== 'null' && lat !== '';
     const hasLon = lon !== null && lon !== undefined && lon !== 'undefined' && lon !== 'null' && lon !== '';
 
     if (hasLat && hasLon) {
-        console.log("🚀 Valid Mission Parameters found. Initializing Tactical Dashboard.");
+        console.log(" Valid Mission Parameters found. Initializing Tactical Dashboard.");
 
         // Use the consolidated filler
         fillPredictionInputs(lat, lon, name || 'Target Zone');

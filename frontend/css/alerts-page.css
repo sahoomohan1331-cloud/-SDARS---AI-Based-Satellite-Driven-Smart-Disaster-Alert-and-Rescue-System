@@ -107,13 +107,13 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #00f2ff;
     color: white;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 242, 255, 0.2);
 }
 
 .btn-secondary {
@@ -138,13 +138,13 @@ select {
 }
 
 select:hover {
-    border-color: #667eea;
+    border-color: #00f2ff;
     background: rgba(102, 126, 234, 0.1);
 }
 
 select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #00f2ff;
 }
 
 /* Alerts Section */
@@ -167,7 +167,7 @@ select:focus {
 
 .badge {
     padding: 4px 12px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
     color: white;
     border-radius: 12px;
     font-size: 14px;
@@ -366,7 +366,7 @@ select:focus {
 }
 
 .alert-btn.view {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: #00f2ff;
     color: white;
 }
 
@@ -610,7 +610,7 @@ select:focus {
     width: 50px;
     height: 50px;
     border: 3px solid rgba(102, 126, 234, 0.3);
-    border-top-color: #667eea;
+    border-top-color: #00f2ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 15px;
@@ -623,7 +623,7 @@ select:focus {
 }
 
 .loading-text {
-    color: #667eea;
+    color: #00f2ff;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     letter-spacing: 2px;

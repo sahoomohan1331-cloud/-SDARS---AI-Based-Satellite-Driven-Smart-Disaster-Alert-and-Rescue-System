@@ -37,8 +37,8 @@ async function initCharts() {
                     {
                         label: 'Aggregated Threat Index',
                         data: [12, 19, 15, 8, 22, 30, summary.total_count % 100],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#00f2ff',
+                        backgroundColor: 'rgba(0, 242, 255, 0.1)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4

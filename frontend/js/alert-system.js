@@ -16,7 +16,7 @@ const alertState = {
  * Initialize Alert System
  */
 function initAlertSystem() {
-    console.log('🚨 Initializing Alert System...');
+    console.log(' Initializing Alert System...');
 
     // Create alert container if it doesn't exist
     createAlertContainer();
@@ -33,7 +33,7 @@ function initAlertSystem() {
     // Request notification permission
     requestNotificationPermission();
 
-    console.log('✅ Alert System initialized');
+    console.log('[ALERT-SYSTEM] Initialized successfully');
 }
 
 /**
@@ -72,7 +72,7 @@ function loadNotificationSound() {
 function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission().then(permission => {
-            console.log(`🔔 Notification permission: ${permission}`);
+            console.log(` Notification permission: ${permission}`);
         });
     }
 }
@@ -143,7 +143,7 @@ async function loadActiveAlerts() {
                 displayAlert(alert, false);
             });
 
-            console.log(`📋 Loaded ${alertState.activeAlerts.length} active alerts`);
+            console.log(` Loaded ${alertState.activeAlerts.length} active alerts`);
         }
 
     } catch (error) {
@@ -196,17 +196,17 @@ function createAlertCard(alert) {
         max-width: 400px;
     `;
 
-    const severityEmoji = {
-        'LOW': 'ℹ️',
-        'MEDIUM': '⚠️',
-        'HIGH': '🚨',
-        'CRITICAL': '🆘'
+    const severityIcons = {
+        'LOW': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+        'MEDIUM': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+        'HIGH': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff4d00" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+        'CRITICAL': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
     };
 
     card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 24px;">${severityEmoji[alert.severity] || '⚠️'}</span>
+                <span style="display: flex; align-items: center;">${severityIcons[alert.severity] || severityIcons.MEDIUM}</span>
                 <div>
                     <div style="font-weight: 700; color: ${getSeverityColor(alert.severity)}; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
                         ${alert.severity} ALERT
@@ -236,7 +236,7 @@ function createAlertCard(alert) {
         </div>
         
         <div style="color: #e2e8f0; font-size: 13px; line-height: 1.5; margin-bottom: 12px;">
-            <strong>📍 ${alert.location.name}</strong><br>
+            <strong>${alert.location.name}</strong><br>
             <span style="color: #94a3b8;">${formatAlertTime(alert.created_at)}</span>
         </div>
         
@@ -247,18 +247,18 @@ function createAlertCard(alert) {
         <div style="display: flex; gap: 8px;">
             <button onclick="viewAlertDetails('${alert.alert_id}')" style="
                 flex: 1;
-                background: linear-gradient(135deg, #6366f1, #4f46e5);
-                color: white;
+                background: #00f2ff;
+                color: #05070a;
                 border: none;
                 padding: 10px;
                 border-radius: 8px;
-                font-weight: 600;
+                font-weight: 700;
                 font-size: 12px;
                 cursor: pointer;
                 transition: transform 0.2s;
             " onmouseover="this.style.transform='scale(1.02)'" 
                onmouseout="this.style.transform='scale(1)'">
-                📋 View Details
+                View Details
             </button>
             <button onclick="acknowledgeAlert('${alert.alert_id}')" style="
                 flex: 1;
@@ -273,7 +273,7 @@ function createAlertCard(alert) {
                 transition: background 0.2s;
             " onmouseover="this.style.background='rgba(34, 197, 94, 0.3)'" 
                onmouseout="this.style.background='rgba(34, 197, 94, 0.2)'">
-                ✓ Acknowledge
+                Acknowledge
             </button>
         </div>
     `;
@@ -513,16 +513,16 @@ ${alert.message}
                 <div style="margin-top: 24px; display: flex; gap: 12px;">
                     <button onclick="acknowledgeAlert('${alert.alert_id}'); document.getElementById('alertModal').remove();" style="
                         flex: 1;
-                        background: linear-gradient(135deg, #22c55e, #16a34a);
-                        color: white;
+                        background: #10b981;
+                        color: #ffffff;
                         border: none;
                         padding: 14px;
                         border-radius: 10px;
-                        font-weight: 600;
+                        font-weight: 700;
                         font-size: 14px;
                         cursor: pointer;
                     ">
-                        ✓ Acknowledge & Close
+                        Acknowledge & Close
                     </button>
                      <button onclick="document.getElementById('alertModal').remove()" style="
                         background: rgba(255,255,255,0.05);

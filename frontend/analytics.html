@@ -11,6 +11,7 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/lucide.min.js"></script>
 </head>
 <body>
 <!-- Background Effects -->
@@ -24,7 +25,7 @@
 <section class="page-header">
 <h1 class="page-title">
                 Analytics &amp; Insights
-                <span class="gradient-text">Historical Trends</span>
+                <span style="color: var(--accent-signal); font-family: var(--font-display, sans-serif);">Historical Trends</span>
 </h1>
 <p class="page-subtitle">
                 Track disaster patterns, prediction accuracy, and system performance
@@ -33,7 +34,7 @@
 <!-- KPI Cards -->
 <section class="kpi-grid">
 <div class="kpi-card">
-<div class="kpi-icon">🎯</div>
+<div class="kpi-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
 <div class="kpi-content">
 <h3>95.8%</h3>
 <p>Prediction Accuracy</p>
@@ -41,7 +42,7 @@
 </div>
 </div>
 <div class="kpi-card">
-<div class="kpi-icon">⚡</div>
+<div class="kpi-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
 <div class="kpi-content">
 <h3>1,247</h3>
 <p>Predictions Made</p>
@@ -49,7 +50,7 @@
 </div>
 </div>
 <div class="kpi-card">
-<div class="kpi-icon">🚨</div>
+<div class="kpi-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
 <div class="kpi-content">
 <h3>23</h3>
 <p>Alerts Issued</p>
@@ -57,7 +58,7 @@
 </div>
 </div>
 <div class="kpi-card">
-<div class="kpi-icon">⏱️</div>
+<div class="kpi-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
 <div class="kpi-content">
 <h3>0.8s</h3>
 <p>Avg Response Time</p>
@@ -69,7 +70,7 @@
 <section class="charts-section">
 <div class="chart-card">
 <div class="chart-header">
-<h3>📈 Disaster Risk Trends (Last 30 Days)</h3>
+<h3> Disaster Risk Trends (Last 30 Days)</h3>
 <div class="chart-controls">
 <select class="chart-select">
 <option>Last 7 days</option>
@@ -85,7 +86,7 @@
 <div class="chart-row">
 <div class="chart-card half">
 <div class="chart-header">
-<h3>🔥 Risk Distribution</h3>
+<h3> Risk Distribution</h3>
 </div>
 <div class="chart-container">
 <canvas id="distributionChart"></canvas>
@@ -93,7 +94,7 @@
 </div>
 <div class="chart-card half">
 <div class="chart-header">
-<h3>🌍 Predictions by Region</h3>
+<h3> Predictions by Region</h3>
 </div>
 <div class="chart-container">
 <canvas id="regionChart"></canvas>
@@ -103,7 +104,7 @@
 </section>
 <!-- Recent Activity -->
 <section class="activity-section">
-<h2 class="section-title">📝 Recent Activity Log</h2>
+<h2 class="section-title"> Recent Activity Log</h2>
 <div class="activity-table">
 <div class="table-header">
 <div>Timestamp</div>
@@ -115,35 +116,35 @@
 <div class="table-row">
 <div>2026-01-30 17:35</div>
 <div>Mumbai</div>
-<div>🔥 Fire Analysis</div>
+<div> Fire Analysis</div>
 <div><span class="badge low">LOW</span></div>
 <div>30%</div>
 </div>
 <div class="table-row">
 <div>2026-01-30 17:29</div>
 <div>Chennai</div>
-<div>🌊 Flood Analysis</div>
+<div> Flood Analysis</div>
 <div><span class="badge medium">MEDIUM</span></div>
 <div>55%</div>
 </div>
 <div class="table-row">
 <div>2026-01-30 17:22</div>
 <div>Kolkata</div>
-<div>🌪️ Cyclone Analysis</div>
+<div>️ Cyclone Analysis</div>
 <div><span class="badge high">HIGH</span></div>
 <div>90%</div>
 </div>
 <div class="table-row">
 <div>2026-01-30 17:15</div>
 <div>Delhi</div>
-<div>🔥 Fire Analysis</div>
+<div> Fire Analysis</div>
 <div><span class="badge low">LOW</span></div>
 <div>25%</div>
 </div>
 <div class="table-row">
 <div>2026-01-30 17:08</div>
 <div>Bangalore</div>
-<div>🌊 Flood Analysis</div>
+<div> Flood Analysis</div>
 <div><span class="badge low">LOW</span></div>
 <div>15%</div>
 </div>
@@ -151,7 +152,7 @@
 </section>
 <!-- AI Performance -->
 <section class="performance-section">
-<h2 class="section-title">🤖 AI Model Performance</h2>
+<h2 class="section-title"> AI Model Performance</h2>
 <div class="performance-grid">
 <div class="performance-card">
 <h3>Fire Detection Model</h3>
@@ -214,5 +215,6 @@
 
 <script src="js/main.js"></script>
 <script src="js/analytics.js"></script>
-<script src="js/nav.js"></script></body>
+<script src="js/nav.js"></script><script>document.addEventListener("DOMContentLoaded", function() { if (window.lucide) lucide.createIcons(); });</script>
+</body>
 </html>

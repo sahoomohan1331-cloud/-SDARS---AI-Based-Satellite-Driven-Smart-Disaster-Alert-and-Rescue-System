@@ -88,7 +88,7 @@
         }
 
         .float-link.active {
-            color: #667eea;
+            color: #00f2ff;
         }
 
         .control-panel {
@@ -129,14 +129,10 @@
         }
 
         .panel-title {
-            color: white;
+            color: #ffffff;
             font-size: 22px;
             font-weight: 800;
             margin-bottom: 5px;
-            background: linear-gradient(135deg, #fff 0%, #a8b3cf 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -267,9 +263,9 @@
         }
 
         .btn-tour {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            background: #00f2ff;
+            color: #05070a;
+            font-weight: 700;
         }
 
         .btn-tour:hover {
@@ -327,7 +323,7 @@
         }
 
         input:checked+.slider {
-            background-color: #667eea;
+            background-color: #00f2ff;
         }
 
         input:checked+.slider:before {
@@ -341,7 +337,7 @@
             transform: translateX(-50%);
             background: rgba(10, 14, 26, 0.9);
             backdrop-filter: blur(10px);
-            border: 1px solid #667eea;
+            border: 1px solid #00f2ff;
             color: white;
             padding: 12px 24px;
             border-radius: 50px;
@@ -484,15 +480,18 @@
             50% { transform: translateY(-8px) rotate(4deg); }
         }
     </style>
+<script src="js/lucide.min.js"></script>
 </head>
 <body>
 <!-- Engine Initializing Overlay -->
 <div id="engineLoader" style="position: fixed; inset: 0; background: #070913; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; color: #fff; transition: opacity 0.5s ease;">
-<div style="font-size: 48px; margin-bottom: 16px; animation: floatSat 2s infinite ease-in-out;">🛰️</div>
-<h2 style="font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; background: linear-gradient(135deg, #fff 0%, #667eea 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">INITIALIZING 3D WAR ROOM</h2>
+<div style="margin-bottom: 16px; animation: floatSat 2s infinite ease-in-out; color: #00f2ff;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+</div>
+<h2 style="font-size: 20px; font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; color: #ffffff;">INITIALIZING 3D WAR ROOM</h2>
 <p id="loaderStatus" style="color: #6b7a99; font-size: 13px; margin-bottom: 24px;">Loading Cesium 3D Globe &amp; Orbital Telemetry...</p>
 <div style="width: 260px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-<div id="loaderBar" style="width: 45%; height: 100%; background: linear-gradient(90deg, #667eea, #00f2ff); border-radius: 4px; transition: width 0.4s ease;"></div>
+<div id="loaderBar" style="width: 45%; height: 100%; background: linear-gradient(90deg, #00f2ff, #00f2ff); border-radius: 4px; transition: width 0.4s ease;"></div>
 </div>
 </div>
 <div class="scanlines"></div>
@@ -508,7 +507,7 @@
 <div class="war-room-overlay">
 <div class="control-panel">
 <div class="panel-header">
-<h2 class="panel-title"><span>🛰️</span><span>SDARS THREAT-3D</span></h2>
+<h2 class="panel-title"><span>️</span><span>SDARS THREAT-3D</span></h2>
 <p style="color: #6b7a99; font-size: 11px;">Nasa/Sentinel Data Fusion Architecture</p>
 </div>
 <div class="status-indicator">
@@ -534,7 +533,7 @@
 <div class="control-item"><span>Day/Night Lighting</span><label class="switch"><input id="sunToggle" type="checkbox"/><span class="slider"></span></label></div>
 <!-- ⭐ SATELLITE ORBITS -->
 <div class="orbit-section">
-<div class="orbit-section-title">🛰️ LIVE SATELLITE ORBITS</div>
+<div class="orbit-section-title">️ LIVE SATELLITE ORBITS</div>
 <div class="control-item">
 <span style="color: white; font-weight: 600;">Show Orbits</span>
 <label class="switch"><input checked="" id="orbitToggle" type="checkbox"/><span class="slider"></span></label>
@@ -564,8 +563,10 @@
 </div>
 <!-- ⭐ STRATEGIC SIMULATORS -->
 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
-<div style="color: #00f2ff; font-size: 10px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px;">
-                        ⚠️ STRATEGIC CRISIS SIMULATOR </div>
+<div style="color: #00f2ff; font-size: 10px; font-weight: 800; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    STRATEGIC CRISIS SIMULATOR
+</div>
 <div class="control-item" style="margin-bottom: 10px;"><span style="color: white; font-weight: 600;">Flood Engine</span><label class="switch"><input id="floodSimToggle" type="checkbox"/><span class="slider"></span></label></div>
 <div id="floodControls" style="display: none;">
 <div style="display: flex; justify-content: space-between; font-size: 10px; color: #6b7a99; margin-bottom: 5px;">
@@ -580,14 +581,14 @@
 <div style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">
                         Map Base Imagery</div>
 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-<button class="terrain-btn active" onclick="setImagery('tactical')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Tactical Dark">🌌</button>
-<button class="terrain-btn" onclick="setImagery('satellite')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="NASA Satellite">🛰️</button>
-<button class="terrain-btn" onclick="setImagery('topo')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Topographic">🏔️</button>
-<button class="terrain-btn" onclick="setImagery('streets')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="OpenStreetMap">🏙️</button>
+<button class="terrain-btn active" onclick="setImagery('tactical')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Tactical Dark"></button>
+<button class="terrain-btn" onclick="setImagery('satellite')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="NASA Satellite">️</button>
+<button class="terrain-btn" onclick="setImagery('topo')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Topographic">️</button>
+<button class="terrain-btn" onclick="setImagery('streets')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="OpenStreetMap">️</button>
 </div>
 </div>
 </div>
-<button class="btn-action btn-tour" id="tourBtn"><span>🎬</span>Start Crisis Tour </button><a class="btn-action btn-secondary" href="map.html">← Exit War Room </a>
+<button class="btn-action btn-tour" id="tourBtn"><span></span>Start Crisis Tour </button><a class="btn-action btn-secondary" href="map.html">← Exit War Room </a>
 </div>
 </div>
 
@@ -937,8 +938,8 @@
                                 ${prediction ? 'Satellite analysis confirmed anomalies in spectral bands. High probability of event occurrence.' : 'Monitoring station active. No current anomalies detected.'}
                             </p>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                                <button onclick="runImpactAssessment(${loc.lat}, ${loc.lon}, '${threat}', ${prediction ? (prediction.risk_scores && prediction.risk_scores[threat] ? prediction.risk_scores[threat] : (prediction.confidence || 0.8)) : 0.1})" style="background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">📊 IMPACT</button>
-                                <button onclick="dispatchRescueTeam('${loc.name.replace(/'/g, "\\'")}', ${loc.lat}, ${loc.lon})" style="background: rgba(244, 67, 54, 0.2); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;">🚀 DISPATCH</button>
+                                <button onclick="runImpactAssessment(${loc.lat}, ${loc.lon}, '${threat}', ${prediction ? (prediction.risk_scores && prediction.risk_scores[threat] ? prediction.risk_scores[threat] : (prediction.confidence || 0.8)) : 0.1})" style="background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 152, 0, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;"> IMPACT</button>
+                                <button onclick="dispatchRescueTeam('${loc.name.replace(/'/g, "\\'")}', ${loc.lat}, ${loc.lon})" style="background: rgba(244, 67, 54, 0.2); color: #f44336; border: 1px solid rgba(244, 67, 54, 0.5); padding: 8px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: all 0.2s;"> DISPATCH</button>
                             </div>
                             <a href="prediction.html?lat=${loc.lat}&lon=${loc.lon}&name=${encodeURIComponent(loc.name)}" style="display: block; text-align: center; background: ${color.toCssColorString()}; color: black; text-decoration: none; padding: 10px; border-radius: 6px; font-size: 10px; font-weight: 700;">VIEW STRATEGIC DASHBOARD</a>
                         </div>`;
@@ -1028,7 +1029,7 @@
             }
 
             document.getElementById('tourBtn').disabled = true;
-            document.getElementById('tourBtn').textContent = "🎬 Tour in Progress...";
+            document.getElementById('tourBtn').textContent = " Tour in Progress...";
             addLog("TOUR: STARTING CINEMATIC SEQUENCE");
 
             for (const loc of highRiskLocs) {
@@ -1077,7 +1078,7 @@
             });
 
             document.getElementById('tourBtn').disabled = false;
-            document.getElementById('tourBtn').innerHTML = "<span>🎬</span> Start Crisis Tour";
+            document.getElementById('tourBtn').innerHTML = "<span></span> Start Crisis Tour";
         }
 
         function setupEventHandlers() {
@@ -1194,8 +1195,8 @@
 
                 if (activeBtn) {
                     activeBtn.classList.add('active');
-                    activeBtn.style.background = '#667eea';
-                    activeBtn.style.borderColor = '#764ba2';
+                    activeBtn.style.background = '#00f2ff';
+                    activeBtn.style.borderColor = '#00f2ff';
                 }
 
                 addLog(`IMAGERY: ${type.toUpperCase()} LOADED`, 'success');
@@ -1289,7 +1290,7 @@
         }
 
         // ═══════════════════════════════════════════════════════
-        // 🛰️ SATELLITE ORBIT SYSTEM
+        // ️ SATELLITE ORBIT SYSTEM
         // ═══════════════════════════════════════════════════════
         class SatelliteOrbitSystem {
             constructor() {
@@ -1302,7 +1303,7 @@
                         raanDeg: 0,       // Right Ascension of Ascending Node
                         periodMin: 92.68, // Orbital period in minutes
                         color: Cesium.Color.fromCssColorString('#00f2ff'),
-                        emoji: '🛸',
+                        emoji: '',
                         speed: 7.66,      // km/s
                         phaseOffset: 0
                     },
@@ -1314,7 +1315,7 @@
                         raanDeg: 90,
                         periodMin: 100.6,
                         color: Cesium.Color.fromCssColorString('#a78bfa'),
-                        emoji: '🛰️',
+                        emoji: '️',
                         speed: 7.49,
                         phaseOffset: Math.PI * 0.5
                     },
@@ -1326,7 +1327,7 @@
                         raanDeg: 180,
                         periodMin: 101.4,
                         color: Cesium.Color.fromCssColorString('#34d399'),
-                        emoji: '🌍',
+                        emoji: '',
                         speed: 7.46,
                         phaseOffset: Math.PI
                     },
@@ -1338,7 +1339,7 @@
                         raanDeg: 270,
                         periodMin: 98.9,
                         color: Cesium.Color.fromCssColorString('#fbbf24'),
-                        emoji: '📡',
+                        emoji: '',
                         speed: 7.52,
                         phaseOffset: Math.PI * 1.5
                     }
@@ -1481,7 +1482,7 @@
                                 <div style="color:white;font-size:12px;font-weight:700;">${sat.periodMin} min</div>
                             </div>
                         </div>
-                        <div style="font-size:9px;color:#6b7a99;text-align:center;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">🛰️ SDARS Orbital Tracking System</div>
+                        <div style="font-size:9px;color:#6b7a99;text-align:center;border-top:1px solid rgba(255,255,255,0.05);padding-top:8px;">️ SDARS Orbital Tracking System</div>
                     </div>`;
 
                 const entity = viewer.entities.add({
@@ -1696,5 +1697,6 @@
         });
     </script>
 <script src="js/main.js"></script>
-<script src="js/nav.js"></script></body>
+<script src="js/nav.js"></script><script>document.addEventListener("DOMContentLoaded", function() { if (window.lucide) lucide.createIcons(); });</script>
+</body>
 </html>

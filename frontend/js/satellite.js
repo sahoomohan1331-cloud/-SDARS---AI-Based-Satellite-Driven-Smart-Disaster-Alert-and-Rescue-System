@@ -22,7 +22,7 @@ const satelliteState = {
  * Initialize the application
  */
 function initSatellite() {
-    console.log('🛰️ Initializing Satellite Visualization...');
+    console.log('[SATELLITE] Initializing Satellite Visualization...');
 
     // Initialize map
     initMap();
@@ -36,7 +36,7 @@ function initSatellite() {
     // Update info overlay
     updateInfoOverlay();
 
-    console.log('✅ Satellite system initialized');
+    console.log('[SATELLITE] Initialized successfully');
 }
 
 /**
@@ -63,7 +63,7 @@ function initMap() {
     // Add scale
     L.control.scale({ position: 'bottomleft' }).addTo(satelliteState.map);
 
-    console.log('🗺️ Map initialized');
+    console.log('[SATELLITE] Map initialized');
 }
 
 /**
@@ -97,7 +97,7 @@ async function loadLayerOptions() {
                 container.appendChild(btn);
             });
 
-            console.log(`📡 Loaded ${data.layers.length} layer options`);
+            console.log(`[SATELLITE] Loaded ${data.layers.length} layer options`);
         }
 
     } catch (error) {
@@ -195,7 +195,7 @@ function displayImagery(imageData) {
     // Fit map to bounds
     satelliteState.map.fitBounds(bounds);
 
-    console.log('🖼️ Imagery displayed on map');
+    console.log('[SATELLITE] Imagery displayed on map');
 }
 
 /**
@@ -336,7 +336,7 @@ function displayThermalData(thermalData) {
             <div style="color: #8b949e; font-size: 11px;">AVG BRIGHTNESS</div>
             <div style="color: white; font-size: 16px; font-weight: 600;">${thermalData.avg_brightness.toFixed(1)}K</div>
         </div>
-        ` : '<div style="color: #8b949e; padding: 16px; text-align: center;">✓ No hotspots detected</div>'}
+        ` : '<div style="color: #8b949e; padding: 16px; text-align: center;">No hotspots detected</div>'}
     `;
 
     resultSection.style.display = 'block';
@@ -353,7 +353,7 @@ function displayThermalData(thermalData) {
         }).addTo(satelliteState.map);
 
         marker.bindPopup(`
-            <strong>🔥 Thermal Hotspot</strong><br>
+            <strong>[THERMAL] Hotspot Anomaly</strong><br>
             Brightness: ${hotspot.brightness.toFixed(1)}K<br>
             Confidence: ${hotspot.confidence}<br>
             FRP: ${hotspot.frp.toFixed(1)} MW
@@ -436,8 +436,8 @@ function displayTimeSeriesChart(tsData) {
             datasets: [{
                 label: tsData.metric,
                 data: tsData.values,
-                borderColor: '#667eea',
-                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderColor: '#00f2ff',
+                backgroundColor: 'rgba(0, 242, 255, 0.1)',
                 borderWidth: 2,
                 tension: 0.4,
                 fill: true
@@ -548,14 +548,14 @@ function displayComparison(compData) {
         <img src="${compData.before.image.image_data}" alt="Before" style="width: 100%; border-radius: 8px;">
     `;
     document.getElementById('beforeDate').innerHTML = `
-        <div style="color: #8b949e; font-size: 12px; margin-top: 8px;">📅 ${compData.before.date}</div>
+        <div style="color: #8b949e; font-size: 12px; margin-top: 8px;">Date: ${compData.before.date}</div>
     `;
 
     document.getElementById('afterImage').innerHTML = `
         <img src="${compData.after.image.image_data}" alt="After" style="width: 100%; border-radius: 8px;">
     `;
     document.getElementById('afterDate').innerHTML = `
-        <div style="color: #8b949e; font-size: 12px; margin-top: 8px;">📅 ${compData.after.date}</div>
+        <div style="color: #8b949e; font-size: 12px; margin-top: 8px;">Date: ${compData.after.date}</div>
     `;
 
     // Display change detection
@@ -643,7 +643,7 @@ function showLoading(show) {
  */
 function showSuccess(message) {
     // Simple console log for now
-    console.log('✅ ' + message);
+    console.log('[SUCCESS] ' + message);
     // Could add toast notification here
 }
 
@@ -651,7 +651,7 @@ function showSuccess(message) {
  * Show error message
  */
 function showError(message) {
-    console.error('❌ ' + message);
+    console.error('[ERROR] ' + message);
     alert(message);
 }
 

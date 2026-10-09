@@ -1,7 +1,8 @@
 /* Satellite Visualization Page Styles */
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #00f2ff;
+    --primary-gradient: linear-gradient(135deg, #00f2ff 0%, #0284c7 100%);
     --success-color: #10b981;
     --danger-color: #ef4444;
     --warning-color: #f59e0b;
@@ -89,8 +90,8 @@
 .input-group input:focus,
 .input-group select:focus {
     outline: none;
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
+    border-color: #00f2ff;
+    background: rgba(0, 242, 255, 0.08);
 }
 
 .date-input {
@@ -114,13 +115,14 @@
 }
 
 .btn-primary {
-    background: var(--primary-gradient);
-    color: white;
+    background: #00f2ff;
+    color: #05070a;
+    font-weight: 700;
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    transform: translateY(-1px);
+    background: #22f4ff;
 }
 
 .btn-secondary {
@@ -166,14 +168,15 @@
 
 .layer-btn:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: #667eea;
+    border-color: #00f2ff;
     transform: translateX(4px);
 }
 
 .layer-btn.active {
-    background: var(--primary-gradient);
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    background: #00f2ff;
+    color: #05070a;
+    border-color: #00f2ff;
+    font-weight: 700;
 }
 
 /* Tool Buttons */
@@ -290,7 +293,7 @@
     width: 50px;
     height: 50px;
     border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #667eea;
+    border-top-color: #00f2ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }

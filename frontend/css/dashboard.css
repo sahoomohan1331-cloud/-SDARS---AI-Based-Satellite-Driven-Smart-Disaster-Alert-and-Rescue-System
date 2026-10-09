@@ -284,8 +284,8 @@
 .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(102, 126, 234, 0.2);
-    border-top-color: #667eea;
+    border: 3px solid rgba(0, 242, 255, 0.2);
+    border-top-color: #00f2ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto;

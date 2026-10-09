@@ -231,7 +231,7 @@
                     <h3 id="sheetTitle" style="font-family:var(--font-display); font-size:15px; font-weight:700; margin-bottom:2px; color:var(--text-white);">Location Details</h3>
                     <div id="sheetSub" style="font-size:11px; color:var(--text-dim);">Threat details & status</div>
                 </div>
-                <button onclick="closeMapSheet()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-dim); width:28px; height:28px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
+                <button onclick="closeMapSheet()" style="background:rgba(255,255,255,0.06); border:none; color:var(--text-dim); width:28px; height:28px; border-radius:50%; font-size:14px; cursor:pointer;">&times;</button>
             </div>
             <div id="sheetBody" style="margin:12px 0; font-size:12px; line-height:1.5;"></div>
             <div style="display:flex; gap:10px;">
@@ -444,7 +444,7 @@
     <div class="map-sheet-handle"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
         <h2 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-white);">SDARS Command Hub</h2>
-        <button onclick="toggleHub(false)" style="background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer;">✕</button>
+        <button onclick="toggleHub(false)" style="background:none; border:none; color:var(--text-dim); font-size:18px; cursor:pointer;">&times;</button>
     </div>
     <p style="font-size:11px; color:var(--text-secondary); margin-bottom:14px;">Access all system modules from the desktop command suite</p>
 
@@ -1644,7 +1644,7 @@ async function runMobileScan() {
         const data = await res.json();
 
         const levelCfg = {
-            'L5': { bg:'rgba(168,85,247,0.18)', color:'#a855f7', border:'#a855f7' },
+            'L5': { bg:'rgba(225,29,72,0.18)', color:'#e11d48', border:'#e11d48' },
             'L4': { bg:'rgba(239,68,68,0.18)', color:'#ef4444', border:'#ef4444' },
             'L3': { bg:'rgba(245,158,11,0.18)', color:'#f59e0b', border:'#f59e0b' },
             'L2': { bg:'rgba(0,229,255,0.18)', color:'#00e5ff', border:'#00e5ff' },

@@ -51,7 +51,7 @@ async function loadGlobalFeed() {
                 <div class="feed-item" onclick="viewDetailed('${item.name}', ${item.lat}, ${item.lon})" 
                      style="display: grid; grid-template-columns: 100px 1fr 120px 100px; gap: 20px; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer; transition: background 0.2s;">
                     <div style="color: #6b7a99; font-size: 11px;">${time.split(',')[1]}</div>
-                    <div style="font-weight: 600;">📍 ${item.name}</div>
+                    <div style="font-weight: 600;"> ${item.name}</div>
                     <div>
                         <span class="risk-badge ${riskClass}" style="font-size: 10px; padding: 2px 8px;">
                             ${item.primary_threat.toUpperCase()}
@@ -66,7 +66,7 @@ async function loadGlobalFeed() {
 
     } catch (err) {
         console.error("Feed Error:", err);
-        feedContainer.innerHTML = `<p style="color: #ff5252; text-align: center; padding: 20px;">⚠️ Connection to Strategic Intelligence lost</p>`;
+        feedContainer.innerHTML = `<p style="color: #ff5252; text-align: center; padding: 20px; font-family: var(--font-body, sans-serif);"><span style="font-family: monospace; font-weight: 700; margin-right: 6px;">[OFFLINE]</span> Connection to Strategic Intelligence lost</p>`;
     }
 }
 
@@ -100,9 +100,9 @@ async function loadMonitoredRegions() {
                     <span class="risk-badge ${data.overall_risk_level.toLowerCase()}">${data.overall_risk_level}</span>
                 </div>
                 <div class="location-stats">
-                    <div class="location-stat"><span class="stat-icon">🌡️</span><span>${data.current_weather.temperature}°C</span></div>
-                    <div class="location-stat"><span class="stat-icon">💧</span><span>${data.current_weather.humidity}%</span></div>
-                    <div class="location-stat"><span class="stat-icon">🌀</span><span>${data.current_weather.pressure} hPa</span></div>
+                    <div class="location-stat"><span class="stat-icon">️</span><span>${data.current_weather.temperature}°C</span></div>
+                    <div class="location-stat"><span class="stat-icon"></span><span>${data.current_weather.humidity}%</span></div>
+                    <div class="location-stat"><span class="stat-icon"></span><span>${data.current_weather.pressure} hPa</span></div>
                 </div>
                 <p class="location-status">Live AI Monitoring: ${data.primary_threat.toUpperCase()}</p>
             `;
@@ -332,7 +332,7 @@ async function loadResourcesDashboard() {
 async function runAutoAllocation() {
     const resultBox = document.getElementById('allocationResultBox');
     resultBox.style.display = 'block';
-    resultBox.innerHTML = '⚡ Computing optimal impact-based resource routing...';
+    resultBox.innerHTML = 'Computing optimal impact-based resource routing...';
 
     try {
         const res = await fetch(`${API_BASE_URL}/resources/allocate`, {
@@ -352,7 +352,7 @@ async function runAutoAllocation() {
             const data = await res.json();
             const plan = data.allocation_plan;
             resultBox.innerHTML = `
-                <strong style="color: #38bdf8; display: block; margin-bottom: 6px;">🎯 DISPATCH DIRECTIVE ISSUED</strong>
+                <strong style="color: #38bdf8; display: block; margin-bottom: 6px;">DISPATCH DIRECTIVE ISSUED</strong>
                 <p style="margin: 0 0 6px 0;">${data.recommendation}</p>
                 <div style="font-size: 11px; color: #94a3b8;">
                     Reserved Hubs: ${plan.shelters_dispatched.map(s => s.name).join(', ')}<br>
@@ -388,14 +388,14 @@ async function loadCrowdReportsDashboard() {
             const isPending = r.is_verified === 0;
 
             const badgeColor = isVerified ? '#10b981' : isRejected ? '#ef4444' : '#eab308';
-            const badgeText = isVerified ? '✔ VERIFIED [OFFICIAL]' : isRejected ? '✖ DISMISSED' : '⏳ PENDING REVIEW';
+            const badgeText = isVerified ? 'VERIFIED [OFFICIAL]' : isRejected ? 'DISMISSED' : 'PENDING REVIEW';
 
             return `
                 <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 9px 10px; border-radius: 6px; margin-bottom: 6px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
                         <div>
                             <div style="font-size: 12px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
-                                <span>📢</span> ${r.location_name}
+                                <span></span> ${r.location_name}
                                 <span style="font-size: 9px; font-weight: 600; color: #38bdf8; text-transform: uppercase;">[${r.report_type}]</span>
                             </div>
                             <div style="font-size: 11px; color: #cbd5e1; margin-top: 2px;">${r.description}</div>
@@ -408,10 +408,10 @@ async function loadCrowdReportsDashboard() {
                     ${isPending ? `
                         <div style="display: flex; gap: 6px; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); justify-content: flex-end;">
                             <button onclick="verifyCitizenReport(${r.id}, 'verify')" style="background: rgba(16,185,129,0.15); border: 1px solid #10b981; color: #10b981; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                                ✔ Verify Ground Truth
+                                Verify Ground Truth
                             </button>
                             <button onclick="verifyCitizenReport(${r.id}, 'reject')" style="background: rgba(239,68,68,0.15); border: 1px solid #ef4444; color: #ef4444; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                                ✖ Dismiss
+                                Dismiss
                             </button>
                         </div>
                     ` : ''}
