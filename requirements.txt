@@ -13,3 +13,4 @@ Pillow>=10.1.0
 python-dotenv>=1.0.0
 aiohttp>=3.9.1
 schedule>=1.2.0
+xgboost>=2.0.0
