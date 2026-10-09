@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="nav-container">
         <div class="nav-logo">
             <img src="logo.png?v=2" alt="SDARS Logo" class="logo-image">
-            <span class="logo-fallback">🛰️</span>
+            <span class="logo-fallback"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg></span>
             <div class="logo-text">
                 <h1>SDARS</h1>
                 <p>TACTICAL INTELLIGENCE HUB</p>
@@ -48,16 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const mobileBottomNavHTML = `
 <nav class="mobile-bottom-nav">
     <a href="index.html" class="mobile-nav-link" id="m-nav-index.html">
-        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🏠</span><small>Home</small>
+        <span style="display: flex; justify-content: center; margin-bottom: 2px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><small>Home</small>
     </a>
     <a href="map.html" class="mobile-nav-link" id="m-nav-map.html">
-        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🗺️</span><small>Map</small>
+        <span style="display: flex; justify-content: center; margin-bottom: 2px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg></span><small>Map</small>
     </a>
     <a href="3d-view.html" class="mobile-nav-link" id="m-nav-3d-view.html">
-        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🌎</span><small>3D Room</small>
+        <span style="display: flex; justify-content: center; margin-bottom: 2px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span><small>3D Room</small>
     </a>
     <a href="prediction.html" class="mobile-nav-link" id="m-nav-prediction.html">
-        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🤖</span><small>AI Scan</small>
+        <span style="display: flex; justify-content: center; margin-bottom: 2px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="m12 12 5-5"/></svg></span><small>AI Scan</small>
     </a>
 </nav>
 `;
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="auth-card"
         style="background: #0d1117; border: 1px solid rgba(255,255,255,0.1); padding: 30px; border-radius: 12px; width: 350px; text-align: center; position: relative;">
         <img src="logo.png" alt="SDARS"
-            style="height: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));">
+            style="height: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.3));">
         <button onclick="closeAuthModal()"
             style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: white; cursor: pointer;">✕</button>
         <h2

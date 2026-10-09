@@ -19,15 +19,15 @@
     --accent-hazard: #ff4d00;
     --accent-warning: #ffd000;
     --accent-positive: #00df82;
-    --accent-primary: #6366f1;
-    --accent-blue: #6366f1;
+    --accent-primary: #00f2ff;
+    --accent-blue: #00f2ff;
 
     /* Japan 5-Level Disaster Alert System Tokens */
-    --japan-l1-normal: #00df82;    /* 🟢 Level 1: Normal / Routine */
-    --japan-l2-watch: #00f2ff;     /* 🟡 Level 2: Watch / Advisory */
-    --japan-l3-prepare: #ffd000;   /* 🟠 Level 3: Warning / Prepare */
-    --japan-l4-evacuate: #ff4d00;  /* 🔴 Level 4: Evacuate Now */
-    --japan-l5-extreme: #a855f7;   /* 🟣 Level 5: Extreme / Emergency */
+    --japan-l1-normal: #00df82;    /* Level 1: Normal / Routine */
+    --japan-l2-watch: #00f2ff;     /* Level 2: Watch / Advisory */
+    --japan-l3-prepare: #ffd000;   /* Level 3: Warning / Prepare */
+    --japan-l4-evacuate: #ff4d00;  /* Level 4: Evacuate Now */
+    --japan-l5-extreme: #ef4444;   /* Level 5: Extreme / Emergency */
 
     /* Typography */
     --text-primary: #f0f6fc;
@@ -40,11 +40,11 @@
     --signal-glow: rgba(0, 242, 255, 0.15);
     --signal-glow-strong: rgba(0, 242, 255, 0.3);
 
-    /* Gradients */
+    /* Tactical Gradients (Used only for subtle indicator bars / backgrounds) */
     --gradient-tactical: linear-gradient(135deg, #0d1117 0%, #05070a 100%);
     --gradient-hazard: linear-gradient(135deg, #ff4d00 0%, #ff7b00 100%);
     --gradient-signal: linear-gradient(135deg, #00f2ff 0%, #70fdff 100%);
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-primary: linear-gradient(135deg, #00f2ff 0%, #0099ff 100%);
 
     /* Metrics & Spacing */
     --spacing-unit: 8px;
@@ -473,10 +473,9 @@ body::before {
 
 .gradient-text {
     display: block;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--accent-signal);
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.5px;
     margin-top: 0.25rem;
 }
 
@@ -499,24 +498,26 @@ body::before {
 .btn-primary,
 .btn-secondary {
     padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     border: none;
     text-decoration: none;
     display: inline-block;
 }
 
 .btn-primary {
-    background: var(--gradient-primary);
-    color: white;
+    background: var(--accent-signal);
+    color: #05070a;
+    border: 1px solid rgba(0, 242, 255, 0.3);
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    background: #33f5ff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 242, 255, 0.2);
 }
 
 .btn-secondary {

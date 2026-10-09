@@ -220,7 +220,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0e17',
+    backgroundColor: '#0b0f19',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
   },
   loadingContainer: {
@@ -229,13 +229,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#0a0e17',
+    backgroundColor: '#0b0f19',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
   },
   loadingText: {
-    color: '#7b8ba3',
+    color: '#94a3b8',
     marginTop: 14,
     fontSize: 13,
     fontWeight: '600',
@@ -245,21 +245,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 28,
-    backgroundColor: '#0a0e17',
+    backgroundColor: '#0b0f19',
   },
   errorIcon: {
     fontSize: 54,
     marginBottom: 16,
   },
   errorTitle: {
-    color: '#f0f4ff',
+    color: '#f8fafc',
     fontSize: 18,
     fontWeight: '800',
     marginBottom: 8,
     textAlign: 'center',
   },
   errorSub: {
-    color: '#7b8ba3',
+    color: '#94a3b8',
     fontSize: 13,
     textAlign: 'center',
     lineHeight: 20,
@@ -270,20 +270,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   errorTech: {
-    color: '#ff4757',
+    color: '#ef4444',
     fontSize: 11,
     marginBottom: 20,
   },
   retryBtn: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#00e5ff',
     paddingHorizontal: 24,
     paddingVertical: 14,
-    borderRadius: 14,
+    borderRadius: 12,
     marginTop: 10,
   },
   retryText: {
-    color: '#fff',
-    fontWeight: '700',
+    color: '#090d16',
+    fontWeight: '800',
     fontSize: 14,
+    letterSpacing: 0.5,
   },
 });

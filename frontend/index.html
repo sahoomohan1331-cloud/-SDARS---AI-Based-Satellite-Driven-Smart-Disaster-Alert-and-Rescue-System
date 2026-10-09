@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&amp;family=Outfit:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
-<link href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;🛰️&lt;/text&gt;&lt;/svg&gt;" rel="icon"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2300f2ff%22 stroke-width=%222%22><path d=%22M13 2 3 14h9l-1 8 10-12h-9l1-8z%22/></svg>"/>
 </head>
 <body>
 <!-- Tactical Atmosphere -->
@@ -28,8 +28,7 @@
 <div class="tactical-line"></div>
 <h1 class="page-title">
                     SYSTEM HEARTBEAT
-                    <span class="gradient-text" style="background: var(--gradient-hazard); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">ACTIVE
-                        MONITORING</span>
+                    <span style="color: var(--accent-signal); font-family: var(--font-display, 'Syne', sans-serif); letter-spacing: 1px;">ACTIVE MONITORING</span>
 </h1>
 <p class="page-subtitle" style="font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent-signal);">
                     [STATUS: OPERATIONAL] • [NODES: CONNECTED] • [AI: INFERENCE ACTIVE]
@@ -39,7 +38,7 @@
 <!-- Multi-Hazard Strategic Telemetry Grid (All 8 Hazards + Monitored Grid) -->
 <section class="stats-grid">
 <div class="stat-card">
-<div class="stat-icon fire-gradient">🔥</div>
+<div class="stat-icon fire-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff4d00" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="fireAlerts">4</h3>
 <p class="stat-label">Wildfire Alerts</p>
@@ -47,7 +46,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon flood-gradient">🌊</div>
+<div class="stat-icon flood-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="floodAlerts">3</h3>
 <p class="stat-label">Flood Warnings</p>
@@ -55,7 +54,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon cyclone-gradient">🌪️</div>
+<div class="stat-icon cyclone-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="cycloneAlerts">2</h3>
 <p class="stat-label">Cyclone Watches</p>
@@ -63,7 +62,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon heat-gradient">🌡️</div>
+<div class="stat-icon heat-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd000" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="heatwaveAlerts">3</h3>
 <p class="stat-label">Heatwave Alerts</p>
@@ -71,7 +70,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon landslide-gradient">⛰️</div>
+<div class="stat-icon landslide-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="landslideAlerts">2</h3>
 <p class="stat-label">Landslide Warnings</p>
@@ -79,7 +78,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon drought-gradient">☀️</div>
+<div class="stat-icon drought-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="droughtAlerts">2</h3>
 <p class="stat-label">Drought Watches</p>
@@ -87,7 +86,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon surge-gradient">🌊</div>
+<div class="stat-icon surge-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="surgeAlerts">1</h3>
 <p class="stat-label">Storm Surge Alerts</p>
@@ -95,7 +94,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon lightning-gradient">⚡</div>
+<div class="stat-icon lightning-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="lightningAlerts">3</h3>
 <p class="stat-label">Lightning Threats</p>
@@ -103,7 +102,7 @@
 </div>
 </div>
 <div class="stat-card">
-<div class="stat-icon safe-gradient">🛰️</div>
+<div class="stat-icon safe-gradient"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg></div>
 <div class="stat-content">
 <h3 class="stat-value" id="safeLocations">18</h3>
 <p class="stat-label">Locations Monitored</p>
@@ -113,10 +112,10 @@
 </section>
 <!-- Current Alerts -->
 <section class="alerts-section">
-<h2 class="section-title">🚨 Active Alerts &amp; Warnings</h2>
+<h2 class="section-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" style="vertical-align:middle; margin-right:6px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Active Alerts &amp; Warnings</h2>
 <div class="alerts-container" id="activeAlerts">
 <div class="alert-placeholder">
-<div class="placeholder-icon">🛰️</div>
+<div class="placeholder-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg></div>
 <p>Analyzing satellite data and weather patterns...</p>
 <button class="btn-primary" onclick="loadActiveAlerts()">Load Live Data</button>
 </div>
@@ -125,7 +124,7 @@
 <!-- ⭐ NEW: Global AI Prediction Feed -->
 <section class="global-feed-section" style="margin-bottom: 40px;">
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-<h2 class="section-title" style="margin: 0;">📡 Global AI Prediction Feed</h2>
+<h2 class="section-title" style="margin: 0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2" style="vertical-align:middle; margin-right:6px;"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>Global AI Prediction Feed</h2>
 <span style="font-size: 12px; color: #a8b3cf; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
                     Live System History
                 </span>
@@ -146,14 +145,14 @@
 <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
 <div style="display: flex; align-items: center; gap: 10px;">
-<span style="font-size: 24px;">💧</span>
+<span style="display:flex; align-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span>
 <div>
 <h3 style="margin: 0; font-size: 16px; color: #fff;">River Gauge Telemetry</h3>
 <small style="color: #38bdf8;">CWC Sensor Network Simulation</small>
 </div>
 </div>
 <button onclick="triggerSimulatedSurge()" style="background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">
-                        ⚡ Surge Test (+0.4m)
+                        Surge Test (+0.4m)
                     </button>
 </div>
 <div id="riverGaugesContainer" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
@@ -164,14 +163,14 @@
 <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
 <div style="display: flex; align-items: center; gap: 10px;">
-<span style="font-size: 24px;">🏕️</span>
+<span style="display:flex; align-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg></span>
 <div>
 <h3 style="margin: 0; font-size: 16px; color: #fff;">Resource &amp; Shelter Logistics</h3>
 <small style="color: #a78bfa;">Impact-Based Dispatch Engine</small>
 </div>
 </div>
 <button onclick="runAutoAllocation()" style="background: rgba(167,139,250,0.15); border: 1px solid #a78bfa; color: #a78bfa; padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">
-                        🚀 Auto-Allocate
+                        Auto-Allocate
                     </button>
 </div>
 <div id="resourcesSummaryContainer" style="width: 100%; display: flex; flex-direction: column; gap: 8px;">
@@ -183,7 +182,7 @@
 <div class="stat-card" style="padding: 22px; flex-direction: column; align-items: flex-start;">
 <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 10px;">
 <div style="display: flex; align-items: center; gap: 10px;">
-<span style="font-size: 24px;">📢</span>
+<span style="display:flex; align-items:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></span>
 <div>
 <h3 style="margin: 0; font-size: 16px; color: #fff;">Citizen Ground-Truth Reports</h3>
 <small style="color: #f43f5e;">Community Early Warning</small>
@@ -200,45 +199,45 @@
 </section>
 <!-- Dynamic Monitored Regions -->
 <section class="locations-section">
-<h2 class="section-title">🌐 Global Monitored Regions</h2>
+<h2 class="section-title">Global Monitored Regions</h2>
 <div class="locations-grid" id="liveLocationsGrid">
 <!-- Populated dynamically by dashboard.js -->
 <div style="text-align: center; padding: 40px; grid-column: 1/-1; color: #6b7a99;">
-                    🌍 Loading worldwide monitoring data...
+                    Loading worldwide monitoring data...
                 </div>
 </div>
 </section>
 <!-- Quick Actions -->
 <section class="quick-actions">
-<h2 class="section-title">🚀 Quick Actions</h2>
+<h2 class="section-title">Quick Actions</h2>
 <div class="actions-grid">
 <a class="action-card" href="navigation.html">
-<div class="action-icon">🚀</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
 <h3>Safe Navigator</h3>
 <p>Google Maps style routing with integrated disaster avoidance</p>
 </a>
 <a class="action-card" href="prediction.html">
-<div class="action-icon">🔮</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="m12 12 5-5"/></svg></div>
 <h3>Run Prediction</h3>
 <p>Analyze any location for disaster risks</p>
 </a>
 <a class="action-card" href="3d-view.html">
-<div class="action-icon">🌍</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div>
 <h3>3D War Room</h3>
 <p>Immersive 3D satellite visualization and telemetry monitoring</p>
 </a>
 <a class="action-card" href="map.html">
-<div class="action-icon">🗺️</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg></div>
 <h3>View Map</h3>
 <p>Interactive map with risk zones</p>
 </a>
 <a class="action-card" href="analytics.html">
-<div class="action-icon">📊</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
 <h3>Analytics</h3>
 <p>Historical trends and insights</p>
 </a>
 <a class="action-card" href="about.html">
-<div class="action-icon">📚</div>
+<div class="action-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
 <h3>Learn More</h3>
 <p>How SDARS works</p>
 </a>
