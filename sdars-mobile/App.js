@@ -1,24 +1,81 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, StatusBar, Platform, TouchableOpacity, ActivityIndicator, LogBox } from 'react-native';
+import { View, Text, TextInput, StyleSheet, StatusBar, Platform, TouchableOpacity, ActivityIndicator, LogBox } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Suppress non-critical development warnings and Expo CLI disconnect overlays
+// Suppress non-critical development warnings
 LogBox.ignoreLogs([
   'Cannot connect to Expo CLI',
   'Failed to download the latest version of React Native DevTools',
 ]);
 LogBox.ignoreAllLogs(true);
 
-const SERVER_URL = 'http://192.168.0.137:8000/mobile_app.html';
+const DEFAULT_SERVER_URL = 'http://192.168.0.137:8000/mobile_app.html';
+const STORAGE_KEY = 'SDARS_MOBILE_SERVER_URL';
 
 export default function App() {
   const webViewRef = useRef(null);
+  const [serverUrl, setServerUrl] = useState(DEFAULT_SERVER_URL);
+  const [inputUrl, setInputUrl] = useState(DEFAULT_SERVER_URL);
+  const [isUrlLoaded, setIsUrlLoaded] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorDetails, setErrorDetails] = useState('');
   const [key, setKey] = useState(0);
 
   const lastCoordsRef = useRef(null);
+
+  // Load saved server URL on startup
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        if (saved && saved.trim().length > 0) {
+          setServerUrl(saved.trim());
+          setInputUrl(saved.trim());
+        }
+      } catch (err) {
+        console.warn('[SDARS Native] Error loading saved server URL:', err);
+      } finally {
+        setIsUrlLoaded(true);
+      }
+    })();
+  }, []);
+
+  // Save new server URL
+  const handleSaveUrl = async () => {
+    let cleanUrl = inputUrl.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      cleanUrl = 'https://' + cleanUrl;
+    }
+    if (!cleanUrl.includes('/mobile_app.html') && !cleanUrl.endsWith('.html')) {
+      cleanUrl = cleanUrl.replace(/\/+$/, '') + '/mobile_app.html';
+    }
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, cleanUrl);
+      setServerUrl(cleanUrl);
+      setInputUrl(cleanUrl);
+      setShowConfig(false);
+      setHasError(false);
+      setErrorDetails('');
+      setKey(prev => prev + 1);
+    } catch (err) {
+      console.warn('[SDARS Native] Failed to save URL:', err);
+    }
+  };
+
+  const handleResetDefault = async () => {
+    try {
+      await AsyncStorage.removeItem(STORAGE_KEY);
+      setServerUrl(DEFAULT_SERVER_URL);
+      setInputUrl(DEFAULT_SERVER_URL);
+      setShowConfig(false);
+      setHasError(false);
+      setErrorDetails('');
+      setKey(prev => prev + 1);
+    } catch (err) {}
+  };
 
   // Native Device GPS via expo-location
   const fetchAndInjectLocation = useCallback(async () => {
@@ -34,7 +91,7 @@ export default function App() {
         return;
       }
 
-      // Step 1: Send last known position immediately for instant zero-lag response
+      // Step 1: Send last known position immediately
       try {
         const lastKnown = await Location.getLastKnownPositionAsync();
         if (lastKnown && lastKnown.coords) {
@@ -47,9 +104,7 @@ export default function App() {
           `;
           webViewRef.current?.injectJavaScript(jsCodeQuick);
         }
-      } catch (eQuick) {
-        // Continue to fresh GPS fix
-      }
+      } catch (eQuick) {}
 
       // Step 2: Fresh active GPS fix
       try {
@@ -70,8 +125,6 @@ export default function App() {
       } catch (errActive) {
         if (lastCoordsRef.current) {
           console.log('[SDARS Native] Retaining valid location fix:', lastCoordsRef.current.latitude, lastCoordsRef.current.longitude);
-        } else {
-          console.log('[SDARS Native] Satellite acquisition in progress...');
         }
       }
     } catch (err) {
@@ -82,7 +135,6 @@ export default function App() {
   useEffect(() => {
     fetchAndInjectLocation();
 
-    // Active continuous location watcher
     let locationSubscription = null;
     (async () => {
       try {
@@ -98,43 +150,41 @@ export default function App() {
               if (newLoc && newLoc.coords) {
                 const { latitude, longitude, accuracy } = newLoc.coords;
                 lastCoordsRef.current = { latitude, longitude, accuracy: accuracy || 10 };
-                webViewRef.current?.injectJavaScript(`
+                const jsCode = `
                   if (typeof window.onNativeLocationUpdate === 'function') {
-                    window.onNativeLocationUpdate(${latitude}, ${longitude}, ${accuracy || 10}, 'Live GPS');
+                    window.onNativeLocationUpdate(${latitude}, ${longitude}, ${accuracy || 10}, 'Native GPS Watcher');
                   }
-                `);
+                `;
+                webViewRef.current?.injectJavaScript(jsCode);
               }
             }
           );
         }
-      } catch (e) {
-        console.warn('[SDARS Native] watchPosition error:', e);
-      }
+      } catch (err) {}
     })();
 
     return () => {
-      locationSubscription?.remove();
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
     };
   }, [fetchAndInjectLocation]);
 
   const handleMessage = (event) => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
-      if (data && (data.type === 'REQUEST_LOCATION' || data.type === 'GET_GPS')) {
-        // If we already have a cached fix, immediately inject it
+      if (data.type === 'REQUEST_NATIVE_LOCATION') {
         if (lastCoordsRef.current) {
           const { latitude, longitude, accuracy } = lastCoordsRef.current;
           webViewRef.current?.injectJavaScript(`
             if (typeof window.onNativeLocationUpdate === 'function') {
-              window.onNativeLocationUpdate(${latitude}, ${longitude}, ${accuracy || 10}, 'Cached GPS');
+              window.onNativeLocationUpdate(${latitude}, ${longitude}, ${accuracy}, 'Native Cache');
             }
           `);
         }
         fetchAndInjectLocation();
       }
-    } catch (e) {
-      // Non-JSON message, ignore
-    }
+    } catch (e) {}
   };
 
   const handleRetry = () => {
@@ -143,28 +193,65 @@ export default function App() {
     setKey(prev => prev + 1);
   };
 
+  if (!isUrlLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#00e5ff" />
+        <Text style={styles.loadingText}>Initializing SDARS Mobile...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0e17" />
+      <StatusBar barStyle="light-content" backgroundColor="#0b0f19" />
       
-      {hasError ? (
+      {hasError || showConfig ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorIcon}>📡</Text>
-          <Text style={styles.errorTitle}>Connecting to SDARS Server...</Text>
-          <Text style={styles.errorSub}>
-            Make sure your PC backend is running at:{'\n'}
-            <Text style={styles.errorUrl}>{SERVER_URL}</Text>
+          <Text style={styles.errorTitle}>
+            {showConfig ? 'SDARS Server Configuration' : 'Connection Standby'}
           </Text>
-          {errorDetails ? <Text style={styles.errorTech}>{errorDetails}</Text> : null}
-          <TouchableOpacity style={styles.retryBtn} onPress={handleRetry}>
-            <Text style={styles.retryText}>🔄 Retry Connection</Text>
-          </TouchableOpacity>
+          <Text style={styles.errorSub}>
+            Target Server Endpoint:
+          </Text>
+
+          <TextInput
+            style={styles.urlInput}
+            value={inputUrl}
+            onChangeText={setInputUrl}
+            placeholder="http://192.168.x.x:8000/mobile_app.html"
+            placeholderTextColor="#64748b"
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="url"
+          />
+
+          {errorDetails && !showConfig ? (
+            <Text style={styles.errorTech}>{errorDetails}</Text>
+          ) : null}
+
+          <View style={styles.btnRow}>
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSaveUrl}>
+              <Text style={styles.saveBtnText}>Connect to Server</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.resetBtn} onPress={handleResetDefault}>
+              <Text style={styles.resetBtnText}>Reset Local IP</Text>
+            </TouchableOpacity>
+          </View>
+
+          {hasError && !showConfig ? (
+            <TouchableOpacity style={styles.retryBtn} onPress={handleRetry}>
+              <Text style={styles.retryText}>Retry Connection</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       ) : (
         <WebView 
           key={key}
           ref={webViewRef}
-          source={{ uri: `${SERVER_URL}?t=${Date.now()}` }} 
+          source={{ uri: `${serverUrl}?t=${Date.now()}` }} 
           style={{ flex: 1, backgroundColor: '#0a0e17' }}
           javaScriptEnabled={true}
           domStorageEnabled={true}
@@ -196,7 +283,7 @@ export default function App() {
           renderLoading={() => (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color="#00e5ff" />
-              <Text style={styles.loadingText}>Initializing SDARS Mobile...</Text>
+              <Text style={styles.loadingText}>Syncing Disaster Telemetry...</Text>
             </View>
           )}
           onError={(syntheticEvent) => {
@@ -244,11 +331,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 28,
+    padding: 24,
     backgroundColor: '#0b0f19',
   },
   errorIcon: {
-    fontSize: 54,
+    fontSize: 48,
     marginBottom: 16,
   },
   errorTitle: {
@@ -262,29 +349,64 @@ const styles = StyleSheet.create({
     color: '#94a3b8',
     fontSize: 13,
     textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  errorUrl: {
+  urlInput: {
+    width: '100%',
+    backgroundColor: '#1e293b',
+    borderWidth: 1,
+    borderColor: '#334155',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     color: '#00e5ff',
-    fontWeight: '700',
+    fontFamily: Platform.OS === 'android' ? 'monospace' : 'Courier',
+    fontSize: 12,
+    marginBottom: 14,
   },
   errorTech: {
     color: '#ef4444',
-    fontSize: 11,
-    marginBottom: 20,
+    fontSize: 12,
+    marginBottom: 16,
+    textAlign: 'center',
   },
-  retryBtn: {
+  btnRow: {
+    width: '100%',
+    gap: 10,
+    marginBottom: 12,
+  },
+  saveBtn: {
     backgroundColor: '#00e5ff',
-    paddingHorizontal: 24,
     paddingVertical: 14,
-    borderRadius: 12,
-    marginTop: 10,
+    borderRadius: 10,
+    alignItems: 'center',
   },
-  retryText: {
+  saveBtnText: {
     color: '#090d16',
     fontWeight: '800',
     fontSize: 14,
     letterSpacing: 0.5,
+  },
+  resetBtn: {
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  resetBtnText: {
+    color: '#94a3b8',
+    fontWeight: '600',
+    fontSize: 13,
+  },
+  retryBtn: {
+    paddingVertical: 10,
+    alignItems: 'center',
+  },
+  retryText: {
+    color: '#38bdf8',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

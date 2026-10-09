@@ -1,17 +1,28 @@
 {
   "expo": {
-    "name": "sdars-mobile",
+    "name": "SDARS Alert",
     "slug": "sdars-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sdars.disasteralert",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "SDARS requires GPS access to detect your proximity to real-time disaster zones."
+      }
     },
     "android": {
+      "package": "com.sdars.disasteralert",
+      "versionCode": 1,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "INTERNET"
+      ],
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0A0E1A",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -19,6 +30,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow SDARS to detect your location for disaster alerts and tactical routing."
+        }
+      ]
+    ]
   }
 }
