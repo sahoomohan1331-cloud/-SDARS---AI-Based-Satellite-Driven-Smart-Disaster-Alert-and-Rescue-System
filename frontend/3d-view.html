@@ -479,6 +479,10 @@
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-8px) rotate(4deg); }
         }
+        /* Suppress Cesium error panel completely */
+        .cesium-widget-errorPanel {
+            display: none !important;
+        }
     </style>
 <script src="js/lucide.min.js"></script>
 </head>
@@ -682,7 +686,7 @@
                     baseLayerPicker: false,
                     geocoder: false,
                     homeButton: false,
-                    sceneModePicker: true,
+                    sceneModePicker: false,
                     timeline: false,
                     animation: false,
                     navigationHelpButton: false,
@@ -692,11 +696,26 @@
                     selectionIndicator: true
                 });
 
-                // Suppress fatal Cesium modal crash and auto-recover on transient culling frames
+                // Suppress fatal Cesium modal crash and auto-recover render loop
+                if (viewer.cesiumWidget) {
+                    viewer.cesiumWidget.showErrorPanel = function (title, message, error) {
+                        console.warn("[SDARS 3D] Intercepted Cesium render exception:", error || title);
+                        try {
+                            if (!viewer.cesiumWidget._renderLoopRunning) {
+                                viewer.cesiumWidget.startRenderLoop();
+                            }
+                        } catch (e) {}
+                    };
+                }
+
                 if (viewer.scene && viewer.scene.renderError) {
                     viewer.scene.renderError.addEventListener((scene, error) => {
                         console.warn("[SDARS 3D] Intercepted transient Cesium render anomaly:", error);
-                        scene.requestRender();
+                        try {
+                            if (viewer.cesiumWidget && !viewer.cesiumWidget._renderLoopRunning) {
+                                viewer.cesiumWidget.startRenderLoop();
+                            }
+                        } catch (e) {}
                     });
                 }
 
@@ -962,10 +981,7 @@
                                 length: towerHeight,
                                 topRadius: risk === 'HIGH' ? 8000.0 : 4000.0,
                                 bottomRadius: risk === 'HIGH' ? 20000.0 : 10000.0,
-                                material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
-                                    const opacity = risk === 'HIGH' ? 0.4 + Math.sin(Date.now() / 500) * 0.1 : 0.2;
-                                    return color.withAlpha(opacity);
-                                }, false)),
+                                material: color.withAlpha(risk === 'HIGH' ? 0.35 : 0.2),
                                 outline: true,
                                 outlineColor: color,
                                 outlineWidth: 1
@@ -1226,31 +1242,32 @@
             }
 
             init() {
-
-                // Create the water surface
-                this.waterEntity = viewer.entities.add({
-
-                    name: 'Projected Flood Surface',
-                    show: false,
-                    polygon: {
-                        hierarchy: Cesium.Cartesian3.fromDegreesArray([-180, -90, 180, -90, 180, 90, -180, 90]),
-                        height: 0,
-                        material: Cesium.Color.BLUE.withAlpha(0.4),
-                        outline: true,
-                        outlineColor: Cesium.Color.CYAN
-                    }
-                });
-
                 document.getElementById('floodSimToggle').addEventListener('change', (e) => this.toggle(e.target.checked));
-
                 const slider = document.getElementById('waterLevelSlider');
-
                 slider.addEventListener('input', (e) => this.setLevel(parseFloat(e.target.value)));
+            }
+
+            _ensureWaterEntity() {
+                if (!this.waterEntity && viewer) {
+                    this.waterEntity = viewer.entities.add({
+                        name: 'Projected Flood Surface',
+                        show: this.active,
+                        rectangle: {
+                            coordinates: Cesium.Rectangle.fromDegrees(-180, -85, 180, 85),
+                            height: this.currentLevel,
+                            material: Cesium.Color.BLUE.withAlpha(0.35),
+                            outline: false
+                        }
+                    });
+                }
             }
 
             toggle(state) {
                 this.active = state;
-                this.waterEntity.show = state;
+                this._ensureWaterEntity();
+                if (this.waterEntity) {
+                    this.waterEntity.show = state;
+                }
                 document.getElementById('floodControls').style.display = state ? 'block' : 'none';
 
                 if (state) {
@@ -1264,7 +1281,10 @@
 
             setLevel(level) {
                 this.currentLevel = level;
-                this.waterEntity.polygon.height = level;
+                this._ensureWaterEntity();
+                if (this.waterEntity && this.waterEntity.rectangle) {
+                    this.waterEntity.rectangle.height = level;
+                }
 
                 document.getElementById('waterLevelVal').textContent = `${level}m`;
 
@@ -1509,17 +1529,14 @@
                         }
                     }, false),
                     point: {
-                        pixelSize: new Cesium.CallbackProperty(() => {
-                            // Pulsing size
-                            return 10 + Math.sin(Date.now() / 400) * 2;
-                        }, false),
+                        pixelSize: 10,
                         color: sat.color,
                         outlineColor: Cesium.Color.WHITE,
                         outlineWidth: 1.5,
                         scaleByDistance: new Cesium.NearFarScalar(1e6, 1.5, 2e7, 0.5)
                     },
                     label: {
-                        text: `${sat.emoji} ${sat.name}`,
+                        text: `${sat.name}`,
                         font: '700 9pt Inter',
                         fillColor: sat.color,
                         outlineColor: Cesium.Color.BLACK,
@@ -1562,10 +1579,7 @@
                     ellipse: {
                         semiMajorAxis: 220000,
                         semiMinorAxis: 220000,
-                        material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
-                            const alpha = 0.08 + Math.sin(Date.now() / 600) * 0.04;
-                            return sat.color.withAlpha(Math.max(0.02, alpha));
-                        }, false)),
+                        material: sat.color.withAlpha(0.12),
                         outline: true,
                         outlineColor: sat.color.withAlpha(0.5),
                         outlineWidth: 1,
