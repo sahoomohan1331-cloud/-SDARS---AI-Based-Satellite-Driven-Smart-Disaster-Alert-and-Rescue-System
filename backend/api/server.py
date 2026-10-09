@@ -142,6 +142,58 @@ async def root():
         "timestamp": datetime.now().isoformat()
     }
 
+def _serve_frontend_page(filename: str):
+    _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    filepath = os.path.join(_root, "frontend", filename)
+    if os.path.exists(filepath):
+        return FileResponse(filepath)
+    raise HTTPException(status_code=404, detail=f"Page {filename} not found")
+
+@app.get("/mobile_app.html")
+@app.get("/mobile")
+async def get_mobile_page():
+    return _serve_frontend_page("mobile_app.html")
+
+@app.get("/map.html")
+@app.get("/map")
+async def get_map_page():
+    return _serve_frontend_page("map.html")
+
+@app.get("/3d-view.html")
+@app.get("/3d-view")
+async def get_3d_page():
+    return _serve_frontend_page("3d-view.html")
+
+@app.get("/prediction.html")
+@app.get("/prediction")
+async def get_prediction_page():
+    return _serve_frontend_page("prediction.html")
+
+@app.get("/analytics.html")
+@app.get("/analytics")
+async def get_analytics_page():
+    return _serve_frontend_page("analytics.html")
+
+@app.get("/zones.html")
+@app.get("/zones")
+async def get_zones_page():
+    return _serve_frontend_page("zones.html")
+
+@app.get("/alerts.html")
+@app.get("/alerts")
+async def get_alerts_page():
+    return _serve_frontend_page("alerts.html")
+
+@app.get("/about.html")
+@app.get("/about")
+async def get_about_page():
+    return _serve_frontend_page("about.html")
+
+@app.get("/navigation.html")
+@app.get("/navigation")
+async def get_navigation_page():
+    return _serve_frontend_page("navigation.html")
+
 @app.get("/api/status")
 async def api_status():
     """API status endpoint"""
@@ -1192,6 +1244,12 @@ from fastapi.staticfiles import StaticFiles
 _ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _frontend_dir = os.path.join(_ROOT_DIR, "frontend")
 if os.path.exists(_frontend_dir):
+    _css_dir = os.path.join(_frontend_dir, "css")
+    _js_dir = os.path.join(_frontend_dir, "js")
+    if os.path.exists(_css_dir):
+        app.mount("/css", StaticFiles(directory=_css_dir), name="css")
+    if os.path.exists(_js_dir):
+        app.mount("/js", StaticFiles(directory=_js_dir), name="js")
     app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")
 
 

@@ -11,7 +11,7 @@ LogBox.ignoreLogs([
 ]);
 LogBox.ignoreAllLogs(true);
 
-const DEFAULT_SERVER_URL = 'http://192.168.0.137:8000/mobile_app.html';
+const DEFAULT_SERVER_URL = 'https://sdars.onrender.com/mobile_app.html';
 const STORAGE_KEY = 'SDARS_MOBILE_SERVER_URL';
 
 export default function App() {
