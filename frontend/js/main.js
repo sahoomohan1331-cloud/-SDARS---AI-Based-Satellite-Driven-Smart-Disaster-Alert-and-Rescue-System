@@ -187,8 +187,22 @@
 
     Object.assign(window, {
         fetchPrediction: async (lat, lon, name) => {
-            const r = await fetch(`${API_BASE_URL}/predict`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lat, lon, name }) });
-            return r.ok ? await r.json() : null;
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 6500);
+            try {
+                const r = await fetch(`${API_BASE_URL}/predict`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat, lon, name }),
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+                return r.ok ? await r.json() : null;
+            } catch (err) {
+                clearTimeout(timer);
+                console.warn("[SDARS] Prediction fetch timed out or offline:", err);
+                return null;
+            }
         },
         viewLoc: (n, lat, lon) => window.location.href = `prediction.html?lat=${lat}&lon=${lon}&name=${encodeURIComponent(n)}`,
         goToDashboard: () => window.location.href = 'index.html',

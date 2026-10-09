@@ -765,33 +765,149 @@ html, body {
     right: 12px;
     z-index: 1100;
     display: flex;
-    gap: 4px;
-    background: rgba(11, 15, 25, 0.94);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--card-border);
-    border-radius: 12px;
-    padding: 3px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    user-select: none;
 }
 
-.terrain-btn {
-    padding: 5px 8px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    font-size: 10px;
-    font-weight: 700;
+.terrain-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: rgba(11, 15, 25, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: var(--accent-cyan);
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.terrain-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.terrain-selector.expanded .terrain-toggle-btn {
+    border-color: var(--card-border-focus);
+    background: var(--card-elevated);
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+}
+
+.active-layer-indicator {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px var(--accent-cyan);
+    animation: tacticalPulseDot 2s infinite ease-in-out;
+}
+
+.terrain-options-menu {
+    display: flex;
+    flex-direction: column;
     gap: 4px;
-    transition: all 0.15s;
+    background: rgba(11, 15, 25, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 6px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px) scale(0.95);
+    transform-origin: top right;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    min-width: 150px;
+}
+
+.terrain-selector.expanded .terrain-options-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.terrain-menu-header {
+    font-family: var(--font-mono, monospace);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    padding: 3px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 2px;
+}
+
+.terrain-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    position: relative;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .terrain-btn.active {
     background: var(--card-elevated);
     color: var(--accent-cyan);
-    border: 1px solid var(--card-border-focus);
+    border-color: var(--card-border-focus);
+}
+
+.terrain-dot {
+    margin-left: auto;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.terrain-btn.active .terrain-dot {
+    background: var(--accent-cyan);
+    box-shadow: 0 0 6px var(--accent-cyan);
+}
+
+.map-radar-sweep {
+    position: absolute;
+    top: -150px;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(180deg, 
+        rgba(0, 229, 255, 0) 0%, 
+        rgba(0, 229, 255, 0.04) 25%, 
+        rgba(0, 229, 255, 0.2) 75%, 
+        rgba(0, 229, 255, 0.6) 96%, 
+        #00e5ff 100%
+    );
+    border-bottom: 2px solid #00e5ff;
+    box-shadow: 0 4px 20px rgba(0, 229, 255, 0.5);
+    pointer-events: none;
+    z-index: 1050;
+    opacity: 0;
+}
+
+.map-radar-sweep.active {
+    animation: tacticalRadarSweep 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .map-fab-group {

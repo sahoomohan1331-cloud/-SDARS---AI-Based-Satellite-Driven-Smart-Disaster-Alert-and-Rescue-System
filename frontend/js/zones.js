@@ -115,6 +115,49 @@ function initMap() {
     });
 }
 
+// ⭐ Tactical Radar Scan Sweep Animation on Map
+function triggerMapRadarSweep() {
+    let sweep = document.getElementById('mapRadarSweep') || document.querySelector('.map-radar-sweep');
+    if (!sweep) {
+        const wrapper = document.querySelector('.map-container') || document.getElementById('map')?.parentElement;
+        if (wrapper) {
+            sweep = document.createElement('div');
+            sweep.className = 'map-radar-sweep';
+            sweep.id = 'mapRadarSweep';
+            wrapper.appendChild(sweep);
+        }
+    }
+    if (sweep) {
+        sweep.classList.remove('active');
+        void sweep.offsetWidth;
+        sweep.classList.add('active');
+        setTimeout(() => sweep.classList.remove('active'), 850);
+    }
+}
+
+// ⭐ Collapsible Terrain Menu Handlers
+function toggleTerrainMenu(e) {
+    if (e) e.stopPropagation();
+    const selector = document.getElementById('terrainSelector');
+    if (selector) selector.classList.toggle('expanded');
+}
+
+function selectTerrain(type, e) {
+    if (e) e.stopPropagation();
+    setTerrain(type);
+    setTimeout(() => {
+        const selector = document.getElementById('terrainSelector');
+        if (selector) selector.classList.remove('expanded');
+    }, 350);
+}
+
+document.addEventListener('click', (e) => {
+    const selector = document.getElementById('terrainSelector');
+    if (selector && !selector.contains(e.target)) {
+        selector.classList.remove('expanded');
+    }
+});
+
 /**
  * ⭐ Switch Terrain Function
  */
@@ -128,9 +171,12 @@ function setTerrain(type) {
     zonesState.terrainLayers[type].addTo(zonesState.map);
     zonesState.currentLayerName = type;
 
+    // Trigger tactical radar scan sweep
+    triggerMapRadarSweep();
+
     // Update UI buttons
     document.querySelectorAll('.terrain-btn').forEach(btn => btn.classList.remove('active'));
-    const activeBtn = document.querySelector(`.terrain-btn[onclick*="${type}"]`);
+    const activeBtn = document.querySelector(`.terrain-btn[onclick*="'${type}'"]`) || document.querySelector(`.terrain-btn[onclick*="${type}"]`);
     if (activeBtn) activeBtn.classList.add('active');
 
     if (typeof showSuccess === 'function') {

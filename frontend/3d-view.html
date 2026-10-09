@@ -692,6 +692,14 @@
                     selectionIndicator: true
                 });
 
+                // Suppress fatal Cesium modal crash and auto-recover on transient culling frames
+                if (viewer.scene && viewer.scene.renderError) {
+                    viewer.scene.renderError.addEventListener((scene, error) => {
+                        console.warn("[SDARS 3D] Intercepted transient Cesium render anomaly:", error);
+                        scene.requestRender();
+                    });
+                }
+
                 // ⭐ Custom Selection Handler to replace InfoBox
                 viewer.selectedEntityChanged.addEventListener(async function (entity) {
                     const existingOverlay = document.getElementById('customInfoOverlay');
@@ -951,7 +959,7 @@
                             name: `${loc.name} - RISK ZONE`,
                             position: Cesium.Cartesian3.fromDegrees(loc.lon, loc.lat, towerHeight / 2),
                             cylinder: {
-                                length: new Cesium.CallbackProperty(() => towerHeight + Math.sin(Date.now() / 500) * 5000, false),
+                                length: towerHeight,
                                 topRadius: risk === 'HIGH' ? 8000.0 : 4000.0,
                                 bottomRadius: risk === 'HIGH' ? 20000.0 : 10000.0,
                                 material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
@@ -1384,27 +1392,20 @@
              * Compute 3D Cartesian position of a satellite at time t.
              * Uses real-time telemetry when available, with orbital mechanics calculation.
              */
-            _satPosition(sat, t) {
-                if (sat.name === 'ISS' && sat.livePosition) {
-                    return sat.livePosition;
-                }
+            _calculateKeplerOrbit(sat, t) {
                 const R_EARTH = 6371000; // metres
-                const altM = sat.altitudeKm * 1000;
+                const altM = (sat.altitudeKm || 500) * 1000;
                 const r = R_EARTH + altM;
 
-                // Angular velocity (rad/s)
-                const omega = (2 * Math.PI) / (sat.periodMin * 60);
-                // Current true anomaly
-                const nu = omega * t + sat.phaseOffset;
+                const omega = (2 * Math.PI) / ((sat.periodMin || 90) * 60);
+                const nu = omega * t + (sat.phaseOffset || 0);
 
-                const incRad = Cesium.Math.toRadians(sat.inclinationDeg);
-                const raanRad = Cesium.Math.toRadians(sat.raanDeg);
+                const incRad = Cesium.Math.toRadians(sat.inclinationDeg || 50);
+                const raanRad = Cesium.Math.toRadians(sat.raanDeg || 0);
 
-                // Position in orbital plane
                 const xOrb = r * Math.cos(nu);
                 const yOrb = r * Math.sin(nu);
 
-                // Rotate by RAAN (around Z) then inclination (around X)
                 const cosR = Math.cos(raanRad), sinR = Math.sin(raanRad);
                 const cosI = Math.cos(incRad), sinI = Math.sin(incRad);
 
@@ -1415,15 +1416,22 @@
                 return new Cesium.Cartesian3(x, y, z);
             }
 
+            _satPosition(sat, t) {
+                if (sat.name === 'ISS' && sat.livePosition) {
+                    return sat.livePosition;
+                }
+                return this._calculateKeplerOrbit(sat, t);
+            }
+
             /**
              * Generate full orbit path as array of Cartesian3 points.
              */
             _buildOrbitPath(sat, steps = 180) {
-                const period = sat.periodMin * 60; // seconds
+                const period = (sat.periodMin || 90) * 60; // seconds
                 const points = [];
                 for (let i = 0; i <= steps; i++) {
                     const t = (i / steps) * period;
-                    points.push(this._satPosition(sat, t));
+                    points.push(this._calculateKeplerOrbit(sat, t));
                 }
                 return points;
             }
@@ -1489,8 +1497,16 @@
                     name: sat.name,
                     description: infoHtml,
                     position: new Cesium.CallbackProperty(() => {
-                        const elapsed = (Date.now() - self.startTime) / 1000;
-                        return self._satPosition(sat, elapsed);
+                        try {
+                            const elapsed = (Date.now() - self.startTime) / 1000;
+                            const pos = self._satPosition(sat, elapsed);
+                            if (pos && isFinite(pos.x) && isFinite(pos.y) && isFinite(pos.z)) {
+                                return pos;
+                            }
+                            return Cesium.Cartesian3.fromDegrees(0, 0, 1000000);
+                        } catch (e) {
+                            return Cesium.Cartesian3.fromDegrees(0, 0, 1000000);
+                        }
                     }, false),
                     point: {
                         pixelSize: new Cesium.CallbackProperty(() => {
@@ -1528,21 +1544,28 @@
                 const entity = viewer.entities.add({
                     name: `${sat.name} Ground Track`,
                     position: new Cesium.CallbackProperty(() => {
-                        const elapsed = (Date.now() - self.startTime) / 1000;
-                        const pos3d = self._satPosition(sat, elapsed);
-                        // Normalize to Earth surface
-                        const cart = Cesium.Cartographic.fromCartesian(pos3d);
-                        return Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
+                        try {
+                            const elapsed = (Date.now() - self.startTime) / 1000;
+                            const pos3d = self._satPosition(sat, elapsed);
+                            if (!pos3d || !isFinite(pos3d.x) || !isFinite(pos3d.y) || !isFinite(pos3d.z)) {
+                                return Cesium.Cartesian3.fromDegrees(0, 0, 0);
+                            }
+                            const cart = Cesium.Cartographic.fromCartesian(pos3d);
+                            if (!cart || !isFinite(cart.longitude) || !isFinite(cart.latitude)) {
+                                return Cesium.Cartesian3.fromDegrees(0, 0, 0);
+                            }
+                            return Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
+                        } catch (e) {
+                            return Cesium.Cartesian3.fromDegrees(0, 0, 0);
+                        }
                     }, false),
                     ellipse: {
-                        semiMajorAxis: new Cesium.CallbackProperty(() => {
-                            // Footprint radius based on altitude (simplified)
-                            return 200000 + Math.sin(Date.now() / 600) * 30000;
-                        }, false),
-                        semiMinorAxis: new Cesium.CallbackProperty(() => {
-                            return 200000 + Math.sin(Date.now() / 600) * 30000;
-                        }, false),
-                        material: sat.color.withAlpha(0.08),
+                        semiMajorAxis: 220000,
+                        semiMinorAxis: 220000,
+                        material: new Cesium.ColorMaterialProperty(new Cesium.CallbackProperty(() => {
+                            const alpha = 0.08 + Math.sin(Date.now() / 600) * 0.04;
+                            return sat.color.withAlpha(Math.max(0.02, alpha));
+                        }, false)),
                         outline: true,
                         outlineColor: sat.color.withAlpha(0.5),
                         outlineWidth: 1,
@@ -1556,11 +1579,21 @@
                     name: `${sat.name} Nadir`,
                     polyline: {
                         positions: new Cesium.CallbackProperty(() => {
-                            const elapsed = (Date.now() - self.startTime) / 1000;
-                            const satPos = self._satPosition(sat, elapsed);
-                            const cart = Cesium.Cartographic.fromCartesian(satPos);
-                            const groundPos = Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
-                            return [groundPos, satPos];
+                            try {
+                                const elapsed = (Date.now() - self.startTime) / 1000;
+                                const satPos = self._satPosition(sat, elapsed);
+                                if (!satPos || !isFinite(satPos.x) || !isFinite(satPos.y) || !isFinite(satPos.z)) {
+                                    return [Cesium.Cartesian3.fromDegrees(0, 0, 0), Cesium.Cartesian3.fromDegrees(0, 0, 1000)];
+                                }
+                                const cart = Cesium.Cartographic.fromCartesian(satPos);
+                                if (!cart || !isFinite(cart.longitude) || !isFinite(cart.latitude)) {
+                                    return [Cesium.Cartesian3.fromDegrees(0, 0, 0), Cesium.Cartesian3.fromDegrees(0, 0, 1000)];
+                                }
+                                const groundPos = Cesium.Cartesian3.fromRadians(cart.longitude, cart.latitude, 0);
+                                return [groundPos, satPos];
+                            } catch (e) {
+                                return [Cesium.Cartesian3.fromDegrees(0, 0, 0), Cesium.Cartesian3.fromDegrees(0, 0, 1000)];
+                            }
                         }, false),
                         width: 0.8,
                         material: new Cesium.PolylineDashMaterialProperty({

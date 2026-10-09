@@ -202,12 +202,38 @@
             <div class="map-chip" onclick="filterMapLayer('vehicles', this)"><i data-lucide="truck" style="width:13px; height:13px;"></i> Teams</div>
         </div>
 
-        <!-- Floating Terrain Selector -->
+        <!-- Tactical Radar / Satellite Sweep Overlay -->
+        <div class="map-radar-sweep" id="mobileMapRadarSweep"></div>
+
+        <!-- Floating Collapsible Terrain Selector -->
         <div class="terrain-selector" id="mobileTerrainSelector">
-            <button class="terrain-btn active" id="btn-t-dark" onclick="setMobileTerrain('dark')">Dark</button>
-            <button class="terrain-btn" id="btn-t-satellite" onclick="setMobileTerrain('satellite')">Sat</button>
-            <button class="terrain-btn" id="btn-t-terrain" onclick="setMobileTerrain('terrain')">Terr</button>
-            <button class="terrain-btn" id="btn-t-streets" onclick="setMobileTerrain('streets')">Street</button>
+            <button class="terrain-toggle-btn" id="mobileTerrainToggleBtn" onclick="toggleMobileTerrainMenu(event)" title="Tactical Map Layers" aria-label="Toggle map layers">
+                <i data-lucide="layers" style="width:18px; height:18px;"></i>
+                <span class="active-layer-indicator"></span>
+            </button>
+            <div class="terrain-options-menu" id="mobileTerrainMenu">
+                <div class="terrain-menu-header">MAP LAYERS</div>
+                <button class="terrain-btn active" id="btn-t-dark" onclick="selectMobileTerrain('dark', event)">
+                    <i data-lucide="moon" style="width:14px; height:14px;"></i>
+                    <span class="terrain-label">Dark Tactical</span>
+                    <span class="terrain-dot"></span>
+                </button>
+                <button class="terrain-btn" id="btn-t-satellite" onclick="selectMobileTerrain('satellite', event)">
+                    <i data-lucide="satellite" style="width:14px; height:14px;"></i>
+                    <span class="terrain-label">Satellite HD</span>
+                    <span class="terrain-dot"></span>
+                </button>
+                <button class="terrain-btn" id="btn-t-terrain" onclick="selectMobileTerrain('terrain', event)">
+                    <i data-lucide="mountain" style="width:14px; height:14px;"></i>
+                    <span class="terrain-label">Topographic</span>
+                    <span class="terrain-dot"></span>
+                </button>
+                <button class="terrain-btn" id="btn-t-streets" onclick="selectMobileTerrain('streets', event)">
+                    <i data-lucide="navigation" style="width:14px; height:14px;"></i>
+                    <span class="terrain-label">Street Grid</span>
+                    <span class="terrain-dot"></span>
+                </button>
+            </div>
         </div>
 
         <!-- Map Canvas -->
@@ -1057,10 +1083,43 @@ function initMobileMap() {
     refreshIcons();
 }
 
+function triggerMobileMapRadarSweep() {
+    let sweep = document.getElementById('mobileMapRadarSweep');
+    if (sweep) {
+        sweep.classList.remove('active');
+        void sweep.offsetWidth;
+        sweep.classList.add('active');
+        setTimeout(() => sweep.classList.remove('active'), 850);
+    }
+}
+
+function toggleMobileTerrainMenu(e) {
+    if (e) e.stopPropagation();
+    const sel = document.getElementById('mobileTerrainSelector');
+    if (sel) sel.classList.toggle('expanded');
+}
+
+function selectMobileTerrain(t, e) {
+    if (e) e.stopPropagation();
+    setMobileTerrain(t);
+    setTimeout(() => {
+        const sel = document.getElementById('mobileTerrainSelector');
+        if (sel) sel.classList.remove('expanded');
+    }, 350);
+}
+
+document.addEventListener('click', (e) => {
+    const sel = document.getElementById('mobileTerrainSelector');
+    if (sel && !sel.contains(e.target)) {
+        sel.classList.remove('expanded');
+    }
+});
+
 function setMobileTerrain(t) {
     if (!mobileMap) return;
     Object.values(mobileTerrainLayers).forEach(layer => mobileMap.removeLayer(layer));
     if (mobileTerrainLayers[t]) mobileTerrainLayers[t].addTo(mobileMap);
+    triggerMobileMapRadarSweep();
     document.querySelectorAll('.terrain-btn').forEach(b => b.classList.remove('active'));
     const btn = document.getElementById('btn-t-' + t);
     if (btn) btn.classList.add('active');

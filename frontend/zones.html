@@ -126,14 +126,43 @@
 </div>
 </div>
 <!-- Map Container -->
-<div class="map-container" style="position: relative;">
+<div class="map-container" style="position: relative; overflow: hidden;">
 <div id="map"></div>
-<!-- Floating Terrain Selector -->
-<div class="terrain-selector" style="position: absolute; top: 20px; left: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(12px); padding: 8px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-<button class="terrain-btn active" onclick="setTerrain('dark')" style="width: 48px; height: 36px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0, 242, 255, 0.15); color: #00f2ff; cursor: pointer; font-size: 11px; font-weight: 700;" title="Dark Tactical">Dark</button>
-<button class="terrain-btn" onclick="setTerrain('satellite')" style="width: 48px; height: 36px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; font-size: 11px; font-weight: 600;" title="Satellite View">Sat</button>
-<button class="terrain-btn" onclick="setTerrain('terrain')" style="width: 48px; height: 36px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; font-size: 11px; font-weight: 600;" title="Topographic Terrain">Terr</button>
-<button class="terrain-btn" onclick="setTerrain('streets')" style="width: 48px; height: 36px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: white; cursor: pointer; font-size: 11px; font-weight: 600;" title="Standard Streets">Street</button>
+<!-- Tactical Radar / Satellite Sweep Overlay -->
+<div class="map-radar-sweep" id="mapRadarSweep"></div>
+<!-- ⭐ Floating Collapsible Tactical Terrain Selector -->
+<div class="terrain-selector" id="terrainSelector">
+    <button class="terrain-toggle-btn" id="terrainToggleBtn" onclick="toggleTerrainMenu(event)" title="Tactical Map Layers" aria-label="Toggle map layers">
+        <svg class="layers-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+        </svg>
+        <span class="active-layer-indicator"></span>
+    </button>
+    <div class="terrain-options-menu" id="terrainOptionsMenu">
+        <div class="terrain-menu-header">MAP LAYERS</div>
+        <button class="terrain-btn active" onclick="selectTerrain('dark', event)" title="Dark Tactical">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <span class="terrain-label">Dark Tactical</span>
+            <span class="terrain-dot"></span>
+        </button>
+        <button class="terrain-btn" onclick="selectTerrain('satellite', event)" title="Satellite View">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <span class="terrain-label">Satellite HD</span>
+            <span class="terrain-dot"></span>
+        </button>
+        <button class="terrain-btn" onclick="selectTerrain('terrain', event)" title="Topographic Terrain">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+            <span class="terrain-label">Topographic</span>
+            <span class="terrain-dot"></span>
+        </button>
+        <button class="terrain-btn" onclick="selectTerrain('streets', event)" title="Standard Streets">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+            <span class="terrain-label">Street Grid</span>
+            <span class="terrain-dot"></span>
+        </button>
+    </div>
 </div>
 <!-- Map Controls Overlay -->
 <div class="map-controls-overlay">
