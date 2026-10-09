@@ -1502,20 +1502,58 @@ html, body {
     letter-spacing: 0.5px;
 }
 
-/* Tactical Leaflet Marker Styles */
+/* Tactical Leaflet Marker & Popup Styles */
+.leaflet-pane.leaflet-popup-pane {
+    z-index: 1150 !important;
+}
+
+.leaflet-popup {
+    z-index: 1150 !important;
+}
+
+.leaflet-marker-icon.custom-pin {
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.leaflet-marker-icon.custom-pin * {
+    pointer-events: none !important;
+}
+
 .leaflet-popup-content-wrapper {
-    background: rgba(17, 24, 39, 0.96) !important;
-    backdrop-filter: blur(16px) !important;
-    border: 1px solid var(--card-border) !important;
+    background: rgba(15, 23, 42, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-radius: 12px !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8) !important;
     color: var(--text-white) !important;
     padding: 2px !important;
+    pointer-events: auto !important;
+}
+
+.leaflet-popup-tip-container {
+    z-index: 1150 !important;
 }
 
 .leaflet-popup-tip {
-    background: rgba(17, 24, 39, 0.96) !important;
-    border: 1px solid var(--card-border) !important;
+    background: rgba(15, 23, 42, 0.98) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #94a3b8 !important;
+    padding: 6px 8px !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    z-index: 20 !important;
+    text-decoration: none !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: #00e5ff !important;
 }
 
 .popup-tactical {

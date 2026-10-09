@@ -678,7 +678,7 @@ function applyLocationUpdate(lat, lon, accuracy, label) {
             userMarker.setLatLng([userLat, userLon]);
         }
 
-        userMarker.bindPopup(`
+        const userPopupHtml = `
             <div class="popup-tactical">
                 <div class="popup-tactical-header">
                     <span class="popup-tactical-title">My Tactical Location</span>
@@ -693,7 +693,20 @@ function applyLocationUpdate(lat, lon, accuracy, label) {
                     <button class="popup-btn popup-btn-scan" onclick="useCurrentLocationForScan()">AI Threat Scan</button>
                 </div>
             </div>
-        `);
+        `;
+        userMarker.bindPopup(userPopupHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+        userMarker.off('click');
+        userMarker.on('click', (e) => {
+            if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+            userMarker.openPopup();
+            openMapSheet(
+                'My Tactical Location',
+                `GPS Sensor • ±${Math.round(userLocationAccuracy)}m Accuracy`,
+                `<b>Coordinates:</b> ${userLat.toFixed(4)}° N, ${userLon.toFixed(4)}° E<br><b>Telemetry Source:</b> ${label || 'Real-Time Hardware Bridge'}<br><span style="color:var(--accent-cyan); font-size:11px;">Operational status active</span>`,
+                'Scan Threat Level',
+                useCurrentLocationForScan
+            );
+        });
     }
 
     // 2. Update Evac start input
@@ -1020,7 +1033,8 @@ function initMobileMap() {
     mobileMap = L.map('mobileMap', {
         center: [userLat, userLon],
         zoom: 11,
-        zoomControl: false
+        zoomControl: false,
+        tap: false // Crucial: disables buggy legacy tap simulation on mobile WebViews
     });
 
     mobileTerrainLayers = {
@@ -1051,6 +1065,38 @@ function initMobileMap() {
     vehicleLayerGroup = L.layerGroup().addTo(mobileMap);
     routePolylineGroup = L.layerGroup().addTo(mobileMap);
 
+    // Click anywhere on map for coordinates & instant threat scan / route
+    mobileMap.on('click', function(e) {
+        if (!e || !e.latlng) return;
+        const lat = e.latlng.lat;
+        const lon = e.latlng.lng;
+        L.popup({
+            maxWidth: 290,
+            autoPan: true,
+            autoPanPadding: [20, 70],
+            closeButton: true
+        })
+        .setLatLng(e.latlng)
+        .setContent(`
+            <div class="popup-tactical">
+                <div class="popup-tactical-header">
+                    <span class="popup-tactical-title">Selected Point</span>
+                    <span class="popup-tactical-badge" style="background:rgba(0,229,255,0.15); color:#00e5ff;">TACTICAL GPS</span>
+                </div>
+                <div class="popup-tactical-body">
+                    <b>Latitude:</b> ${lat.toFixed(4)}° N<br>
+                    <b>Longitude:</b> ${lon.toFixed(4)}° E<br>
+                    <span style="color:var(--text-dim); font-size:10px;">Tap below to inspect threat or route</span>
+                </div>
+                <div class="popup-tactical-actions">
+                    <button class="popup-btn popup-btn-evac" onclick="quickNavTo(${lat}, ${lon}, 'Point ${lat.toFixed(2)}, ${lon.toFixed(2)}')">Route Here</button>
+                    <button class="popup-btn popup-btn-scan" onclick="quickScanFromCoords(${lat}, ${lon})">AI Scan</button>
+                </div>
+            </div>
+        `)
+        .openOn(mobileMap);
+    });
+
     loadMapHazards();
     loadMapShelters();
     loadMapGauges();
@@ -1063,7 +1109,9 @@ function initMobileMap() {
         color: '#ffffff',
         weight: 2,
         fillOpacity: 0.95
-    }).addTo(mobileMap).bindPopup(`
+    }).addTo(mobileMap);
+
+    const userPopupHtml = `
         <div class="popup-tactical">
             <div class="popup-tactical-header">
                 <span class="popup-tactical-title">My Tactical Location</span>
@@ -1077,7 +1125,19 @@ function initMobileMap() {
                 <button class="popup-btn popup-btn-scan" onclick="useCurrentLocationForScan()">AI Threat Scan</button>
             </div>
         </div>
-    `);
+    `;
+    userMarker.bindPopup(userPopupHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+    userMarker.on('click', (e) => {
+        if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+        userMarker.openPopup();
+        openMapSheet(
+            'My Tactical Location',
+            `GPS Sensor • Active`,
+            `<b>Coordinates:</b> ${userLat.toFixed(4)}° N, ${userLon.toFixed(4)}° E<br><span style="color:var(--accent-cyan); font-size:11px;">Operational status active</span>`,
+            'Scan Threat Level',
+            useCurrentLocationForScan
+        );
+    });
 
     mapReady = true;
     refreshIcons();
@@ -1197,7 +1257,7 @@ async function loadMapHazards() {
                     weight: 2
                 }).addTo(hazardLayerGroup);
 
-                circle.bindPopup(`
+                const hazardHtml = `
                     <div class="popup-tactical">
                         <div class="popup-tactical-header">
                             <span class="popup-tactical-title">${r.name}</span>
@@ -1213,7 +1273,20 @@ async function loadMapHazards() {
                             <button class="popup-btn popup-btn-scan" onclick="quickScan('${r.name}')">Scan</button>
                         </div>
                     </div>
-                `);
+                `;
+
+                circle.bindPopup(hazardHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+                circle.on('click', (e) => {
+                    if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                    circle.openPopup();
+                    openMapSheet(
+                        r.name,
+                        `Threat: ${(r.primary_threat||'Hazard').toUpperCase()} • Risk: ${r.overall_risk}`,
+                        `<b>Severity Level:</b> <span style="color:${c}; font-weight:700;">${r.overall_risk}</span><br><b>Coordinates:</b> ${r.lat.toFixed(4)}, ${r.lon.toFixed(4)}<br><small style="color:var(--text-dim);">Logged: ${timeAgo(r.timestamp)}</small>`,
+                        'Evacuate Hazard Zone',
+                        () => quickNavTo(r.lat, r.lon, r.name)
+                    );
+                });
             });
         }
     } catch(e) {}
@@ -1249,11 +1322,13 @@ async function loadMapShelters() {
             icon: L.divIcon({
                 className: 'custom-pin',
                 html: makeTacticalPin(pinType, color),
-                iconSize: [30, 30]
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -18]
             })
         }).addTo(shelterLayerGroup);
 
-        marker.bindPopup(`
+        const shelterHtml = `
             <div class="popup-tactical">
                 <div class="popup-tactical-header">
                     <span class="popup-tactical-title">${r.name}</span>
@@ -1268,7 +1343,20 @@ async function loadMapShelters() {
                     <button class="popup-btn popup-btn-evac" onclick="quickNavTo(${r.latitude}, ${r.longitude}, '${r.name}')">Evacuate Here</button>
                 </div>
             </div>
-        `);
+        `;
+
+        marker.bindPopup(shelterHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+        marker.on('click', (e) => {
+            if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+            marker.openPopup();
+            openMapSheet(
+                r.name,
+                `${(r.type||'shelter').toUpperCase()} • Status: ${r.status || 'AVAILABLE'}`,
+                `<b>Occupancy:</b> ${r.current_occupancy}/${r.capacity} beds (${r.available_capacity || (r.capacity - r.current_occupancy)} free)<br><b>Coordinates:</b> ${r.latitude.toFixed(4)}, ${r.longitude.toFixed(4)}<br><b>Emergency Contact:</b> <a href="tel:${r.contact_info||'112'}" style="color:#00e5ff; text-decoration:none;">${r.contact_info||'112'}</a>`,
+                'Evacuate to Shelter',
+                () => quickNavTo(r.latitude, r.longitude, r.name)
+            );
+        });
     });
 }
 
@@ -1285,11 +1373,13 @@ async function loadMapGauges() {
                     icon: L.divIcon({
                         className: 'custom-pin',
                         html: makeTacticalPin('gauge', danger ? '#ef4444' : '#00e5ff'),
-                        iconSize: [30, 30]
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                        popupAnchor: [0, -18]
                     })
                 }).addTo(gaugeLayerGroup);
 
-                marker.bindPopup(`
+                const gaugeHtml = `
                     <div class="popup-tactical">
                         <div class="popup-tactical-header">
                             <span class="popup-tactical-title">${g.station_name}</span>
@@ -1304,7 +1394,20 @@ async function loadMapGauges() {
                             <button class="popup-btn popup-btn-evac" onclick="quickNavTo(${g.latitude}, ${g.longitude}, '${g.station_name}')">Evacuate Area</button>
                         </div>
                     </div>
-                `);
+                `;
+
+                marker.bindPopup(gaugeHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+                marker.on('click', (e) => {
+                    if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                    marker.openPopup();
+                    openMapSheet(
+                        g.station_name,
+                        `River Gauge Sensor • ${g.status}`,
+                        `<b>Current Water Level:</b> <span style="color:${danger?'#ef4444':'#00e5ff'}; font-weight:700;">${g.water_level_m}m</span> (Critical Danger: ${g.danger_level_m}m)<br><b>Flow Rate:</b> ${g.flow_rate_cumecs || '--'} m³/s • <b>Danger Threshold:</b> ${g.pct_of_danger || Math.round((g.water_level_m/g.danger_level_m)*100)}%`,
+                        'Evacuate Flood Corridor',
+                        () => quickNavTo(g.latitude, g.longitude, g.station_name)
+                    );
+                });
             });
         }
     } catch(e) {}
@@ -1322,11 +1425,13 @@ async function loadMapRoads() {
                     icon: L.divIcon({
                         className: 'custom-pin',
                         html: makeTacticalPin('roadblock', '#f59e0b'),
-                        iconSize: [30, 30]
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                        popupAnchor: [0, -18]
                     })
                 }).addTo(roadLayerGroup);
 
-                marker.bindPopup(`
+                const roadHtml = `
                     <div class="popup-tactical">
                         <div class="popup-tactical-header">
                             <span class="popup-tactical-title">${rd.name}</span>
@@ -1340,7 +1445,20 @@ async function loadMapRoads() {
                             <button class="popup-btn popup-btn-evac" onclick="quickNavTo(${rd.latitude}, ${rd.longitude}, '${rd.name}')">View Detour</button>
                         </div>
                     </div>
-                `);
+                `;
+
+                marker.bindPopup(roadHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+                marker.on('click', (e) => {
+                    if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                    marker.openPopup();
+                    openMapSheet(
+                        rd.name,
+                        `Road Obstruction • ${rd.status}`,
+                        `<b>Cause:</b> ${rd.reason}<br><b>Recommended Detour:</b> <span style="color:#00e5ff;">${rd.detour || 'Use alternate bypass route'}</span><br><b>Coordinates:</b> ${rd.latitude.toFixed(4)}, ${rd.longitude.toFixed(4)}`,
+                        'Route Around Obstruction',
+                        () => quickNavTo(rd.latitude, rd.longitude, rd.name)
+                    );
+                });
             });
         }
     } catch(e) {}
@@ -1358,11 +1476,13 @@ async function loadMapVehicles() {
                     icon: L.divIcon({
                         className: 'custom-pin',
                         html: makeTacticalPin('vehicle', '#10b981'),
-                        iconSize: [30, 30]
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                        popupAnchor: [0, -18]
                     })
                 }).addTo(vehicleLayerGroup);
 
-                marker.bindPopup(`
+                const vehicleHtml = `
                     <div class="popup-tactical">
                         <div class="popup-tactical-header">
                             <span class="popup-tactical-title">${v.team}</span>
@@ -1374,7 +1494,20 @@ async function loadMapVehicles() {
                             <b>Mission:</b> ${v.mission}
                         </div>
                     </div>
-                `);
+                `;
+
+                marker.bindPopup(vehicleHtml, { autoPan: true, autoPanPadding: [20, 70], closeButton: true });
+                marker.on('click', (e) => {
+                    if (e && e.originalEvent) L.DomEvent.stopPropagation(e);
+                    marker.openPopup();
+                    openMapSheet(
+                        v.team,
+                        `Emergency Vehicle • ${v.status}`,
+                        `<b>Asset:</b> ${v.type} (${v.vehicle_id})<br><b>Speed:</b> ${v.speed_kmh} km/h • <b>Position:</b> ${v.latitude.toFixed(4)}, ${v.longitude.toFixed(4)}<br><b>Mission:</b> ${v.mission}`,
+                        'Close Drawer',
+                        closeMapSheet
+                    );
+                });
             });
         }
     } catch(e) {}
@@ -1394,6 +1527,7 @@ function quickNavTo(lat, lon, label) {
 
 function quickScanFromCoords(lat, lng) {
     if (mobileMap) mobileMap.closePopup();
+    closeMapSheet();
     document.getElementById('scanLocation').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     switchTab('scan');
     setTimeout(runMobileScan, 100);
@@ -1404,9 +1538,10 @@ function openMapSheet(title, subtitle, content, actionLabel, onAction) {
     document.getElementById('sheetSub').textContent = subtitle;
     document.getElementById('sheetBody').innerHTML = content;
     const btn = document.getElementById('sheetActionBtn');
-    btn.textContent = actionLabel || 'Evacuate Here';
+    btn.innerHTML = `<i data-lucide="navigation" style="width:15px; height:15px;"></i> ${actionLabel || 'Evacuate Here'}`;
     window._sheetAction = onAction;
     document.getElementById('mapSheet').classList.add('open');
+    refreshIcons();
 }
 
 function closeMapSheet() {
