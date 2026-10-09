@@ -483,6 +483,52 @@
         .cesium-widget-errorPanel {
             display: none !important;
         }
+
+        .terrain-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 4px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .terrain-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-color: rgba(0, 242, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .terrain-btn.active {
+            background: #00f2ff !important;
+            color: #05080f !important;
+            border-color: #00f2ff !important;
+            font-weight: 700;
+        }
+
+        .terrain-btn svg {
+            transition: transform 0.2s ease;
+        }
+
+        .terrain-btn:hover svg {
+            transform: scale(1.1);
+        }
+
+        .terrain-btn .btn-lbl {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
     </style>
 <script src="js/lucide.min.js"></script>
 </head>
@@ -511,7 +557,7 @@
 <div class="war-room-overlay">
 <div class="control-panel">
 <div class="panel-header">
-<h2 class="panel-title"><span>️</span><span>SDARS THREAT-3D</span></h2>
+<h2 class="panel-title" style="display: flex; align-items: center; gap: 8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f2ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg><span>SDARS THREAT-3D</span></h2>
 <p style="color: #6b7a99; font-size: 11px;">Nasa/Sentinel Data Fusion Architecture</p>
 </div>
 <div class="status-indicator">
@@ -581,18 +627,32 @@
                             Simulation active: Topographic analysis running... </div>
 </div>
 </div>
-<div style="margin-top: 10px;">
-<div style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;">
-                        Map Base Imagery</div>
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
-<button class="terrain-btn active" onclick="setImagery('tactical')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Tactical Dark"></button>
-<button class="terrain-btn" onclick="setImagery('satellite')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="NASA Satellite">️</button>
-<button class="terrain-btn" onclick="setImagery('topo')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="Topographic">️</button>
-<button class="terrain-btn" onclick="setImagery('streets')" style="padding: 8px; background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; cursor: pointer;" title="OpenStreetMap">️</button>
+<div style="margin-top: 12px;">
+<div style="color: #6b7a99; font-size: 10px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+    Map Base Imagery
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+<button class="terrain-btn active" onclick="setImagery('tactical')" title="Tactical Dark">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    <span class="btn-lbl">Dark</span>
+</button>
+<button class="terrain-btn" onclick="setImagery('satellite')" title="NASA Satellite">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 7 9 3 5 7l4 4"/><path d="m17 11 4 4-4 4-4-4"/><path d="m8 12 4 4 6-6-4-4Z"/><path d="m16 8 3-3"/><path d="M9 21a6 6 0 0 0-6-6"/></svg>
+    <span class="btn-lbl">Sat</span>
+</button>
+<button class="terrain-btn" onclick="setImagery('topo')" title="Topographic">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+    <span class="btn-lbl">Topo</span>
+</button>
+<button class="terrain-btn" onclick="setImagery('streets')" title="OpenStreetMap Grid">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+    <span class="btn-lbl">Road</span>
+</button>
 </div>
 </div>
 </div>
-<button class="btn-action btn-tour" id="tourBtn"><span></span>Start Crisis Tour </button><a class="btn-action btn-secondary" href="map.html">← Exit War Room </a>
+<button class="btn-action btn-tour" id="tourBtn" style="display: flex; align-items: center; justify-content: center; gap: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>Start Crisis Tour</button>
+<a class="btn-action btn-secondary" href="map.html" style="display: flex; align-items: center; justify-content: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>Exit War Room</a>
 </div>
 </div>
 
@@ -1211,16 +1271,14 @@
                 // Update UI buttons
                 document.querySelectorAll('.terrain-btn').forEach(btn => {
                     btn.classList.remove('active');
-                    btn.style.background = 'rgba(255, 255, 255, 0.05)';
-                    btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
                 });
 
                 const activeBtn = document.querySelector(`.terrain-btn[onclick*="${type}"]`);
 
                 if (activeBtn) {
                     activeBtn.classList.add('active');
-                    activeBtn.style.background = '#00f2ff';
-                    activeBtn.style.borderColor = '#00f2ff';
                 }
 
                 addLog(`IMAGERY: ${type.toUpperCase()} LOADED`, 'success');
