@@ -19,7 +19,9 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "INTERNET"
+        "INTERNET",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#0A0E1A",
@@ -38,6 +40,11 @@
           "locationWhenInUsePermission": "Allow SDARS to detect your location for disaster alerts and tactical routing."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "52208377-b686-4857-9473-7f8b4d78e1b5"
+      }
+    }
   }
 }
