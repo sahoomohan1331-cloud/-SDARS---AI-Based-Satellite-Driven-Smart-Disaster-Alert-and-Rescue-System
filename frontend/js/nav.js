@@ -44,6 +44,23 @@ document.addEventListener("DOMContentLoaded", () => {
     <p>Powered by Multi-Modal AI | Real-Time Monitoring Active</p>
 </footer>
 `;
+
+    const mobileBottomNavHTML = `
+<nav class="mobile-bottom-nav">
+    <a href="index.html" class="mobile-nav-link" id="m-nav-index.html">
+        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🏠</span><small>Home</small>
+    </a>
+    <a href="map.html" class="mobile-nav-link" id="m-nav-map.html">
+        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🗺️</span><small>Map</small>
+    </a>
+    <a href="3d-view.html" class="mobile-nav-link" id="m-nav-3d-view.html">
+        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🌎</span><small>3D Room</small>
+    </a>
+    <a href="prediction.html" class="mobile-nav-link" id="m-nav-prediction.html">
+        <span style="font-size: 20px; display: block; margin-bottom: 2px;">🤖</span><small>AI Scan</small>
+    </a>
+</nav>
+`;
     const authHTML = `
 <div id="authModal" class="modal-backdrop"
     style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
@@ -138,4 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
             link.classList.add("active");
         }
     });
+
+    // Inject mobile bottom nav
+    const mNavContainer = document.createElement('div');
+    mNavContainer.innerHTML = mobileBottomNavHTML;
+    body.appendChild(mNavContainer.firstElementChild);
+
+    const mNavLink = document.getElementById("m-nav-" + page);
+    if(mNavLink) mNavLink.style.color = "var(--accent-signal)";
 });

@@ -312,11 +312,30 @@
             gpsButton.disabled = true;
         }
 
-        if (!navigator.geolocation) {
-            if (typeof notificationSystem !== 'undefined') {
-                notificationSystem.error('GPS not supported by your browser', 3000);
-            }
+        async function fallbackToNetworkLocation() {
+            try {
+                const res = await fetch('/api/geolocation/detect');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.latitude && data.longitude) {
+                        const locationName = data.city || 'Detected Location';
+                        const input = document.getElementById('locationSearchInput');
+                        if (input) input.value = locationName;
+                        goToLocation(data.latitude, data.longitude, locationName);
+                        if (typeof notificationSystem !== 'undefined') {
+                            notificationSystem.success(`Located at ${locationName}!`, 3000);
+                        }
+                        resetGpsButton();
+                        return;
+                    }
+                }
+            } catch (e) {}
+            goToLocation(20.2961, 85.8245, 'Bhubaneswar');
             resetGpsButton();
+        }
+
+        if (!navigator.geolocation) {
+            fallbackToNetworkLocation();
             return;
         }
 
@@ -327,17 +346,15 @@
 
                 // Get location name
                 try {
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
-                        { headers: { 'User-Agent': 'SDARS-DisasterAlertSystem/1.0' } }
-                    );
-
-                    const data = await response.json();
-                    const address = data.address || {};
-                    // Get cleanest name - prefer city/town/village over municipality
-                    const locationName = address.city || address.town || address.village ||
-                        address.suburb || address.county || address.state_district ||
-                        'Your Location';
+                    let locationName = '';
+                    const rRes = await fetch(`/api/geolocation/reverse?lat=${lat}&lon=${lon}`);
+                    if (rRes.ok) {
+                        const rData = await rRes.json();
+                        locationName = rData.name;
+                    }
+                    if (!locationName) {
+                        locationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                    }
 
                     // Update search input
                     const input = document.getElementById('locationSearchInput');
@@ -358,22 +375,12 @@
                 resetGpsButton();
             },
             (error) => {
-                console.error('GPS error:', error);
-
-                let message = 'Unable to get your location';
-                if (error.code === 1) message = 'Location access denied. Please enable GPS.';
-                if (error.code === 2) message = 'Location unavailable. Try again.';
-                if (error.code === 3) message = 'Location request timed out.';
-
-                if (typeof notificationSystem !== 'undefined') {
-                    notificationSystem.error(message, 4000);
-                }
-
-                resetGpsButton();
+                console.warn('GPS error, falling back to server detection:', error);
+                fallbackToNetworkLocation();
             },
             {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 5000,
                 maximumAge: 60000
             }
         );

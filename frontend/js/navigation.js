@@ -473,34 +473,55 @@ function displayRouteOptions(routes) {
 }
 
 // Use My Location
-function useMyLocation() {
-    if (!navigator.geolocation) return alert("Geolocation not supported.");
-    
+async function useMyLocation() {
     updateMapStatus('Intercepting satellite coordinates...', 'warning');
     
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            userCoords = [pos.coords.latitude, pos.coords.longitude];
-            document.getElementById('startInput').value = `${userCoords[0].toFixed(5)}, ${userCoords[1].toFixed(5)}`;
-            map.flyTo(userCoords, 16); // Slightly closer zoom for precision
-            updateMapStatus('Location Fixed via GPS', 'success');
-            if (window.showSuccess) showSuccess("Current location accurately fixed.");
-        },
-        err => {
-            console.error("Geolocation error:", err);
-            updateMapStatus('GPS Signal Interrupted', 'danger');
-            let msg = "Could not get location.";
-            if (err.code === 1) msg = "Location permission denied.";
-            else if (err.code === 2) msg = "Location unavailable.";
-            else if (err.code === 3) msg = "Timeout obtaining location.";
-            alert(msg);
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        }
-    );
+    function applyCoords(lat, lon, label) {
+        userCoords = [lat, lon];
+        document.getElementById('startInput').value = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+        if (typeof map !== 'undefined' && map) map.flyTo(userCoords, 16);
+        updateMapStatus('Location Fixed (' + (label || 'GPS') + ')', 'success');
+        if (window.showSuccess) showSuccess("Location accurately fixed: " + (label || `${lat.toFixed(4)}, ${lon.toFixed(4)}`));
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                applyCoords(pos.coords.latitude, pos.coords.longitude, 'Device GPS');
+            },
+            async err => {
+                console.warn("Geolocation fallback to server detect:", err);
+                try {
+                    const res = await fetch('/api/geolocation/detect');
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.latitude && data.longitude) {
+                            applyCoords(data.latitude, data.longitude, data.city || 'Network Geo');
+                            return;
+                        }
+                    }
+                } catch(e) {}
+                applyCoords(20.2961, 85.8245, 'Default Sector');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 4000,
+                maximumAge: 30000
+            }
+        );
+    } else {
+        try {
+            const res = await fetch('/api/geolocation/detect');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.latitude && data.longitude) {
+                    applyCoords(data.latitude, data.longitude, data.city || 'Network Geo');
+                    return;
+                }
+            }
+        } catch(e) {}
+        applyCoords(20.2961, 85.8245, 'Default Sector');
+    }
 }
 
 // Interactive Map Picker

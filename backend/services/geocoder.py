@@ -422,16 +422,17 @@ class RealGeocoder:
             if r.status_code == 200:
                 data = r.json()
                 addr = data.get('address', {})
-                name_parts = [
-                    addr.get('suburb'),
-                    addr.get('neighbourhood'),
-                    addr.get('village'),
-                    addr.get('town'),
-                    addr.get('city'),
-                    addr.get('district'),
-                    addr.get('state')
-                ]
-                loc_name = next((p for p in name_parts if p), f"Location ({lat:.2f}, {lon:.2f})")
+                loc_name = (
+                    addr.get('city') or
+                    addr.get('town') or
+                    addr.get('state_district') or
+                    addr.get('district') or
+                    addr.get('village') or
+                    addr.get('suburb') or
+                    addr.get('neighbourhood') or
+                    addr.get('state') or
+                    f"Location ({lat:.2f}, {lon:.2f})"
+                )
                 res = {
                     'name': loc_name,
                     'display_name': data.get('display_name', loc_name),

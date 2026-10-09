@@ -165,6 +165,58 @@ async def health_check():
         "timestamp": datetime.now().isoformat()
     }
 
+_cached_ip_location = None
+
+@app.get("/api/geolocation/detect")
+async def detect_client_geolocation():
+    """Detect regional geolocation based on client or public IP network"""
+    global _cached_ip_location
+    if _cached_ip_location:
+        return _cached_ip_location
+
+    try:
+        import urllib.request
+        import json
+        req = urllib.request.Request(
+            "https://ipinfo.io/json",
+            headers={"User-Agent": "SDARS/2.0"}
+        )
+        with urllib.request.urlopen(req, timeout=3.5) as resp:
+            data = json.loads(resp.read().decode())
+            loc_str = data.get("loc", "").split(",")
+            if len(loc_str) == 2:
+                _cached_ip_location = {
+                    "latitude": float(loc_str[0]),
+                    "longitude": float(loc_str[1]),
+                    "city": data.get("city", "Bhubaneswar"),
+                    "region": data.get("region", "Odisha"),
+                    "country": data.get("country", "IN"),
+                    "source": "ip_network"
+                }
+                return _cached_ip_location
+    except Exception as e:
+        logger.warning(f"IP Geolocation error: {e}")
+
+    return {
+        "latitude": 20.2961,
+        "longitude": 85.8245,
+        "city": "Bhubaneswar",
+        "region": "Odisha",
+        "country": "IN",
+        "source": "default_fallback"
+    }
+
+@app.get("/api/geolocation/reverse")
+async def reverse_geocode_endpoint(lat: float, lon: float):
+    """Reverse geocode coordinates to a clean human-readable city/location name"""
+    try:
+        name = reverse_geocode(lat, lon)
+        if name:
+            return {"name": name, "latitude": lat, "longitude": lon}
+    except Exception as e:
+        logger.warning(f"Reverse geocode error: {e}")
+    return {"name": f"{lat:.4f}, {lon:.4f}", "latitude": lat, "longitude": lon}
+
 def _get_lite_risk(lat: float, lon: float) -> Dict:
     """
     EXTREMELY FAST risk check for autocomplete suggestions.
