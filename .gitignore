@@ -29,10 +29,18 @@ backend/.env
 secrets.py
 config_secret.py
 
-# ---- Database Files ----
+# ---- Database Files & Local Archives ----
 *.db
 *.sqlite
 *.sqlite3
+archive_local/
+
+# ---- Machine Learning Model Binaries ----
+*.joblib
+*.pkl
+*.h5
+*.pt
+*.onnx
 
 # ---- IDE & Editor ----
 .vscode/
