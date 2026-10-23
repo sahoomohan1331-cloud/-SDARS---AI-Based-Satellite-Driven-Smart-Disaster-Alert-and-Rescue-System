@@ -25,21 +25,14 @@ TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER', '')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '')
 
-# Database Configuration
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://localhost:27017/')
-DATABASE_NAME = os.getenv('DATABASE_NAME', 'sdars_db')
-
 # Server Configuration
-API_HOST = os.getenv('API_HOST', '0.0.0.0')
+API_HOST = os.getenv('API_HOST', '127.0.0.1')
 API_PORT = int(os.getenv('API_PORT', 8000))
-DEBUG_MODE = os.getenv('DEBUG_MODE', 'True').lower() == 'true'
+DEBUG_MODE = os.getenv('DEBUG_MODE', 'False').lower() == 'true'
+DEMO_MODE = os.getenv('DEMO_MODE', 'False').lower() == 'true'
 
-# Model Paths
+# Model Storage Directory
 MODELS_DIR = os.path.join(os.path.dirname(__file__), 'models')
-FIRE_MODEL_PATH = os.path.join(MODELS_DIR, 'fire_detection_model.h5')
-FLOOD_MODEL_PATH = os.path.join(MODELS_DIR, 'flood_detection_model.h5')
-CYCLONE_MODEL_PATH = os.path.join(MODELS_DIR, 'cyclone_prediction_model.h5')
-WEATHER_MODEL_PATH = os.path.join(MODELS_DIR, 'weather_timeseries_model.pkl')
 
 # Data Storage
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
