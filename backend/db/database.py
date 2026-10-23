@@ -69,8 +69,9 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     is_verified = Column(Integer, default=0) # 0=Pending, 1=Verified
-    otp_code = Column(String, nullable=True)
+    otp_code = Column(String, nullable=True) # Stores SHA-256 hash of OTP
     otp_expiry = Column(DateTime, nullable=True)
+    otp_attempts = Column(Integer, default=0) # Track invalid attempts (max 5)
     subscribed_zones = Column(JSON, default=[]) # List of zone IDs
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -147,6 +148,18 @@ class HistoricalDisaster(Base):
 # Create all tables
 def init_db():
     Base.metadata.create_all(bind=engine)
+    # Ensure otp_attempts exists on users table if already created
+    try:
+        from sqlalchemy import text
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN otp_attempts INTEGER DEFAULT 0"))
+    except Exception:
+        pass
+
+try:
+    init_db()
+except Exception:
+    pass
 
 def get_db():
     db = SessionLocal()

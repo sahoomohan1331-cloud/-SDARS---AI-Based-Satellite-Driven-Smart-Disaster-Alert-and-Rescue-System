@@ -27,6 +27,11 @@ function openAuthModal() {
         modal.style.display = 'flex';
         document.getElementById('stepEmail').style.display = 'block';
         document.getElementById('stepOTP').style.display = 'none';
+        const hintEl = document.getElementById('otpDemoHint');
+        if (hintEl) {
+            hintEl.innerText = '';
+            hintEl.style.display = 'none';
+        }
     }
 }
 
@@ -40,6 +45,11 @@ function closeAuthModal() {
 function backToEmail() {
     document.getElementById('stepEmail').style.display = 'block';
     document.getElementById('stepOTP').style.display = 'none';
+    const hintEl = document.getElementById('otpDemoHint');
+    if (hintEl) {
+        hintEl.innerText = '';
+        hintEl.style.display = 'none';
+    }
 }
 
 async function requestOTP() {
@@ -67,11 +77,16 @@ async function requestOTP() {
             document.getElementById('stepEmail').style.display = 'none';
             document.getElementById('stepOTP').style.display = 'block';
 
-            // For Demo/Dev purposes, show the hint if provided
-            if (data.demo_hint) {
-                document.getElementById('otpDemoHint').innerText = `DEV HINT: Code is likely in server logs`;
-            } else if (data.demo_otp) {
-                document.getElementById('otpDemoHint').innerText = `DEV CODE: ${data.demo_otp}`;
+            // Show demo mode banner ONLY when API explicitly reports demo_mode: true
+            const hintEl = document.getElementById('otpDemoHint');
+            if (hintEl) {
+                if (data.demo_mode === true) {
+                    hintEl.style.display = 'block';
+                    hintEl.innerText = `[DEMO MODE] use code ${data.demo_otp || '123456'}`;
+                } else {
+                    hintEl.style.display = 'none';
+                    hintEl.innerText = '';
+                }
             }
         } else {
             alert(data.detail || 'Failed to send OTP');

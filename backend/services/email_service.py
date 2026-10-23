@@ -1,9 +1,7 @@
-
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-import random
 import logging
 from datetime import datetime, timedelta
 
@@ -24,46 +22,43 @@ class EmailService:
         }
 
     @staticmethod
-    def send_otp(to_email: str) -> dict:
+    def is_configured() -> bool:
+        """Check if real SMTP credentials are provided in configuration."""
+        cfg = EmailService._get_smtp_config()
+        return bool(cfg.get('user') and cfg.get('password'))
+
+    @staticmethod
+    def send_otp(to_email: str, otp_code: str):
         """
-        Generates and sends an OTP to the specified email.
-        Returns the OTP code and its expiry time.
+        Sends an OTP code to the specified email via configured SMTP server.
+        Raises RuntimeError if SMTP is not configured or sending fails.
         """
         config = EmailService._get_smtp_config()
-        if not config['user'] or not config['password']:
-            logger.warning("SMTP credentials not configured. Using MOCK OTP.")
-            # Mock OTP for development if credentials missing
-            return {
-                'otp': '123456',
-                'expiry': datetime.utcnow() + timedelta(minutes=10)
-            }
-
-        otp = f"{random.randint(100000, 999999)}"
-        expiry = datetime.utcnow() + timedelta(minutes=10)
+        if not config.get('user') or not config.get('password'):
+            logger.error("SMTP credentials not configured.")
+            raise RuntimeError("Email provider not configured")
 
         subject = "🔐 Your SDARS Login Code"
-        text_body = f"Your verification code is: {otp}\nIt expires in 10 minutes."
+        text_body = f"Your verification code is: {otp_code}\nIt expires in 10 minutes."
         html_body = f"""
         <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; max-width: 400px; border-radius: 8px;">
             <h2 style="color: #6366f1;">SDARS Verification</h2>
             <p>Use the following code to log in:</p>
-            <h1 style="background: #f3f4f6; padding: 10px; text-align: center; letter-spacing: 5px; color: #1f2937;">{otp}</h1>
+            <h1 style="background: #f3f4f6; padding: 10px; text-align: center; letter-spacing: 5px; color: #1f2937;">{otp_code}</h1>
             <p style="color: #6b7280; font-size: 12px;">This code expires in 10 minutes.</p>
         </div>
         """
 
         try:
             EmailService._send_email(to_email, subject, text_body, html_body)
-            return {'otp': otp, 'expiry': expiry}
         except Exception as e:
-            logger.error(f"Failed to send OTP: {e}")
-            raise e
+            logger.error(f"Failed to send OTP via SMTP: {e}")
+            raise RuntimeError("Email provider not configured or delivery failed") from e
 
     @staticmethod
     def send_alert(to_email: str, zone_name: str, risk_level: str, details: str):
         """Sends a disaster alert email."""
         subject = f"⚠️ ALERT: {risk_level} Risk in {zone_name}"
-        
         color = "#ef4444" if risk_level == "HIGH" else "#f59e0b"
         
         html_body = f"""
@@ -79,12 +74,13 @@ class EmailService:
             </div>
         </div>
         """
-        
         EmailService._send_email(to_email, subject, details, html_body)
 
     @staticmethod
     def _send_email(to_email, subject, text_body, html_body):
         config = EmailService._get_smtp_config()
+        if not config.get('user') or not config.get('password'):
+            raise RuntimeError("Email provider not configured")
         
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject

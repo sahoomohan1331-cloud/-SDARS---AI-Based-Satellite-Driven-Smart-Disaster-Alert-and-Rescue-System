@@ -137,8 +137,9 @@ async def root():
         return FileResponse(index_path)
     return {
         "message": "SDARS API is running",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "operational",
+        "demo_mode": os.getenv("DEMO_MODE", "false").lower() == "true",
         "timestamp": datetime.now().isoformat()
     }
 
@@ -194,13 +195,15 @@ async def get_about_page():
 async def get_navigation_page():
     return _serve_frontend_page("navigation.html")
 
+@app.get("/api")
 @app.get("/api/status")
 async def api_status():
     """API status endpoint"""
     return {
         "message": "SDARS API is running",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "status": "operational",
+        "demo_mode": os.getenv("DEMO_MODE", "false").lower() == "true",
         "timestamp": datetime.now().isoformat()
     }
 
