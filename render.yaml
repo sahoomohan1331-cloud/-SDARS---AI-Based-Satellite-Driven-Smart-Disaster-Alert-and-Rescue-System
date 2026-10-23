@@ -4,6 +4,10 @@ services:
     env: python
     region: oregon
     plan: free
+    # Note: On Render free tier, the local SQLite database file is ephemeral and
+    # will reset across instance spins down or redeployments. For production persistence,
+    # use Render Persistent Disks or set DATABASE_URL to a managed PostgreSQL database.
+    healthCheckPath: /api/health
     buildCommand: pip install -r requirements.txt
     startCommand: python run.py
     envVars:
