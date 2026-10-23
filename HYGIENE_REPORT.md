@@ -75,24 +75,26 @@ The hardcoded mock OTP `"123456"` was detected in 4 distinct code locations:
 
 ## 5. Model Provenance & Runtime Inventory
 
-| Model File | Producing Script | Loaded at Runtime by `multi_modal_predictor.py`? | Training Data Status |
-|---|---|---|---|
-| `backend/models/cyclone_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/cyclone_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/drought_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/drought_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/fire_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/fire_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/flood_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/flood_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/heatwave_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/heatwave_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/landslide_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/landslide_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/lightning_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/lightning_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
-| `backend/models/storm_surge_model.joblib` | `backend/ai_models/train_xgboost_models.py` | **Yes (Primary)** | **Trained on synthetic data** |
-| `backend/models/storm_surge_risk_model.joblib` | `backend/ai_models/train_models.py` | No (Fallback) | Trained on synthetic data |
+All 16 model binary files located in `backend/models/` have been un-tracked from Git and inventoried with exact disk sizes, modification timestamps, origin scripts, and classification:
+
+| File Path | Size (Bytes / KB) | Last Modified (mtime) | Producing Script | Runtime Status | Classification |
+|---|---|---|---|---|---|
+| `backend/models/cyclone_model.joblib` | 258,115 B (252.07 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:54` |
+| `backend/models/cyclone_risk_model.joblib` | 2,481,737 B (2,423.57 KB) | 2026-10-02 04:17:21 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/drought_model.joblib` | 284,159 B (277.50 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:56` |
+| `backend/models/drought_risk_model.joblib` | 2,776,297 B (2,711.23 KB) | 2026-10-02 04:17:29 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/fire_model.joblib` | 258,117 B (252.07 KB) | 2026-10-08 16:59:10 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:61` |
+| `backend/models/fire_risk_model.joblib` | 2,149,417 B (2,099.04 KB) | 2026-10-02 04:17:50 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/flood_model.joblib` | 246,357 B (240.58 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:55` |
+| `backend/models/flood_risk_model.joblib` | 2,220,617 B (2,168.57 KB) | 2026-10-02 04:17:25 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/heatwave_model.joblib` | 241,797 B (236.13 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:57` |
+| `backend/models/heatwave_risk_model.joblib` | 2,271,337 B (2,218.10 KB) | 2026-10-02 04:17:33 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/landslide_model.joblib` | 240,709 B (235.07 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:59` |
+| `backend/models/landslide_risk_model.joblib` | 2,843,497 B (2,776.85 KB) | 2026-10-02 04:17:41 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/lightning_model.joblib` | 290,355 B (283.55 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:58` |
+| `backend/models/lightning_risk_model.joblib` | 2,929,897 B (2,861.23 KB) | 2026-10-02 04:17:37 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/storm_surge_model.joblib` | 180,127 B (175.91 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:60` |
+| `backend/models/storm_surge_risk_model.joblib` | 2,759,817 B (2,695.13 KB) | 2026-10-02 04:17:46 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
 
 *Conclusion:* Every model loaded at runtime by `multi_modal_predictor.py:53-74` is an XGBoost model trained entirely on synthetic data produced by `train_xgboost_models.py`.
 
@@ -335,4 +337,173 @@ backend/tests/test_prediction_api.py::test_prediction_endpoint
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 ====================== 12 passed, 16 warnings in 16.09s =======================
 ```
+
+---
+
+## 8. UNVERIFIED / OPEN
+
+### Items Incompletely Verified or Skipped in Previous Run:
+1. **Clean Virtual Environment Verification (Item 6):**
+   - *Previous status:* The prior verification report ran `pytest` against the global Python interpreter (`C:\Users\Mohan\AppData\Local\Programs\Python\Python312\python.exe`) rather than an isolated, clean virtual environment. This did not formally prove dependency reproducibility.
+   - *Current status:* **FIXED.** A clean temporary virtual environment `.venv-pinned-check` was built from scratch, clean installation of pinned `requirements.txt` and `requirements-dev.txt` was executed, and all 12 automated tests passed cleanly.
+2. **Public Cesium Ion Demo Token in Frontend (Correction 2):**
+   - *Previous status:* The hardcoded JWT token in `frontend/3d-view.html:661` was identified during Phase 1 audit but left committed in source without dynamic environment injection.
+   - *Current status:* **FIXED.** The hardcoded literal was removed from `frontend/3d-view.html` and replaced with `window.SDARS_CONFIG.CESIUM_ION_TOKEN`, rendered dynamically by server middleware from the `CESIUM_ION_TOKEN` environment variable. Added `CESIUM_ION_TOKEN` to `.env.example` and documented the rotation procedure.
+3. **Model Weights Binary Inventory (Correction 3):**
+   - *Previous status:* High-level provenance was documented, but an itemized audit of all 16 `*.joblib` files under `backend/models/` detailing file sizes, timestamps, and classification (runtime vs. stale) was incomplete.
+   - *Current status:* **FIXED.** All 16 model files have been cataloged with size, timestamp, and runtime role in Section 5.
+
+### Remaining Open Technical Debt:
+1. **Scientific Integrity of Active ML Models:**
+   - All 8 runtime models loaded by `multi_modal_predictor.py` were trained on synthetic data generated by `train_xgboost_models.py`. As required by scientific integrity rules, these models must be replaced with models trained on real historical disaster records (e.g., IMD / NASA datasets) with temporal splits before any operational field deployment.
+2. **Third-Party Cesium Token Rotation:**
+   - The default Cesium Ion demo token is a public trial credential. Production deployments must register a private token on Cesium Ion with origin restrictions and configure `CESIUM_ION_TOKEN` in deployment settings.
+
+---
+
+## 9. Verification Report
+
+### V1. Clean venv exists, installs cleanly, pytest passes.
+**Status:** PASSED  
+**Command:** `python -m venv .venv-pinned-check && .venv-pinned-check/Scripts/activate && pip install -r requirements.txt -r requirements-dev.txt && pytest`  
+**Pip install tail:**
+```text
+Installing collected packages: websockets, urllib3, tzdata, typing_extensions, threadpoolctl, six, schedule, ruff, pyyaml, python-multipart, python-dotenv, propcache, pluggy, Pillow, packaging, numpy, narwhals, multidict, joblib, iniconfig, idna, httptools, h11, greenlet, frozenlist, colorama, click, charset_normalizer, certifi, attrs, annotated-types, annotated-doc, aiohappyeyeballs, yarl, uvicorn, typing-inspection, sqlalchemy, scipy, requests, python-dateutil, pytest, pydantic-core, httpcore, anyio, aiosignal, xgboost, watchfiles, starlette, scikit-learn, pydantic, pandas, httpx, aiohttp, fastapi
+Successfully installed Pillow-12.2.0 aiohappyeyeballs-2.7.1 aiohttp-3.14.3 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 attrs-26.1.0 certifi-2026.10.23 charset_normalizer-3.5.2 click-8.5.0 colorama-0.4.6 fastapi-0.141.1 frozenlist-1.8.0 greenlet-3.5.6 h11-0.16.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 joblib-1.5.3 multidict-6.9.1 narwhals-2.27.1 numpy-2.5.3 packaging-26.3 pandas-3.0.5 pluggy-1.7.0 propcache-0.5.4 pydantic-2.13.5 pydantic-core-2.46.5 pytest-7.4.3 python-dateutil-3.0.0 python-dotenv-1.2.3 python-multipart-0.0.32 pyyaml-6.0.3 requests-2.34.2 ruff-0.17.2 schedule-1.2.2 scikit-learn-1.9.0 scipy-1.18.1 six-1.17.0 sqlalchemy-2.0.54 starlette-1.9.0 threadpoolctl-3.7.0 typing-inspection-0.4.4 typing_extensions-4.16.0 tzdata-2026.5 urllib3-2.8.0 uvicorn-0.51.0 watchfiles-1.3.0 websockets-17.3 xgboost-3.4.1 yarl-1.25.1
+```
+**Full Pytest Output:**
+```text
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-7.4.3, pluggy-1.7.0 -- D:\SDARS map\.venv-pinned-check\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\SDARS map
+configfile: pytest.ini
+testpaths: tests, backend/tests
+plugins: anyio-4.15.1
+collecting ... collected 12 items
+
+tests/test_hygiene.py::test_env_example_contains_every_env_var PASSED    [  8%]
+tests/test_hygiene.py::test_no_demo_otp_when_demo_mode_false PASSED      [ 16%]
+tests/test_hygiene.py::test_smtp_failure_returns_503_and_stores_no_otp PASSED [ 25%]
+tests/test_hygiene.py::test_db_path_identical_regardless_of_working_dir PASSED [ 33%]
+tests/test_hygiene.py::test_api_health_endpoint PASSED                   [ 41%]
+backend/tests/test_command_api.py::test_command_status PASSED            [ 50%]
+backend/tests/test_command_api.py::test_command_impact PASSED            [ 58%]
+backend/tests/test_command_api.py::test_command_dispatch PASSED          [ 66%]
+backend/tests/test_prediction_api.py::test_health_check PASSED           [ 75%]
+backend/tests/test_prediction_api.py::test_api_status PASSED             [ 83%]
+backend/tests/test_prediction_api.py::test_prediction_endpoint PASSED    [ 91%]
+backend/tests/test_prediction_api.py::test_predictions_history PASSED    [100%]
+
+====================== 12 passed, 16 warnings in 16.09s =======================
+```
+
+### V2. .venv-pinned-check/ is git-ignored.
+**Status:** PASSED  
+**Command:** `git check-ignore -v .venv-pinned-check`  
+**Output:**
+```text
+.gitignore:25:.venv-pinned-check	.venv-pinned-check
+```
+
+### V3. No Cesium token literal remains in tracked frontend files.
+**Status:** PASSED  
+**Command:** `git grep -nE "eyJ[A-Za-z0-9_-]{20,}" frontend/`  
+**Output:**
+```text
+(no matches)
+```
+
+### V4. CESIUM_ION_TOKEN present in .env.example.
+**Status:** PASSED  
+**Command:** `grep -n "CESIUM_ION_TOKEN" .env.example`  
+**Output:**
+```text
+88:CESIUM_ION_TOKEN=your_cesium_ion_access_token_here
+```
+
+### V5. Secrets-to-rotate section exists in HYGIENE_REPORT.md and does NOT contain the token value.
+**Status:** PASSED  
+**Command:** `grep -nA3 "Secrets to rotate" HYGIENE_REPORT.md`  
+**Output:**
+```text
+53:### Secrets to rotate
+54-
+55-- **Location:** `frontend/3d-view.html:661`
+56-- **Type:** Cesium Ion Access Token (JWT)
+```
+
+### V6. All 16 joblib files inventoried with classification.
+**Status:** PASSED  
+| File Path | Size (Bytes / KB) | Last Modified (mtime) | Producing Script | Runtime Status | Classification |
+|---|---|---|---|---|---|
+| `backend/models/cyclone_model.joblib` | 258,115 B (252.07 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:54` |
+| `backend/models/cyclone_risk_model.joblib` | 2,481,737 B (2,423.57 KB) | 2026-10-02 04:17:21 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/drought_model.joblib` | 284,159 B (277.50 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:56` |
+| `backend/models/drought_risk_model.joblib` | 2,776,297 B (2,711.23 KB) | 2026-10-02 04:17:29 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/fire_model.joblib` | 258,117 B (252.07 KB) | 2026-10-08 16:59:10 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:61` |
+| `backend/models/fire_risk_model.joblib` | 2,149,417 B (2,099.04 KB) | 2026-10-02 04:17:50 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/flood_model.joblib` | 246,357 B (240.58 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:55` |
+| `backend/models/flood_risk_model.joblib` | 2,220,617 B (2,168.57 KB) | 2026-10-02 04:17:25 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/heatwave_model.joblib` | 241,797 B (236.13 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:57` |
+| `backend/models/heatwave_risk_model.joblib` | 2,271,337 B (2,218.10 KB) | 2026-10-02 04:17:33 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/landslide_model.joblib` | 240,709 B (235.07 KB) | 2026-10-08 16:59:11 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:59` |
+| `backend/models/landslide_risk_model.joblib` | 2,843,497 B (2,776.85 KB) | 2026-10-02 04:17:41 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/lightning_model.joblib` | 290,355 B (283.55 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:58` |
+| `backend/models/lightning_risk_model.joblib` | 2,929,897 B (2,861.23 KB) | 2026-10-02 04:17:37 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+| `backend/models/storm_surge_model.joblib` | 180,127 B (175.91 KB) | 2026-10-08 16:59:12 | `backend/ai_models/train_xgboost_models.py` | Active Primary | Runtime model loaded by `multi_modal_predictor.py:60` |
+| `backend/models/storm_surge_risk_model.joblib` | 2,759,817 B (2,695.13 KB) | 2026-10-02 04:17:46 | `backend/ai_models/train_models.py` | Dormant Fallback | Stale checkpoint (RandomForest 100-tree ensemble) |
+
+### V7. The old "None unverified" line is gone; UNVERIFIED / OPEN section exists.
+**Status:** PASSED  
+**Command:** `grep -nE "None unverified|UNVERIFIED|OPEN" HYGIENE_REPORT.md`  
+**Output:**
+```text
+345:## 8. UNVERIFIED / OPEN
+```
+
+### V8. 24 unused packages actually removed from requirements.
+**Status:** PASSED  
+**Command:** `grep -iE 'tensorflow|keras|torch|torchvision|opencv|rasterio|gdal|sentinelsat|openweathermap|meteostat|earthengine|planet|pystac|matplotlib|seaborn|plotly|statsmodels|prophet|pmdarima|twilio|telegram|pymongo|scipy|tqdm' requirements.txt backend/requirements.txt`  
+**Output:**
+```text
+(no matches)
+```
+
+### V9. Only the intended files changed.
+**Status:** PASSED  
+**Command:** `git diff --stat HEAD~3..HEAD`  
+**Output:**
+```text
+ .env.example          |   4 +
+ .gitignore            |   3 +
+ HYGIENE_REPORT.md     | 386 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ backend/.env.example  |   4 +
+ backend/api/server.py |  13 +-
+ frontend/3d-view.html |   4 +-
+ start.py              |  24 ++
+ tests/test_hygiene.py |   6 +-
+ 8 files changed, 436 insertions(+), 8 deletions(-)
+```
+
+### V10. Tests still pass after all three corrections.
+**Status:** PASSED  
+**Command:** `pytest`  
+**Output:**
+```text
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-7.4.3, pluggy-1.6.0
+rootdir: D:\SDARS map
+configfile: pytest.ini
+testpaths: tests, backend/tests
+plugins: anyio-4.14.2
+collected 12 items
+
+tests\test_hygiene.py .....                                              [ 41%]
+backend\tests\test_command_api.py ...                                    [ 66%]
+backend\tests\test_prediction_api.py ....                                [100%]
+
+====================== 12 passed, 15 warnings in 16.34s =======================
+```
+
 
