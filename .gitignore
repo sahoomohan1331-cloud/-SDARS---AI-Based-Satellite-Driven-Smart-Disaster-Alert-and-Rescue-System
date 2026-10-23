@@ -21,6 +21,9 @@ env/
 .env
 *.env
 .venv/
+.venv*/
+.venv-pinned-check
+.venv-pinned-check/
 
 # ---- Secrets & API Keys ----
 backend/.env

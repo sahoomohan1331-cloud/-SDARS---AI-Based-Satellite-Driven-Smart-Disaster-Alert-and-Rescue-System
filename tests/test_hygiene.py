@@ -46,12 +46,14 @@ def test_env_example_contains_every_env_var():
     pattern = re.compile(
         r'os\.(?:getenv|environ\.get)\s*\(\s*["\']([A-Z0-9_]+)["\']|os\.environ\s*\[\s*["\']([A-Z0-9_]+)["\']'
     )
-
-    ignore_dirs = {".git", ".agents", "venv", "__pycache__", "archive_local", "node_modules", ".tempmediaStorage"}
     used_vars = set()
-
     for root, dirs, files in os.walk(REPO_ROOT):
-        dirs[:] = [d for d in dirs if d not in ignore_dirs]
+        # Exclude hidden directories (.git, .venv*, etc.) and local non-code folders
+        dirs[:] = [
+            d for d in dirs 
+            if not d.startswith((".", "venv")) 
+            and d not in {"archive_local", "node_modules", "__pycache__", "build", "dist"}
+        ]
         for file in files:
             if file.endswith(".py") and not file.startswith("test_hygiene"):
                 filepath = os.path.join(root, file)
