@@ -3,13 +3,14 @@ FastAPI REST API Server - RELOAD BUMP
 Provides endpoints for the frontend to access AI predictions
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import sys
 import os
+import json
 import asyncio
 import numpy as np
 from sqlalchemy.orm import Session
@@ -147,6 +148,16 @@ def _serve_frontend_page(filename: str):
     _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     filepath = os.path.join(_root, "frontend", filename)
     if os.path.exists(filepath):
+        if filename.endswith(".html"):
+            with open(filepath, "r", encoding="utf-8") as f:
+                content = f.read()
+            cesium_token = os.getenv("CESIUM_ION_TOKEN", "")
+            config_script = f'<script>window.SDARS_CONFIG = window.SDARS_CONFIG || {{}}; window.SDARS_CONFIG.CESIUM_ION_TOKEN = {json.dumps(cesium_token)};</script>'
+            if "<head>" in content:
+                content = content.replace("<head>", f"<head>\n    {config_script}", 1)
+            else:
+                content = f"{config_script}\n{content}"
+            return HTMLResponse(content=content)
         return FileResponse(filepath)
     raise HTTPException(status_code=404, detail=f"Page {filename} not found")
 

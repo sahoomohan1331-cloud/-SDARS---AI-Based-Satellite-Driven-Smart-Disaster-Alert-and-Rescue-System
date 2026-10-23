@@ -12,6 +12,7 @@ import argparse
 import http.server
 import socketserver
 import functools
+import json
 
 # Configure UTF-8 encoding for standard output on Windows
 if sys.platform == 'win32':
@@ -28,9 +29,32 @@ BACKEND_DIR = os.path.join(ROOT_DIR, "backend")
 FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
 
 class FrontendHandler(http.server.SimpleHTTPRequestHandler):
-    """Custom handler that serves from the frontend directory"""
+    """Custom handler that serves from the frontend directory with runtime env injection"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
+
+    def do_GET(self):
+        req_path = self.path.split("?")[0]
+        if req_path.endswith(".html") or req_path in ("/", ""):
+            filename = req_path.lstrip("/") or "index.html"
+            filepath = os.path.join(FRONTEND_DIR, filename)
+            if os.path.exists(filepath) and os.path.isfile(filepath):
+                with open(filepath, "r", encoding="utf-8") as f:
+                    content = f.read()
+                cesium_token = os.getenv("CESIUM_ION_TOKEN", "")
+                config_script = f'<script>window.SDARS_CONFIG = window.SDARS_CONFIG || {{}}; window.SDARS_CONFIG.CESIUM_ION_TOKEN = {json.dumps(cesium_token)};</script>'
+                if "<head>" in content:
+                    content = content.replace("<head>", f"<head>\n    {config_script}", 1)
+                else:
+                    content = f"{config_script}\n{content}"
+                data = content.encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+                return
+        super().do_GET()
 
 def start_backend(is_dev: bool = False):
     """Start the FastAPI backend server"""

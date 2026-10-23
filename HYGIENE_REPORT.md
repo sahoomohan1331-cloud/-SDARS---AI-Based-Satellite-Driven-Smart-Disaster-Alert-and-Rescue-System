@@ -50,6 +50,16 @@ An automated scan of the full Git history (`git log -p --all`) revealed:
 
 *(Note: Active developer keys and SMTP passwords exist on the local filesystem in untracked `backend/.env`, but have never been committed into the Git repository).*
 
+### Secrets to rotate
+
+- **Location:** `frontend/3d-view.html:661`
+- **Type:** Cesium Ion Access Token (JWT)
+- **Token Classification & Risk:** This token is a Cesium-provided public demo token from initial prototyping (not owned or managed by an organizational account). Hardcoding it in client-side markup poses a severe quota exhaustion and abuse risk: if scraped by third parties or if Cesium revokes public tutorial/demo credentials, 3D digital-twin terrain, photogrammetry, and 3D Tiles streaming will immediately fail with HTTP 401/429 errors.
+- **Rotation Instruction:**
+  1. Register for an official Cesium Ion account at https://ion.cesium.com/tokens and create a dedicated access token with domain restrictions set to your application origin (e.g., `*.onrender.com` or custom domain).
+  2. Set `CESIUM_ION_TOKEN=<new_token>` in your local `.env` file and within the hosting deployment configuration (e.g., Render Dashboard Environment Variables).
+  3. Never commit token literals into frontend HTML or JavaScript files. The application now loads this secret at runtime via server-side injection into `window.SDARS_CONFIG.CESIUM_ION_TOKEN`.
+
 ---
 
 ## 4. Usage of Mock OTP "123456"

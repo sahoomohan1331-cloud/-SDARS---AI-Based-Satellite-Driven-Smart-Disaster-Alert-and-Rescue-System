@@ -657,8 +657,10 @@
 </div>
 
 <div id="cesiumContainer"></div>
-<script> // Set your Ion token
-        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MWE3NzQ1OS1mZjU4LTRiYTUtOTRkYS03MzQ0MTU3NGNkODkiLCJpZCI6MzkwNjAzLCJpYXQiOjE3NzEwNzg4NDN9.z5MYsq0_R1Ah5oU7zAHObrYEXVeH-Gywq-JN5DZRZD8';
+<script>
+        // Set Cesium Ion access token from runtime server configuration
+        window.SDARS_CONFIG = window.SDARS_CONFIG || {};
+        Cesium.Ion.defaultAccessToken = window.SDARS_CONFIG.CESIUM_ION_TOKEN || '';
 
         let viewer;
         let locations = [];
