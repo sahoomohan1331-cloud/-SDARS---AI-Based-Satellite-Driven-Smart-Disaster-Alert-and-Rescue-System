@@ -34,3 +34,15 @@ All user interfaces created or modified in this repository must actively avoid r
 ## 2. Architecture & Networking Rules
 - Never rely solely on client-side `navigator.geolocation` over insecure LAN HTTP origins (`http://192.168.x.x`). Always bridge through native Expo location or provide server-side IP fallback (`/api/geolocation/detect`).
 - Keep backend processes, models, and endpoints robust with fallback timeouts.
+
+---
+
+## 3. Scientific Integrity Rules
+1. **Never fabricate, estimate, or hardcode metrics, accuracy, or performance numbers.** Every number in docs must come from a script that writes it to `reports/metrics.json`.
+2. **Never train or evaluate models on synthetic data.** Synthetic data is allowed only in `tests/fixtures/` for pipeline smoke tests.
+3. **If a data source is unavailable or labels for a hazard are too sparse, STOP and describe the problem in `BLOCKERS.md`.** Do not substitute fake or proxy data silently.
+4. **All train/test splits must be temporal** (train on earlier years, test on later years). No random splits.
+5. **Features at time t may only use information available at or before t.** Every feature needs a leakage test.
+6. **Report PR-AUC, recall, precision, false-alarm rate, and Brier score per hazard.** Never report plain accuracy as a headline metric.
+7. **If a hazard performs poorly, label it "experimental" in docs and UI.** Do not hide it.
+8. **Docs must match code.** Remove any claim that is not implemented.
