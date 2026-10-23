@@ -5,8 +5,14 @@ from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 
 # Database setup
-# Using SQLite for ease of use, but engineered for easy swap to PostgreSQL
-DB_URL = "sqlite:///./sdars_database.db"
+# Absolute path to repository root based on __file__ so DB location is independent of working directory
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DEFAULT_DB_PATH = os.path.join(REPO_ROOT, "sdars_database.db").replace("\\", "/")
+
+# Allow override by DATABASE_URL environment variable, defaulting to canonical root SQLite DB
+DB_URL = os.getenv("DATABASE_URL")
+if not DB_URL:
+    DB_URL = f"sqlite:///{DEFAULT_DB_PATH}"
 
 engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
