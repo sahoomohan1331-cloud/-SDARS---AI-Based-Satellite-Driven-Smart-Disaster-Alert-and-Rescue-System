@@ -8,6 +8,7 @@ import webbrowser
 import time
 import os
 import sys
+import argparse
 import http.server
 import socketserver
 import functools
@@ -31,23 +32,28 @@ class FrontendHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
 
-def start_backend():
+def start_backend(is_dev: bool = False):
     """Start the FastAPI backend server"""
-    print(f"🚀 Starting Backend API on http://localhost:{BACKEND_PORT}...")
+    host = "0.0.0.0" if is_dev else "127.0.0.1"
+    mode_str = "DEV MODE (0.0.0.0 with --reload)" if is_dev else "PROD MODE (127.0.0.1)"
+    print(f"🚀 Starting Backend API [{mode_str}] on http://{host}:{BACKEND_PORT}...")
     
     backend_env = os.environ.copy()
     backend_env["PYTHONUTF8"] = "1"
     backend_env["PYTHONIOENCODING"] = "utf-8"
 
+    cmd = [
+        sys.executable, "-m", "uvicorn", 
+        "api.server:app", 
+        "--host", host, 
+        "--port", str(BACKEND_PORT),
+    ]
+    if is_dev:
+        cmd.append("--reload")
+
     # Run uvicorn as a subprocess with the correct working directory
     subprocess.run(
-        [
-            sys.executable, "-m", "uvicorn", 
-            "api.server:app", 
-            "--host", "0.0.0.0", 
-            "--port", str(BACKEND_PORT),
-            "--reload"
-        ],
+        cmd,
         cwd=BACKEND_DIR,  # Set working directory without os.chdir
         env=backend_env
     )
@@ -67,6 +73,16 @@ def open_browser():
     webbrowser.open(f"http://127.0.0.1:{FRONTEND_PORT}")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SDARS - Complete System Launcher")
+    parser.add_argument(
+        "--dev", 
+        action="store_true", 
+        help="Run in development mode: bind to 0.0.0.0 and enable uvicorn --reload"
+    )
+    args = parser.parse_args()
+
+    backend_host = "0.0.0.0" if args.dev else "127.0.0.1"
+
     print("""
     ╔══════════════════════════════════════════════════════════════╗
     ║                                                              ║
@@ -76,9 +92,10 @@ if __name__ == "__main__":
     ╚══════════════════════════════════════════════════════════════╝
     """)
     
-    print(f"📍 Backend API:  http://127.0.0.1:{BACKEND_PORT}")
+    print(f"📍 Backend API:  http://{backend_host}:{BACKEND_PORT}")
     print(f"📍 Frontend:     http://127.0.0.1:{FRONTEND_PORT}")
-    print(f"📍 API Docs:     http://127.0.0.1:{BACKEND_PORT}/docs")
+    print(f"📍 API Docs:     http://{backend_host}:{BACKEND_PORT}/docs")
+    print(f"📍 Mode:         {'DEVELOPMENT (--dev)' if args.dev else 'DEFAULT (127.0.0.1)'}")
     print("\n⏳ Starting servers...\n")
     print("-" * 60)
     
@@ -92,7 +109,7 @@ if __name__ == "__main__":
     
     # Start backend in the main thread (blocking, uses cwd parameter)
     try:
-        start_backend()
+        start_backend(is_dev=args.dev)
     except KeyboardInterrupt:
         print("\n\n🛑 Shutting down SDARS...")
         print("Goodbye! 👋")
