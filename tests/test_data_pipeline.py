@@ -128,13 +128,23 @@ def test_terrain_schema():
         "max_elevation_m",
         "min_elevation_m",
         "max_slope_deg",
+        "p95_slope_deg",
     ]
 
     for col in required_cols:
         assert col in df.columns, f"Missing required column '{col}' in {terrain_path}"
 
     assert (df["max_slope_deg"] >= 0.0).all(), "Slope degrees must be non-negative"
+    assert (df["p95_slope_deg"] >= 0.0).all(), "p95 slope degrees must be non-negative"
+    assert (df["p95_slope_deg"] <= df["max_slope_deg"]).all(), "p95_slope_deg must be <= max_slope_deg for every cell"
     assert (df["max_elevation_m"] >= df["min_elevation_m"]).all(), "Max elevation must be >= min elevation"
+
+    # Robust slope sanity across Odisha:
+    # Odisha is predominantly coastal plain, Mahanadi delta, and rolling central plateau,
+    # with steep relief confined to the Eastern Ghats and northern highlands.
+    # Therefore, the median p95 slope across all cells must be well below 20° (empirical: ~8.97°).
+    median_p95 = float(df["p95_slope_deg"].median())
+    assert median_p95 < 20.0, f"Expected statewide median p95_slope_deg < 20.0, got {median_p95:.2f}"
 
     # Physical sanity checks to prevent silent factor-of-30 scaling or gradient spacing bugs
     puri_rows = df[df["grid_id"].isin(["grid_19.8_85.8", "city_puri"])]
@@ -144,6 +154,21 @@ def test_terrain_schema():
             f"Puri ({puri_cell['grid_id']}) is a flat coastal plain; "
             f"expected max_slope_deg < 5.0, got {puri_cell['max_slope_deg']}"
         )
+        assert puri_cell["p95_slope_deg"] < 5.0, (
+            f"Puri ({puri_cell['grid_id']}) is flat coastal plain; "
+            f"expected p95_slope_deg < 5.0, got {puri_cell['p95_slope_deg']}"
+        )
+
+    # Cuttack Mahanadi delta control cell (grid_20.3_85.8):
+    # max_slope_deg is ~27.23° due to localized river terrace / quarry bluffs,
+    # but robust 95th percentile slope must be < 5.0° (alluvial plain).
+    cuttack_rows = df[df["grid_id"] == "grid_20.3_85.8"]
+    assert not cuttack_rows.empty, "Cuttack delta cell grid_20.3_85.8 not found"
+    cuttack_cell = cuttack_rows.iloc[0]
+    assert cuttack_cell["p95_slope_deg"] < 5.0, (
+        f"Cuttack delta cell ({cuttack_cell['grid_id']}) expected p95_slope_deg < 5.0, "
+        f"got {cuttack_cell['p95_slope_deg']}"
+    )
 
     koraput_rows = df[df["grid_id"] == "grid_18.8_82.8"]
     assert not koraput_rows.empty, "Koraput / Eastern Ghats cell grid_18.8_82.8 not found"
@@ -151,6 +176,10 @@ def test_terrain_schema():
     assert koraput_cell["max_slope_deg"] > 15.0, (
         f"Koraput ({koraput_cell['grid_id']}) is in the steep Eastern Ghats; "
         f"expected max_slope_deg > 15.0, got {koraput_cell['max_slope_deg']}"
+    )
+    assert koraput_cell["p95_slope_deg"] > 10.0, (
+        f"Koraput ({koraput_cell['grid_id']}) is in the steep Eastern Ghats; "
+        f"expected p95_slope_deg > 10.0, got {koraput_cell['p95_slope_deg']}"
     )
 
 
