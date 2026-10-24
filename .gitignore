@@ -76,3 +76,9 @@ npm-debug.log
 ~$*
 scratch/
 r*.json
+
+# ---- Data Pipeline Artifacts ----
+data/raw/
+data/processed/
+data/logs/
+data/checkpoints/
