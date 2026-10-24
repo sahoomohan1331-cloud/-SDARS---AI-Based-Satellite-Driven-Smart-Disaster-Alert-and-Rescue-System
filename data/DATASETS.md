@@ -11,7 +11,7 @@ This document records the exact provenance, cryptographic checksums, schemas, an
 - **Producing Script:** `backend/data_pipeline/fetch_history.py`
 - **Source Data:** Open-Meteo Historical Weather API (Copernicus ECMWF ERA5 & ERA5-Land Reanalysis)
 - **Source Data License:** Creative Commons Attribution 4.0 International (CC BY 4.0) / Copernicus ECMWF License
-- **Row Count:** 202,032
+- **Row Count:** 201480
 - **Column Count:** 16
 - **Column List:**
   1. `timestamp_utc` (datetime64[ns, UTC])
@@ -30,10 +30,10 @@ This document records the exact provenance, cryptographic checksums, schemas, an
   14. `soil_moisture_7_to_28cm` (float64, m³/m³)
   15. `soil_moisture_28_to_100cm` (float64, m³/m³)
   16. `elevation` (float64, metres above sea level)
-- **Date Range:** `2024-01-01 00:00:00+00:00` to `2024-12-31 18:00:00+00:00` (UTC)
+- **Date Range:** `1990-01-01 00:00:00+00:00` to `1990-12-31 18:00:00+00:00` (UTC)
 - **Temporal Frequency:** 6-hourly (00:00, 06:00, 12:00, 18:00 UTC)
 - **Spatial Coverage:** 138 points across Odisha, India (130 regular 0.5° grid cells + 8 named urban centers)
-- **SHA-256 Checksum:** `99687849a0c9013b72922c32a4595b920760d0c4edda6da22ba9666ff606c028`
+- **SHA-256 Checksum:** `42d9a8a038763bccf306fefd0299a92160d270c29ed049fbd2d5a89b3aca1f1b`
 
 ---
 

@@ -183,7 +183,7 @@ def fetch_open_meteo_batch(
     points: list[dict[str, Any]],
     start_date: str,
     end_date: str,
-    max_retries: int = 5,
+    max_retries: int = 8,
 ) -> list[dict[str, Any]]:
     """Fetch hourly historical data for a batch of coordinates from Open-Meteo.
 
@@ -227,10 +227,30 @@ def fetch_open_meteo_batch(
                 return [body]
 
             if response.status_code in (429, 500, 502, 503, 504):
-                sleep_secs = base_delay * (2**attempt) + random.uniform(0.1, 1.0)
+                if attempt == max_retries - 1:
+                    logger.error(
+                        "Open-Meteo returned status %d on final attempt %d: %s",
+                        response.status_code,
+                        attempt + 1,
+                        response.text[:300],
+                    )
+                    response.raise_for_status()
+
+                retry_after = response.headers.get("Retry-After")
+                if retry_after:
+                    try:
+                        sleep_secs = float(retry_after) + random.uniform(0.5, 2.0)
+                    except ValueError:
+                        sleep_secs = 60.0
+                elif response.status_code == 429:
+                    sleep_secs = 60.0 + random.uniform(1.0, 5.0)
+                else:
+                    sleep_secs = base_delay * (2**attempt) + random.uniform(0.1, 1.0)
+
                 logger.warning(
-                    "HTTP %d from Open-Meteo. Backing off for %.2fs (attempt %d/%d)...",
+                    "HTTP %d from Open-Meteo (%s). Backing off for %.2fs (attempt %d/%d)...",
                     response.status_code,
+                    response.text[:150].strip(),
                     sleep_secs,
                     attempt + 1,
                     max_retries,
@@ -470,6 +490,7 @@ def run_pipeline(
                 completed_checkpoints.add(get_checkpoint_key(pt["grid_id"], year))
 
             save_checkpoint(checkpoint_file, completed_checkpoints)
+            time.sleep(1.0)
 
     logger.info("All raw point-year Parquet files verified and cached.")
     return compile_processed_datasets(
