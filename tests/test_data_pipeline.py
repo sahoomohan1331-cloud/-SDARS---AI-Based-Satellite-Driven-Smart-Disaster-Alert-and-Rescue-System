@@ -136,6 +136,23 @@ def test_terrain_schema():
     assert (df["max_slope_deg"] >= 0.0).all(), "Slope degrees must be non-negative"
     assert (df["max_elevation_m"] >= df["min_elevation_m"]).all(), "Max elevation must be >= min elevation"
 
+    # Physical sanity checks to prevent silent factor-of-30 scaling or gradient spacing bugs
+    puri_rows = df[df["grid_id"].isin(["grid_19.8_85.8", "city_puri"])]
+    assert not puri_rows.empty, "Puri cell not found in terrain.parquet"
+    for _, puri_cell in puri_rows.iterrows():
+        assert puri_cell["max_slope_deg"] < 5.0, (
+            f"Puri ({puri_cell['grid_id']}) is a flat coastal plain; "
+            f"expected max_slope_deg < 5.0, got {puri_cell['max_slope_deg']}"
+        )
+
+    koraput_rows = df[df["grid_id"] == "grid_18.8_82.8"]
+    assert not koraput_rows.empty, "Koraput / Eastern Ghats cell grid_18.8_82.8 not found"
+    koraput_cell = koraput_rows.iloc[0]
+    assert koraput_cell["max_slope_deg"] > 15.0, (
+        f"Koraput ({koraput_cell['grid_id']}) is in the steep Eastern Ghats; "
+        f"expected max_slope_deg > 15.0, got {koraput_cell['max_slope_deg']}"
+    )
+
 
 def test_datasets_md_exists():
     """Verify that data/DATASETS.md exists and documents every processed Parquet file on disk."""

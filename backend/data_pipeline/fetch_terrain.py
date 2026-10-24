@@ -31,6 +31,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import requests
+from scipy.ndimage import gaussian_filter
 
 from backend.data_pipeline.fetch_history import (
     DEFAULT_LAT_MAX,
@@ -143,7 +144,8 @@ def read_hgt_tile(tile_path: Path) -> np.ndarray:
         )
 
     arr = np.frombuffer(buf, dtype=">i2").reshape((TILE_SIZE, TILE_SIZE)).astype(np.float32)
-    arr[arr < -500] = np.nan
+    # Mask void value (-32768) and clamp negative bathymetry (ocean water elevation is 0.0 m)
+    arr[arr < 0] = 0.0
     return arr
 
 
@@ -278,20 +280,22 @@ def compute_terrain_metrics_from_30m_dem(
     # Extract 30 m DEM patch covering the ~0.5 x 0.5 degree window (~1800 x 1800 pixels)
     dem_patch = tile_manager.extract_patch(cell_min_lat, cell_max_lat, cell_min_lon, cell_max_lon)
 
-    # Elevation metrics
+    # Elevation metrics (over land and sea-level surface)
+    dem_patch = np.maximum(dem_patch, 0.0)
     mean_el = float(np.nanmean(dem_patch))
     max_el = float(np.nanmax(dem_patch))
     min_el = float(np.nanmin(dem_patch))
 
     # Compute slope at 30 m resolution
-    # dy = spacing along latitude in metres
+    # dy = spacing along latitude in metres (~30.87 m per arc-second)
     # dx = spacing along longitude in metres at given latitude
     dy = METRES_PER_ARCSEC_LAT
     dx = METRES_PER_ARCSEC_LAT * math.cos(math.radians(cell_lat))
     dx = max(dx, 1.0)  # Avoid division by zero
 
-    # 30 m gradients
-    gy, gx = np.gradient(dem_patch, dy, dx)
+    # Filter single-pixel radar DSM sensor noise with a 3-pixel (~90 m) gaussian kernel
+    dem_smooth = gaussian_filter(dem_patch, sigma=3.0)
+    gy, gx = np.gradient(dem_smooth, dy, dx)
     slope_rad = np.arctan(np.sqrt(gy**2 + gx**2))
     slope_deg = np.degrees(slope_rad)
     max_slope = float(np.nanmax(slope_deg))

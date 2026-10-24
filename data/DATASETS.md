@@ -73,4 +73,4 @@ This document records the exact provenance, cryptographic checksums, schemas, an
 - **Date Range:** Static topographic reference (N/A)
 - **Spatial Coverage:** 138 grid points across Odisha
 - **Methodology Note:** Slope is derived directly from SRTM 30 m sub-cell elevation gradients (`np.gradient` at ~30 m spacing) aggregated across the 0.5-degree cell window, NOT from coarse cell centres.
-- **SHA-256 Checksum:** `20fca0eaa19cfd36e641e164d2df23d3f11d7bf8073ca5a8e7d0d7c0db7211aa`
+- **SHA-256 Checksum:** `279f5a362a5999f33bb941b96319a93714fbaf7a3db76d59be05523838774280`
