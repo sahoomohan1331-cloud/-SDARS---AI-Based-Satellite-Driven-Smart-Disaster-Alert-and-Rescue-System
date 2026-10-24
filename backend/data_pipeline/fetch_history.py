@@ -208,8 +208,19 @@ def fetch_open_meteo_batch(
     base_delay = 2.0
     for attempt in range(max_retries):
         try:
+            logger.info(
+                "Request started: sending HTTP GET to Open-Meteo (%s) for %d coordinates (range: %s to %s)...",
+                base_url,
+                len(points),
+                start_date,
+                end_date,
+            )
             response = session.get(base_url, params=params, timeout=60)
             if response.status_code == 200:
+                logger.info(
+                    "HTTP response received: 200 OK (%d bytes payload from Open-Meteo).",
+                    len(response.content),
+                )
                 body = response.json()
                 if isinstance(body, list):
                     return body
@@ -277,7 +288,9 @@ def save_point_year_raw(
         df["elevation"] = float(elevation)
 
     df.drop(columns=["time"], inplace=True)
+    logger.info("Rows parsed: %d hourly observations for point %s (year %d).", len(df), grid_id, year)
     df.to_parquet(out_path, index=False, engine="pyarrow")
+    logger.info("Cache written: saved raw Parquet to %s (%d rows written).", out_path, len(df))
     return out_path
 
 
@@ -367,6 +380,7 @@ def run_pipeline(
     hourly: bool = False,
     data_dir: Path | None = None,
     open_meteo_url: str = DEFAULT_OPEN_METEO_URL,
+    force_point: str | None = None,
 ) -> tuple[Path, Path]:
     """Execute the end-to-end historical weather fetch pipeline."""
     base_data = data_dir or Path("data")
@@ -411,6 +425,16 @@ def run_pipeline(
         for p in points:
             key = get_checkpoint_key(p["grid_id"], year)
             p_file = raw_dir / p["grid_id"] / f"{year}.parquet"
+            if force_point and p["grid_id"] == force_point:
+                if key in completed_checkpoints:
+                    completed_checkpoints.discard(key)
+                if p_file.exists():
+                    try:
+                        p_file.unlink()
+                    except OSError:
+                        pass
+                pending_points.append(p)
+                continue
             if key in completed_checkpoints and p_file.exists():
                 continue
             pending_points.append(p)
@@ -484,6 +508,12 @@ def main(argv: list[str] | None = None) -> int:
         default="data",
         help="Base data directory (default: data)",
     )
+    parser.add_argument(
+        "--force-point",
+        type=str,
+        default=None,
+        help="Force re-fetch of a specific grid point by bypassing cached checkpoint",
+    )
 
     args = parser.parse_args(argv)
 
@@ -508,6 +538,7 @@ def main(argv: list[str] | None = None) -> int:
         hourly=hourly_env,
         data_dir=Path(args.data_dir),
         open_meteo_url=open_meteo_url,
+        force_point=args.force_point,
     )
 
     logger.info("Pipeline complete. Output files: %s, %s", weather_file, meta_file)
