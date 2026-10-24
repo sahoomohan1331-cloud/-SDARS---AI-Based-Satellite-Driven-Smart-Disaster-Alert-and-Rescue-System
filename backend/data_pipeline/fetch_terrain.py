@@ -7,6 +7,7 @@ Aggregates high-resolution 30 m elevation to 0.5-degree grid cells, computing:
 - max_elevation_m
 - min_elevation_m
 - max_slope_deg (derived from 30 m sub-cell gradients, capturing sub-cell terrain variability)
+- p95_slope_deg (95th percentile sub-cell slope, robust to single-pixel outliers)
 
 Source: Public NASA SRTM elevation tiles hosted on AWS Skadi (free, no key required).
 (OpenTopography requires a personal API key and is documented accordingly).
@@ -299,12 +300,14 @@ def compute_terrain_metrics_from_30m_dem(
     slope_rad = np.arctan(np.sqrt(gy**2 + gx**2))
     slope_deg = np.degrees(slope_rad)
     max_slope = float(np.nanmax(slope_deg))
+    p95_slope = float(np.nanpercentile(slope_deg, 95))
 
     return {
         "mean_elevation_m": round(mean_el, 2),
         "max_elevation_m": round(max_el, 2),
         "min_elevation_m": round(min_el, 2),
         "max_slope_deg": round(max(max_slope, 0.0), 2),
+        "p95_slope_deg": round(max(p95_slope, 0.0), 2),
     }
 
 
@@ -366,6 +369,7 @@ def run_terrain_pipeline(
                 "max_elevation_m": metrics["max_elevation_m"],
                 "min_elevation_m": metrics["min_elevation_m"],
                 "max_slope_deg": metrics["max_slope_deg"],
+                "p95_slope_deg": metrics["p95_slope_deg"],
             }
         )
 

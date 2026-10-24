@@ -63,14 +63,15 @@ This document records the exact provenance, cryptographic checksums, schemas, an
 - **Source Data:** NASA Shuttle Radar Topography Mission (SRTM GL1 1-arc-second / 30 m) via AWS Skadi
 - **Source Data License:** Public Domain (US Government work, NASA)
 - **Row Count:** 138
-- **Column Count:** 5
+- **Column Count:** 6
 - **Column List:**
   1. `grid_id` (string)
   2. `mean_elevation_m` (float64, mean elevation in metres within 0.5° cell)
   3. `max_elevation_m` (float64, peak elevation in metres within 0.5° cell)
   4. `min_elevation_m` (float64, base elevation in metres within 0.5° cell)
-  5. `max_slope_deg` (float64, maximum slope in degrees derived from 30 m DEM gradients)
+  5. `max_slope_deg` (float64, maximum slope in degrees derived from 30 m DEM gradients; retained for QA/outlier detection)
+  6. `p95_slope_deg` (float64, 95th percentile slope in degrees derived from 30 m DEM gradients; robust to single-pixel outliers, primary feature for landslide modeling)
 - **Date Range:** Static topographic reference (N/A)
 - **Spatial Coverage:** 138 grid points across Odisha
-- **Methodology Note:** Slope is derived directly from SRTM 30 m sub-cell elevation gradients (`np.gradient` at ~30 m spacing) aggregated across the 0.5-degree cell window, NOT from coarse cell centres.
-- **SHA-256 Checksum:** `279f5a362a5999f33bb941b96319a93714fbaf7a3db76d59be05523838774280`
+- **Methodology Note:** Slope is derived directly from SRTM 30 m sub-cell elevation gradients (`np.gradient` at ~30 m spacing) aggregated across the 0.5-degree cell window, NOT from coarse cell centres. `p95_slope_deg` provides the robust slope metric for susceptibility modeling, while `max_slope_deg` is preserved for quality assurance and outlier detection.
+- **SHA-256 Checksum:** `0e9cc996012d093b2494b1b5f7f05f6de5484b73f04ce89642176cf9b797c8ef`

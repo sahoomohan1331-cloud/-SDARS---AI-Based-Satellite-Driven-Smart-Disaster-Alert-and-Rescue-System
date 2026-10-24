@@ -60,11 +60,17 @@ The OpenTopography global DEM API (`portal.opentopography.org`) returns HTTP 401
 
 - **Resolution:** 1-arc-second (~30 m) Shuttle Radar Topography Mission (SRTM GL1).
 - **Methodology:** "Slope is derived from SRTM 30 m aggregated to 0.5-degree cells; sub-cell terrain variability is captured as max slope."
-- Rather than computing artificial gradients across 0.5-degree cell centers (which would smooth out mountain ridges and river valleys over 55 km), `fetch_terrain.py` extracts the full ~1800 x 1800 pixel 30 m elevation patch for each cell, clamps oceanic bathymetry `< 0 m` to `0.0 m` sea level, applies standard 3-pixel Gaussian smoothing to filter single-pixel sensor spikes, computes 30 m surface gradients using `np.gradient(patch, dy, dx)` where `dy = 30.87 m` (`METRES_PER_ARCSEC_LAT = 30.87`) and `dx = 30.87 * cos(lat)`, and computes the cell-level `mean_elevation_m`, `max_elevation_m`, `min_elevation_m`, and `max_slope_deg`.
+- Rather than computing artificial gradients across 0.5-degree cell centers (which would smooth out mountain ridges and river valleys over 55 km), `fetch_terrain.py` extracts the full ~1800 x 1800 pixel 30 m elevation patch for each cell, clamps oceanic bathymetry `< 0 m` to `0.0 m` sea level, applies standard 3-pixel Gaussian smoothing to filter single-pixel sensor spikes, computes 30 m surface gradients using `np.gradient(patch, dy, dx)` where `dy = 30.87 m` (`METRES_PER_ARCSEC_LAT = 30.87`) and `dx = 30.87 * cos(lat)`, and computes the cell-level `mean_elevation_m`, `max_elevation_m`, `min_elevation_m`, `max_slope_deg`, and `p95_slope_deg`.
+- **Robust Slope Statistic (`p95_slope_deg`) vs QA Metric (`max_slope_deg`):**
+  - In a 0.5° cell containing ~3.24 million 30 m pixels, `max_slope_deg` selects the single extreme pixel. Even in alluvial delta plains, isolated natural bluffs, river embankments, or quarries can produce high local peaks (e.g. Cuttack delta `max_slope_deg = 27.23°`).
+  - Standard landslide susceptibility practice uses the 95th percentile slope (`p95_slope_deg`) to provide resilience against single-pixel artifacts and localized micro-bluffs while preserving true mountain steepness.
+  - **Feature Usage in Steps 5/7:** `p95_slope_deg` is the authoritative terrain slope feature used for landslide risk modeling in Step 5 and Step 7. `max_slope_deg` is retained purely as a QA / outlier-detection column.
 - **Physical Reference Benchmarks (Verified):**
-  - Coastal flat cell (Puri, `grid_19.8_85.8` / `city_puri`): `max_slope_deg = 4.02°` (< 5° threshold).
-  - Plain cell (`grid_21.3_81.8`): `max_slope_deg = 6.39°` (5°–10° range).
-  - Eastern Ghats hilly cell (Koraput, `grid_18.8_82.8`): `max_slope_deg = 42.76°` (> 15° threshold).
+  - Coastal flat cell (Puri, `grid_19.8_85.8` / `city_puri`): `max_slope_deg = 4.02°`, `p95_slope_deg = 0.89°` (< 5° flat threshold).
+  - Delta alluvial plain cell (Cuttack, `grid_20.3_85.8`): `max_slope_deg = 27.23°` (local river terrace), `p95_slope_deg = 3.62°` (< 5° flat threshold).
+  - Plain cell (`grid_21.3_81.8`): `max_slope_deg = 6.39°`, `p95_slope_deg = 1.05°`.
+  - Eastern Ghats hilly cell (Koraput, `grid_18.8_82.8`): `max_slope_deg = 42.76°`, `p95_slope_deg = 20.39°` (> 15° threshold).
+  - Mountain massif cell (Keonjhar / Similipal, `grid_21.8_85.3`): `max_slope_deg = 52.65°`, `p95_slope_deg = 16.84°`.
 
 ---
 
@@ -168,12 +174,14 @@ def compute_terrain_metrics_from_30m_dem(
     slope_rad = np.arctan(np.sqrt(gy**2 + gx**2))
     slope_deg = np.degrees(slope_rad)
     max_slope = float(np.nanmax(slope_deg))
+    p95_slope = float(np.nanpercentile(slope_deg, 95))
 
     return {
         "mean_elevation_m": round(mean_el, 2),
         "max_elevation_m": round(max_el, 2),
         "min_elevation_m": round(min_el, 2),
         "max_slope_deg": round(max(max_slope, 0.0), 2),
+        "p95_slope_deg": round(max(p95_slope, 0.0), 2),
     }
 ```
 
