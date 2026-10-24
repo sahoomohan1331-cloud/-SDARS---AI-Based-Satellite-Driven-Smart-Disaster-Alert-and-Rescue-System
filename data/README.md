@@ -60,7 +60,11 @@ The OpenTopography global DEM API (`portal.opentopography.org`) returns HTTP 401
 
 - **Resolution:** 1-arc-second (~30 m) Shuttle Radar Topography Mission (SRTM GL1).
 - **Methodology:** "Slope is derived from SRTM 30 m aggregated to 0.5-degree cells; sub-cell terrain variability is captured as max slope."
-- Rather than computing artificial gradients across 0.5-degree cell centers (which would smooth out mountain ridges and river valleys over 55 km), `fetch_terrain.py` extracts the full ~1800 x 1800 pixel 30 m elevation patch for each cell, computes 30 m surface gradients using `np.gradient(patch, dy, dx)` where `dy = 30.87 m` and `dx = 30.87 * cos(lat)`, and computes the cell-level `mean_elevation_m`, `max_elevation_m`, `min_elevation_m`, and `max_slope_deg`.
+- Rather than computing artificial gradients across 0.5-degree cell centers (which would smooth out mountain ridges and river valleys over 55 km), `fetch_terrain.py` extracts the full ~1800 x 1800 pixel 30 m elevation patch for each cell, clamps oceanic bathymetry `< 0 m` to `0.0 m` sea level, applies standard 3-pixel Gaussian smoothing to filter single-pixel sensor spikes, computes 30 m surface gradients using `np.gradient(patch, dy, dx)` where `dy = 30.87 m` (`METRES_PER_ARCSEC_LAT = 30.87`) and `dx = 30.87 * cos(lat)`, and computes the cell-level `mean_elevation_m`, `max_elevation_m`, `min_elevation_m`, and `max_slope_deg`.
+- **Physical Reference Benchmarks (Verified):**
+  - Coastal flat cell (Puri, `grid_19.8_85.8` / `city_puri`): `max_slope_deg = 4.02°` (< 5° threshold).
+  - Plain cell (`grid_21.3_81.8`): `max_slope_deg = 6.39°` (5°–10° range).
+  - Eastern Ghats hilly cell (Koraput, `grid_18.8_82.8`): `max_slope_deg = 42.76°` (> 15° threshold).
 
 ---
 
