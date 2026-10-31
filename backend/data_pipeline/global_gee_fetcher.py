@@ -280,6 +280,17 @@ def export_global_dataset(
     logger.info("Visit https://code.earthengine.google.com/ and check the Tasks tab to monitor progress.")
     logger.info("=" * 80)
 
+    print("\n" + "=" * 80)
+    print(f"GEE {len(tasks)}-YEAR GLOBAL EXPORT TASK SUMMARY ({start_year} - {end_year}):")
+    print("=" * 80)
+    for i, t in enumerate(tasks):
+        yr = start_year + i
+        print(f"Year {yr:4d} | Description: {t.config.get('description', 'N/A')} | Task ID: {t.id}")
+    print("=" * 80)
+    print("All tasks submitted to Earth Engine servers.")
+    print("Monitor progress in the GEE Tasks tab: https://code.earthengine.google.com/")
+    print("=" * 80 + "\n")
+
     return tasks
 
 
@@ -326,6 +337,11 @@ def main():
     parser.add_argument("--project", type=str, default=None, help="Google Cloud project ID for GEE")
     parser.add_argument("--test-run", action="store_true", help="Submit test export task for 100 global points (Jan 2024)")
     parser.add_argument(
+        "--export-all",
+        action="store_true",
+        help="Export full 36-year annual chunked global dataset (1990 - 2025)",
+    )
+    parser.add_argument(
         "--export-years",
         nargs=2,
         type=int,
@@ -339,10 +355,12 @@ def main():
 
     setup_logging()
 
-    if args.export_years:
+    if args.export_all or args.export_years:
+        start_yr = args.export_years[0] if args.export_years else 1990
+        end_yr = args.export_years[1] if args.export_years else 2025
         export_global_dataset(
-            start_year=args.export_years[0],
-            end_year=args.export_years[1],
+            start_year=start_yr,
+            end_year=end_yr,
             points_count=args.points_count,
             folder=args.folder,
             project=args.project,
@@ -351,7 +369,7 @@ def main():
     elif args.test_run:
         run_test_sample(project=args.project)
     else:
-        logger.info("No action specified. Use --test-run or --export-years <START_YEAR> <END_YEAR>.")
+        logger.info("No action specified. Use --export-all, --export-years <START_YEAR> <END_YEAR>, or --test-run.")
 
 
 if __name__ == "__main__":
