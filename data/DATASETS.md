@@ -75,3 +75,36 @@ This document records the exact provenance, cryptographic checksums, schemas, an
 - **Spatial Coverage:** 138 grid points across Odisha
 - **Methodology Note:** Slope is derived directly from SRTM 30 m sub-cell elevation gradients (`np.gradient` at ~30 m spacing) aggregated across the 0.5-degree cell window, NOT from coarse cell centres. `p95_slope_deg` provides the robust slope metric for susceptibility modeling, while `max_slope_deg` is preserved for quality assurance and outlier detection.
 - **SHA-256 Checksum:** `0e9cc996012d093b2494b1b5f7f05f6de5484b73f04ce89642176cf9b797c8ef`
+
+---
+
+### 4. `data/processed/weather_6h_2024.parquet`
+- **File Path:** `data/processed/weather_6h_2024.parquet`
+- **Producing Script:** `backend/data_pipeline/fetch_era5_google.py`
+- **Source Data:** Google Cloud Public Datasets (gcp-public-data-arco-era5 / ECMWF ERA5 Reanalysis)
+- **Source Data License:** Creative Commons Attribution 4.0 International (CC BY 4.0) / Copernicus ECMWF License
+- **Row Count:** 552
+- **Column Count:** 17
+- **Column List:**
+  1. `timestamp_utc` (datetime64[ns, UTC])
+  2. `grid_id` (string)
+  3. `lat` (float64)
+  4. `lon` (float64)
+  5. `temperature_2m` (float64, °C)
+  6. `relative_humidity_2m` (float64, %)
+  7. `dew_point_2m` (float64, °C)
+  8. `surface_pressure` (float64, hPa)
+  9. `wind_speed_10m` (float64, km/h)
+  10. `wind_gusts_10m` (float64, km/h)
+  11. `precipitation` (float64, mm)
+  12. `cloud_cover` (float64, %)
+  13. `soil_moisture_0_to_7cm` (float64, m³/m³)
+  14. `soil_moisture_7_to_28cm` (float64, m³/m³)
+  15. `soil_moisture_28_to_100cm` (float64, m³/m³)
+  16. `convective_available_potential_energy` (float64, J/kg)
+  17. `elevation` (float64, metres above sea level)
+- **Date Range:** `2024-01-01 00:00:00+00:00` to `2024-01-01 18:00:00+00:00` (UTC)
+- **Temporal Frequency:** 6-hourly (00:00, 06:00, 12:00, 18:00 UTC)
+- **Spatial Coverage:** 138 points across Odisha, India (130 regular 0.5° grid cells + 8 named urban centers)
+- **SHA-256 Checksum:** `189b3dc77bac8db5597ab2585c94b7025f79427744080987591325581f10553c`
+
