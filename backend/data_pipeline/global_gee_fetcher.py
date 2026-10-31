@@ -97,16 +97,19 @@ def generate_random_land_points(
 ) -> ee.FeatureCollection:
     """Generate randomly distributed sample points constrained to global landmasses.
 
-    Uses the simplified international boundaries dataset (USDOS/LSIB_SIMPLE/2017)
-    as the land mask to ensure points fall on land surfaces.
+    Uses global elevation raster masking (NOAA/NGDC/ETOPO1 bedrock > 0) across
+    habitable global latitudes (-56°S to 75°N). This avoids complex vector geometry
+    unions (such as land.geometry() on multi-polygon boundary layers) which trigger
+    Earth Engine memory limits and worker stalls.
     """
-    logger.info("Generating %d random global land points (seed=%d)...", num_points, seed)
-    land = ee.FeatureCollection(DEFAULT_LAND_DATASET)
-    land_geom = land.geometry()
-
-    raw_points = ee.FeatureCollection.randomPoints(
-        region=land_geom, points=num_points, seed=seed
+    logger.info("Generating %d random global land points via raster mask (seed=%d)...", num_points, seed)
+    region = ee.Geometry.BBox(-180, -56, 180, 75)
+    candidates = ee.FeatureCollection.randomPoints(
+        region=region, points=num_points * 4, seed=seed
     )
+    elev = ee.Image("NOAA/NGDC/ETOPO1").select("bedrock")
+    samples = elev.sampleRegions(collection=candidates, scale=25000, geometries=True)
+    land_points = samples.filter(ee.Filter.gt("bedrock", 0)).limit(num_points)
 
     def attach_point_metadata(feature: ee.Feature) -> ee.Feature:
         coords = feature.geometry().coordinates()
@@ -116,7 +119,7 @@ def generate_random_land_points(
             "lat": coords.get(1),
         })
 
-    points_with_meta = raw_points.map(attach_point_metadata)
+    points_with_meta = land_points.map(attach_point_metadata)
     return points_with_meta
 
 
